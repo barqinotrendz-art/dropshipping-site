@@ -1,0 +1,56 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Dependency directories
+node_modules/
+
+# Build outputs
+dist/
+dist-ssr/
+build/
+.out/
+
+# Local environment files
+*.local
+.env
+.env.*
+!.env.example  # keep example env file for reference
+
+# IDE & Editor settings
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# System files
+.DS_Store
+Thumbs.db
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Optional cache folders
+.cache/
+.next/
+coverage/
+
+AUTHENTICATION_SETUP.md
+CACHING_STRATEGY.md
+FIREBASE_RULES_SETUP.md
+FIREBASE_RULES.md
+HOW_TO_SEE_ERROR_PAGE.md
+REVIEW_TROUBLESHOOTING.md
+SETUP_SPARK_PLAN.md
+readme.md
+firestore.rules
+.vercel

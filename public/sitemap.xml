@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Home Page -->
+  <url>
+    <loc>https://dropshipping-site-xi.vercel.app/</loc>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Products Listing Page -->
+  <url>
+    <loc>https://dropshipping-site-xi.vercel.app/products</loc>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Example Categories (optional, can be expanded) -->
+  <url>
+    <loc>https://dropshipping-site-xi.vercel.app/products/electronics</loc>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://dropshipping-site-xi.vercel.app/products/fashion</loc>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://dropshipping-site-xi.vercel.app/products/watches</loc>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://dropshipping-site-xi.vercel.app/products/home-essentials</loc>
+    <priority>0.7</priority>
+  </url>
+</urlset>

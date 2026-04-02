@@ -1,0 +1,23 @@
+{
+  "name": "Easy Buy",
+  "short_name": "Easy Buy",
+  "description": "Shop a wide range of products including electronics, fashion, watches, home essentials, and more. Fast delivery and reliable service anywhere in the region.",
+  "lang": "en",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
