@@ -1,5 +1,5 @@
 // components/HeaderTicker.tsx
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import Ticker from "framer-motion-ticker";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../lib/firebase";

@@ -26,8 +26,6 @@ import {
   Package,
   Handbag
 } from 'lucide-react'
-import { doc, getDoc } from "firebase/firestore"
-import { db } from "../lib/firebase"
 import HeaderTicker from './HeaderTicker'
 
 interface NavItem {
