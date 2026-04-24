@@ -55,6 +55,7 @@ const AdminDrawer: React.FC<AdminDrawerProps> = ({ isOpen, onToggle }) => {
     { name: "Banners", href: `${ADMIN_BASE_PATH}/banners`, icon: Image },
     { name: "Reports", href: `${ADMIN_BASE_PATH}/reports`, icon: BarChart2 },
     { name: "Social Settings", href: `${ADMIN_BASE_PATH}/social-settings`, icon: Share2 },
+    { name: "Header Settings", href: `${ADMIN_BASE_PATH}/header-settings`, icon: Share2 }
   ]
 
   const isActiveRoute = (href: string) => {
@@ -86,15 +87,16 @@ const AdminDrawer: React.FC<AdminDrawerProps> = ({ isOpen, onToggle }) => {
       {/* Drawer */}
       <div
         className={`
-        fixed top-0 left-0 h-full bg-white shadow-lg z-40 transform transition-transform duration-300 ease-in-out
+        absolute md:top-[120px]  top-[90px] left-0 h-full bg-white shadow-lg z-40 transform 
+        transition-transform duration-300 ease-in-out
         ${isOpen ? "translate-x-0" : "-translate-x-full"}
         lg:translate-x-0
-        w-64 border-r border-gray-200
+        w-64 border border-gray-900 overflow-y-auto
       `}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 ">
             <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">A</span>
             </div>

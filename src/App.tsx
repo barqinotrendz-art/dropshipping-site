@@ -43,7 +43,8 @@ import ScrollToTop from './components/ScrollToTop.tsx'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClient } from './lib/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { ADMIN_BASE_PATH } from './constants/routes'
+import { ADMIN_BASE_PATH } from './constants/routes';
+import HeaderSettings from './pages/admin/HeaderSettings'
 
 function AppContent() {
   const location = useLocation()
@@ -91,6 +92,7 @@ function AppContent() {
           <Route path={`${ADMIN_BASE_PATH}/social-settings`} element={<AdminRoute><AdminLayout><AdminSocialSettings /></AdminLayout></AdminRoute>} />
           <Route path={`${ADMIN_BASE_PATH}/shipping-rates`} element={<AdminRoute><AdminLayout><AdminShippingRates /></AdminLayout></AdminRoute>} />
           <Route path={`${ADMIN_BASE_PATH}/payment-settings`} element={<AdminRoute><AdminLayout><AdminPaymentSettings /></AdminLayout></AdminRoute>} />
+          <Route path={`${ADMIN_BASE_PATH}/header-settings`} element={<AdminRoute><AdminLayout><HeaderSettings /></AdminLayout></AdminRoute>} />
         </Routes>
       </main>
       {!isAdminPage && <Footer />}
@@ -110,7 +112,7 @@ function App() {
   const enableReactQueryDevtools = import.meta.env.VITE_ENABLE_REACT_QUERY_DEVTOOLS === 'true'
 
   return (
-   <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <AppContent />
       </BrowserRouter>
