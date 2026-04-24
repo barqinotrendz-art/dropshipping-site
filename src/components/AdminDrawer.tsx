@@ -15,7 +15,8 @@ import {
   Share2,
   Truck,
   CreditCard,
-  ChevronDown
+  ChevronDown,
+  Settings2
 } from "lucide-react"
 import { useAuth } from "../hooks/useAuth"
 
@@ -32,9 +33,9 @@ const AdminDrawer: React.FC<AdminDrawerProps> = ({ isOpen, onToggle }) => {
   const navigationItems = [
     { name: "Dashboard", href: `${ADMIN_BASE_PATH}`, icon: Home },
     { name: "Add Products", href: `${ADMIN_BASE_PATH}/products`, icon: ShoppingBag },
-    { 
-      name: "Orders", 
-      href: `${ADMIN_BASE_PATH}/orders`, 
+    {
+      name: "Orders",
+      href: `${ADMIN_BASE_PATH}/orders`,
       icon: ClipboardList,
       hasSubmenu: true,
       submenu: [
@@ -55,7 +56,7 @@ const AdminDrawer: React.FC<AdminDrawerProps> = ({ isOpen, onToggle }) => {
     { name: "Banners", href: `${ADMIN_BASE_PATH}/banners`, icon: Image },
     { name: "Reports", href: `${ADMIN_BASE_PATH}/reports`, icon: BarChart2 },
     { name: "Social Settings", href: `${ADMIN_BASE_PATH}/social-settings`, icon: Share2 },
-    { name: "Header Settings", href: `${ADMIN_BASE_PATH}/header-settings`, icon: Share2 }
+    { name: "Header Settings", href: `${ADMIN_BASE_PATH}/header-settings`, icon: Settings2 }
   ]
 
   const isActiveRoute = (href: string) => {
@@ -87,15 +88,17 @@ const AdminDrawer: React.FC<AdminDrawerProps> = ({ isOpen, onToggle }) => {
       {/* Drawer */}
       <div
         className={`
-        absolute md:top-[120px]  top-[90px] left-0 h-full bg-white shadow-lg z-40 transform 
+        fixed md:top-[120px]  top-[90px] left-0     
+        h-[calc(100vh-90px)] md:h-[calc(100vh-120px)]
+ bg-white shadow-lg z-40 transform 
         transition-transform duration-300 ease-in-out
         ${isOpen ? "translate-x-0" : "-translate-x-full"}
         lg:translate-x-0
-        w-64 border border-gray-900 overflow-y-auto
+        w-64 border border-gray-900 flex flex-col
       `}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
+        <div className="flex justify-between p-4 border-b border-gray-200">
           <div className="flex items-center space-x-2 ">
             <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">A</span>
@@ -111,7 +114,7 @@ const AdminDrawer: React.FC<AdminDrawerProps> = ({ isOpen, onToggle }) => {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
+        <nav className="flex-1 px-4 py-6 overflow-y-auto">
           {navigationItems.map((item) => {
             const Icon = item.icon
             const isActive = isActiveRoute(item.href)
@@ -124,10 +127,9 @@ const AdminDrawer: React.FC<AdminDrawerProps> = ({ isOpen, onToggle }) => {
                       onClick={() => setExpandedOrdersMenu(!expandedOrdersMenu)}
                       className={`
                         flex items-center justify-between w-full px-3 py-2 rounded-md text-sm font-medium transition-colors
-                        ${
-                          isActive
-                            ? "bg-black text-white"
-                            : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                        ${isActive
+                          ? "bg-black text-white"
+                          : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                         }
                       `}
                     >
@@ -135,10 +137,9 @@ const AdminDrawer: React.FC<AdminDrawerProps> = ({ isOpen, onToggle }) => {
                         <Icon className="w-5 h-5 mr-3" />
                         {item.name}
                       </div>
-                      <ChevronDown 
-                        className={`w-4 h-4 transition-transform ${
-                          expandedOrdersMenu ? 'rotate-180' : ''
-                        }`} 
+                      <ChevronDown
+                        className={`w-4 h-4 transition-transform ${expandedOrdersMenu ? 'rotate-180' : ''
+                          }`}
                       />
                     </button>
                     {expandedOrdersMenu && (
@@ -152,10 +153,9 @@ const AdminDrawer: React.FC<AdminDrawerProps> = ({ isOpen, onToggle }) => {
                             }}
                             className={`
                               flex items-center px-3 py-2 rounded-md text-sm transition-colors
-                              ${
-                                location.pathname === subItem.href
-                                  ? "bg-gray-800 text-white"
-                                  : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                              ${location.pathname === subItem.href
+                                ? "bg-gray-800 text-white"
+                                : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
                               }
                             `}
                           >
@@ -173,10 +173,9 @@ const AdminDrawer: React.FC<AdminDrawerProps> = ({ isOpen, onToggle }) => {
                     }}
                     className={`
                       flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors
-                      ${
-                        isActive
-                          ? "bg-black text-white"
-                          : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                      ${isActive
+                        ? "bg-black text-white"
+                        : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                       }
                     `}
                   >

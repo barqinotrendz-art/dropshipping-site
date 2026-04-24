@@ -432,7 +432,7 @@ const NavBar: React.FC = () => {
                 <img src={logo} alt="logo" className="w-full h-full object-cover rounded-full" />
               </div>
               <span className="text-2xl font-mono text-black tracking-tight">
-                Esfylo
+                Barqino
               </span>
             </Link>
 
@@ -463,7 +463,7 @@ const NavBar: React.FC = () => {
                   <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center">
                     <img src={logo} alt="logo" className="w-full h-full object-cover rounded-full" />
                   </div>
-                  <span className="text-xl font-mono text-black font-bold">Esfylo</span>
+                  <span className="text-xl font-mono text-black font-bold">Barqino</span>
                 </div>
                 <button
                   onClick={() => setIsMobileMenuOpen(false)}
