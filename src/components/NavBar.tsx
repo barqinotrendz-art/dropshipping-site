@@ -233,7 +233,7 @@ const NavBar: React.FC = () => {
                   <img src={logo} alt="logo" className="w-full h-full object-cover rounded-full" />
                 </div>
                 <span className="hidden sm:block text-4xl text-black tracking-tight transition-all duration-300 group-hover:tracking-wide">
-                  Barqino
+                  Barqino1
                 </span>
               </Link>
 
