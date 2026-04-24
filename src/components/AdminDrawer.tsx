@@ -88,13 +88,13 @@ const AdminDrawer: React.FC<AdminDrawerProps> = ({ isOpen, onToggle }) => {
       {/* Drawer */}
       <div
         className={`
-        fixed md:top-[120px]  top-[90px] left-0     
-        h-[calc(100vh-90px)] md:h-[calc(100vh-120px)]
+        fixed md:top-[119px]  top-[90px] left-0     
+        h-[calc(100dvh-90px)] md:h-[calc(100dvh-120px)]
  bg-white shadow-lg z-40 transform 
         transition-transform duration-300 ease-in-out
         ${isOpen ? "translate-x-0" : "-translate-x-full"}
         lg:translate-x-0
-        w-64 border border-gray-900 flex flex-col
+        w-64 border-b border-gray-200 flex flex-col
       `}
       >
         {/* Header */}
