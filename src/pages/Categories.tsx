@@ -92,7 +92,7 @@ const pageDescription = selectedCategory
   return (
     <>
       <SEOHead 
-        title={`${pageTitle} - Easy buy`}
+        title={`${pageTitle} - Barqino`}
         description={pageDescription}
       />
       

@@ -83,7 +83,7 @@ const Home: FC = () => {
   return (
     <ErrorBoundary>
       <SEOHead 
-       title="Easy Buy Online Store for Electronics, Fashion & More"
+       title="Barqino Online Store for Electronics, Fashion & More"
 description="Shop a wide range of products including electronics, fashion, watches, home essentials, and more at Easy Buy. Quality products, fast delivery, and reliable service anywhere in the region."
 />
 

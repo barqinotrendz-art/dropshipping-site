@@ -15,9 +15,9 @@ type Props = {
 }
 
 const SEOHead: React.FC<Props> = ({
-  title = 'Easy Buy - Your Online Shopping Destination',
-  description = 'Discover a wide range of products from electronics, fashion, watches, home essentials, and more. Easy Buy delivers quality products fast, anywhere in the region, with reliable service.',
-  keywords = 'easy buy, online store, electronics, fashion, watches, home essentials, shopping online, dropshipping store',
+  title = 'Barqino - Your Online Shopping Destination',
+  description = 'Discover a wide range of products from electronics, fashion, watches, home essentials, and more. Barqino delivers quality products fast, anywhere in the region, with reliable service.',
+  keywords = 'barqino, online store, electronics, fashion, watches, home essentials, shopping online, dropshipping store',
   image = "https://dropshipping-site-xi.vercel.app//logo.png",
   url,
   type = 'website',
@@ -27,7 +27,7 @@ const SEOHead: React.FC<Props> = ({
   brand,
   category
 }) => {
-  const siteName = 'Easy Buy'
+  const siteName = 'Barqino'
   const fullTitle = title.includes(siteName) ? title : `${title} | ${siteName}`
 
   React.useEffect(() => {
@@ -96,7 +96,7 @@ const SEOHead: React.FC<Props> = ({
           name: title,
           description,
           image,
-          brand: brand ? { '@type': 'Brand', name: brand } : { '@type': 'Brand', name: 'Easy Buy' },
+          brand: brand ? { '@type': 'Brand', name: brand } : { '@type': 'Brand', name: 'Barqino' },
           category: category || 'General',
           offers: {
             '@type': 'Offer',
@@ -139,7 +139,7 @@ const SEOHead: React.FC<Props> = ({
       addJsonLd('ld-org', {
         '@context': 'https://schema.org',
         '@type': 'Organization',
-        name: 'Easy Buy',
+        name: 'Barqino',
         url: origin,
         logo: { '@type': 'ImageObject', url: logoUrl },
         contactPoint: [
@@ -152,9 +152,9 @@ const SEOHead: React.FC<Props> = ({
           },
         ],
         sameAs: [
-          'https://facebook.com/easybuy',
-          'https://instagram.com/easybuy',
-          'https://twitter.com/easybuy',
+          'https://facebook.com/barqino',
+          'https://instagram.com/barqino',
+          'https://twitter.com/barqino',
         ],
       })
     )
