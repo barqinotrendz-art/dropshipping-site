@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react'
-import logo from '../assets/logo.jpeg'
+import extralogo from '../assets/extralogo.png'
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { useCart } from '../hooks/useCart'
@@ -228,7 +228,7 @@ const NavBar: React.FC = () => {
               {/* Logo */}
               <Link to="/" className="flex items-center space-x-3 group ">
                 <div className="w-14 h-14 bg-black rounded-full flex items-center justify-center shadow-lg transform transition-all duration-300 group-hover:shadow-2xl group-hover:scale-110 ring-2 ring-gray-100 group-hover:ring-4 group-hover:ring-gray-200">
-                  <img src={logo} alt="logo" className="w-full h-full object-cover rounded-full" />
+                  <img src={extralogo} alt="logo" className="w-full h-full object-cover rounded-full" />
                 </div>
                 <span className="hidden sm:block text-4xl text-black tracking-tight transition-all duration-300 group-hover:tracking-wide">
                   Barqino
@@ -429,7 +429,7 @@ const NavBar: React.FC = () => {
             {/* Logo */}
             <Link to="/" className="flex items-center space-x-2 group">
               <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center shadow-lg">
-                <img src={logo} alt="logo" className="w-full h-full object-cover rounded-full" />
+                <img src={extralogo} alt="logo" className="w-full h-full object-cover rounded-full" />
               </div>
               <span className="text-2xl font-mono text-black tracking-tight">
                 Barqino
@@ -461,7 +461,7 @@ const NavBar: React.FC = () => {
               <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50">
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center">
-                    <img src={logo} alt="logo" className="w-full h-full object-cover rounded-full" />
+                    <img src={extralogo} alt="logo" className="w-full h-full object-cover rounded-full" />
                   </div>
                   <span className="text-xl font-mono text-black font-bold">Barqino</span>
                 </div>

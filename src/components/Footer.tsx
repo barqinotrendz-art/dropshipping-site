@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { FaInstagram, FaFacebook, FaTiktok, FaYoutube } from "react-icons/fa";
 import { useSocialSettings } from '../hooks/useSocialSettings'
-import logo from '../assets/logo.jpeg'
+import extralogo from '../assets/extralogo.png'
 
 const Footer: React.FC = () => {
   const { data: socialSettings } = useSocialSettings()
@@ -15,9 +15,9 @@ const Footer: React.FC = () => {
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
               <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg">
-                <img src={logo} alt="Easy Buy" className="w-full h-full object-cover rounded-full" />
+                <img src={extralogo} alt="Easy Buy" className="w-full h-full object-cover rounded-full" />
               </div>
-              <span className="text-2xl font-mono font-bold">Easy Buy</span>
+              <span className="text-2xl font-mono font-bold">Barqino</span>
             </div>
             <p className="text-gray-400 text-sm leading-relaxed">
               Your one-stop destination for premium products at unbeatable prices. 
