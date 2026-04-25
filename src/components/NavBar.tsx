@@ -218,8 +218,8 @@ const NavBar: React.FC = () => {
 
   return (
     <>
-      <div className='sticky top-0 z-50'>
         <HeaderTicker />
+      <div className='sticky top-0 z-50'>
         {/* Desktop Header */}
         <header className="hidden md:block bg-white/95 shadow-xl backdrop-blur-lg border-b border-gray-100">
           <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
