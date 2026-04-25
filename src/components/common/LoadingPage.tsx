@@ -1,5 +1,5 @@
 // import { ShoppingBag } from 'lucide-react'
-import logo from '../../assets/logo.jpeg'
+import extralogocircle from '../../assets/extralogocircle.png'
 
 interface LoadingPageProps {
   message?: string
@@ -18,7 +18,7 @@ const LoadingPage: React.FC<LoadingPageProps> = () => {
           
           {/* Main Logo Circle */}
           <div className="relative inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br rounded-full shadow-xl">
-            <img src={logo} alt="logo" className="w-24 h-24 rounded-full" />
+            <img src={extralogocircle} alt="logo" className="w-24 h-24 rounded-full" />
           </div>
           
           {/* Spinning Rings */}
