@@ -159,7 +159,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
   return (
     <div
-      className="bg-white   shadow-sm  hover:shadow-lg transition-all duration-300 group"
+      className="bg-white   shadow-sm  hover:shadow-lg transition-all duration-300 group rounded-xl"
       onMouseEnter={() => secondImage && setIsHovered(true)}
       onMouseLeave={() => secondImage && setIsHovered(false)}
     >
@@ -204,7 +204,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </div>
 
         {/* Quick Actions - Show on Hover */}
-        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center rounded-xl">
           <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-4 group-hover:translate-y-0 flex space-x-2">
             <button
               onClick={toggleWishlist}
@@ -241,7 +241,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
       {/* Product Info */}
       <div className="p-2 sm:p-4">
-        <Link to={`/product/${product.slug || product.id}`} className="block">
+        <Link to={`/product/${product.id || product.slug}`} className="block hover:bg-gray-50 rounded-md">
           <h3 className="font-semibold text-sm sm:text-base text-gray-900 mb-1 sm:mb-2  overflow-hidden group-hover:text-black transition-colors h-[45px]">
             {product.title.slice(0, 70)}{product.title.length > 60 ? '...' : ''}
           </h3>
