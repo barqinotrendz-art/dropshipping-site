@@ -12,11 +12,11 @@ import ProductCarousel from '../components/home/ProductCarousel.tsx'
 import CategoriesSection from '../components/home/CategoriesSection.tsx'
 import NewsletterSection from '../components/home/NewsletterSection.tsx'
 import ProductPreviewModal from '../components/ProductPreviewModal.tsx'
- 
+
 const Home: FC = () => {
   const { addItem } = useCart()
   const [previewProduct, setPreviewProduct] = useState<any>(null)
-  
+
   // Data fetching
   const { data: banners, isLoading: bannersLoading, error: bannersError } = useBanners()
   const { data: products, isLoading: productsLoading, error: productsError } = useProducts()
@@ -33,7 +33,7 @@ const Home: FC = () => {
     // Group products by category for each section
     const categoryBasedSections = activeCategories.map(category => {
       const categoryProducts = activeProducts.filter(p => p.categoryId === category.id)
-      
+
       return {
         category,
         featured: categoryProducts.filter(p => p.featured === true).slice(0, 8),
@@ -82,10 +82,10 @@ const Home: FC = () => {
 
   return (
     <ErrorBoundary>
-      <SEOHead 
-       title="Barqino Online Store for Electronics, Fashion & More"
-description="Shop a wide range of products including electronics, fashion, watches, home essentials, and more at Easy Buy. Quality products, fast delivery, and reliable service anywhere in the region."
-/>
+      <SEOHead
+        title="Barqino Online Store for Electronics, Fashion & More"
+        description="Shop a wide range of products including electronics, fashion, watches, home essentials, and more at Easy Buy. Quality products, fast delivery, and reliable service anywhere in the region."
+      />
 
 
       <div className="bg-white animate-fadeIn">
@@ -106,23 +106,25 @@ description="Shop a wide range of products including electronics, fashion, watch
 
         {/* Hero Section */}
         <div className="animate-fadeIn " style={{ animationDelay: '0ms' }}>
-          <HeroSection 
-              banners={banners?.map(b => ({
-                id: b.id,
-                // pass title only when present; otherwise leave undefined so HeroSection hides it
-                title: b.title ?? undefined,
-                subtitle: b.caption ?? undefined,
-                publicId: b.publicId,
-                mobilePublicId: b.mobilePublicId,
-                ctaText: b.ctaLabel || 'Shop Now',
-                ctaLink: b.ctaUrl || '/products'
-              }))}
+          <HeroSection
+            banners={banners?.map(b => ({
+              id: b.id,
+              // pass title only when present; otherwise leave undefined so HeroSection hides it
+              title: b.title ?? undefined,
+              subtitle: b.caption ?? undefined,
+              publicId: b.publicId,
+              mobilePublicId: b.mobilePublicId,
+              // ctaText: b.ctaLabel || 'Shop Now',
+              // ctaLink: b.ctaUrl || '/products'
+              ctaText: b.ctaLabel?.trim() || undefined,
+              ctaLink: b.ctaUrl?.trim() || undefined,
+            }))}
             isLoading={bannersLoading}
             error={bannersError ? 'Failed to load banners' : undefined}
           />
         </div>
 
-          {/* Latest Arrivals Section - Category Based */}
+        {/* Latest Arrivals Section - Category Based */}
         {processedProducts?.categoryBasedSections && processedProducts.categoryBasedSections.length > 0 && (
           <div className="py-8">
             {/* Main Latest Arrivals Heading */}
@@ -132,9 +134,9 @@ description="Shop a wide range of products including electronics, fashion, watch
                 <p className="text-gray-600">Fresh new products just added to our collection</p>
               </div>
             </div>
-            
+
             {/* Category-based Latest Carousels */}
-            {processedProducts.categoryBasedSections.map((section, index) => 
+            {processedProducts.categoryBasedSections.map((section, index) =>
               section.latest.length > 0 && (
                 <div key={`latest-${section.category.id}`} className="animate-fadeIn" style={{ animationDelay: `${800 + (index * 100)}ms` }}>
                   <ProductCarousel
@@ -167,7 +169,7 @@ description="Shop a wide range of products including electronics, fashion, watch
 
 
 
-    
+
 
         {/* Categories Section - Only show if more than 1 active category */}
         {categories && categories.filter(c => c.active !== false).length > 1 && (
@@ -198,9 +200,9 @@ description="Shop a wide range of products including electronics, fashion, watch
                 <p className="text-gray-600">Best-selling items loved by our customers</p>
               </div>
             </div>
-            
+
             {/* Category-based Top Selling Carousels */}
-            {processedProducts.categoryBasedSections.map((section, index) => 
+            {processedProducts.categoryBasedSections.map((section, index) =>
               section.topSelling.length > 0 && (
                 <div key={`topselling-${section.category.id}`} className="animate-fadeIn" style={{ animationDelay: `${600 + (index * 100)}ms` }}>
                   <ProductCarousel
@@ -232,7 +234,7 @@ description="Shop a wide range of products including electronics, fashion, watch
           </div>
         )}
 
-    {/* Featured Products Section - Category Based */}
+        {/* Featured Products Section - Category Based */}
         {processedProducts?.categoryBasedSections && processedProducts.categoryBasedSections.length > 0 && (
           <div className="py-8">
             {/* Main Featured Products Heading */}
@@ -242,9 +244,9 @@ description="Shop a wide range of products including electronics, fashion, watch
                 <p className="text-gray-600">Discover our handpicked selection across all categories</p>
               </div>
             </div>
-            
+
             {/* Category-based Featured Carousels */}
-            {processedProducts.categoryBasedSections.map((section, index) => 
+            {processedProducts.categoryBasedSections.map((section, index) =>
               section.featured.length > 0 && (
                 <div key={`featured-${section.category.id}`} className="animate-fadeIn" style={{ animationDelay: `${200 + (index * 100)}ms` }}>
                   <ProductCarousel
@@ -273,7 +275,7 @@ description="Shop a wide range of products including electronics, fashion, watch
             />
           </div>
         )}
-      
+
         {/* Newsletter Section */}
         <div className="animate-fadeIn" style={{ animationDelay: '1000ms' }}>
           <NewsletterSection />

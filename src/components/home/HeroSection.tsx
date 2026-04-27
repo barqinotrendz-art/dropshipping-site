@@ -3,6 +3,7 @@ import type { FC } from 'react'
 import { ChevronLeft, ChevronRight, ShoppingBag } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { getCloudinaryUrl } from '../../lib/cloudinary'
+import LiquidButton from '../LiquidButton'
 
 interface Banner {
   id: string
@@ -28,27 +29,27 @@ const HeroSection: FC<HeroSectionProps> = ({ banners, isLoading, error }) => {
   // Auto-slide logic (no hover pause)
   useEffect(() => {
     if (!banners || banners.length <= 1) return
-    
+
     let interval: ReturnType<typeof setInterval>
-    
+
     // Wait for first animation to complete before starting auto-slide
     const firstTimeout = setTimeout(() => {
       // First slide change after animation completes
       setCurrentSlide((prev) => (prev + 1) % banners.length)
-      
+
       // Then start regular intervals
       interval = setInterval(() => {
         setCurrentSlide((prev) => (prev + 1) % banners.length)
       }, 8000)
     }, 8000)
-    
+
     return () => {
       clearTimeout(firstTimeout)
       if (interval) clearInterval(interval)
     }
   }, [banners])
 
- useEffect(() => {
+  useEffect(() => {
     // Reset animation: start zoomed in, then zoom out
     setAnimate(false)
     const timeout = setTimeout(() => setAnimate(true), 300)
@@ -144,7 +145,7 @@ const HeroSection: FC<HeroSectionProps> = ({ banners, isLoading, error }) => {
                   sizes="100vw"
                 />
               )}
-              
+
               {/* Desktop Image (769px and up) */}
               <source
                 media="(min-width: 769px)"
@@ -155,14 +156,13 @@ const HeroSection: FC<HeroSectionProps> = ({ banners, isLoading, error }) => {
                 `}
                 sizes="100vw"
               />
-              
+
               {/* Fallback Image */}
               <img
                 src={getCloudinaryUrl(currentBanner.publicId, 1920, 880)}
                 alt={currentBanner.title || 'Banner'}
-                className={`w-full h-full object-cover transition-all duration-[5000ms] ease-out ${
-                  animate ? 'scale-100' : 'scale-110'
-                } ${isTransitioning ? 'scale-105 opacity-70' : ''}`}
+                className={`w-full h-full object-cover transition-all duration-[5000ms] ease-out ${animate ? 'scale-100' : 'scale-110'
+                  } ${isTransitioning ? 'scale-105 opacity-70' : ''}`}
               />
             </picture>
 
@@ -187,6 +187,14 @@ const HeroSection: FC<HeroSectionProps> = ({ banners, isLoading, error }) => {
                       {currentBanner.subtitle}
                     </p>
                   )}
+                  {currentBanner.ctaText && currentBanner.ctaLink && (
+                    <LiquidButton
+                      text={currentBanner.ctaText}
+                      to={currentBanner.ctaLink}
+                      icon={<ShoppingBag className="w-5 h-5" />}
+                      className={"bg-white"}
+                    />
+                  )}
                 </div>
               </div>
             </div>
@@ -209,7 +217,7 @@ const HeroSection: FC<HeroSectionProps> = ({ banners, isLoading, error }) => {
                   sizes="100vw"
                 />
               )}
-              
+
               {/* Desktop Image (769px and up) */}
               <source
                 media="(min-width: 769px)"
@@ -220,14 +228,13 @@ const HeroSection: FC<HeroSectionProps> = ({ banners, isLoading, error }) => {
                 `}
                 sizes="100vw"
               />
-              
+
               {/* Fallback Image */}
               <img
                 src={getCloudinaryUrl(currentBanner.publicId, 1920, 880)}
                 alt={currentBanner.title || 'Banner'}
-                className={`w-full h-full object-cover transition-all duration-[5000ms] ease-out ${
-                  animate ? 'scale-100' : 'scale-110'
-                } ${isTransitioning ? 'scale-105 opacity-70' : ''}`}
+                className={`w-full h-full object-cover transition-all duration-[5000ms] ease-out ${animate ? 'scale-100' : 'scale-110'
+                  } ${isTransitioning ? 'scale-105 opacity-70' : ''}`}
               />
             </picture>
 
@@ -295,11 +302,10 @@ const HeroSection: FC<HeroSectionProps> = ({ banners, isLoading, error }) => {
                   }, 200)
                 }
               }}
-              className={`w-3 h-3 md:w-3.5 md:h-3.5 rounded-full transition-all duration-300 ${
-                index === currentSlide
-                  ? 'bg-slate-200 scale-125 shadow-md'
-                  : 'bg-slate-200/50 hover:bg-white/80'
-              }`}
+              className={`w-3 h-3 md:w-3.5 md:h-3.5 rounded-full transition-all duration-300 ${index === currentSlide
+                ? 'bg-slate-200 scale-125 shadow-md'
+                : 'bg-slate-200/50 hover:bg-white/80'
+                }`}
               aria-label={`Go to slide ${index + 1}`}
             />
           ))}
