@@ -190,7 +190,6 @@ const HeroSection: FC<HeroSectionProps> = ({ banners, isLoading, error }) => {
                   {currentBanner.ctaText && currentBanner.ctaLink && (
                     <LiquidButton
                       text={currentBanner.ctaText}
-                      to={currentBanner.ctaLink}
                       icon={<ShoppingBag className="w-5 h-5" />}
                       className={"bg-white"}
                     />

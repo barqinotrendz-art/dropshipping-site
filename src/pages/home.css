@@ -1,0 +1,15 @@
+.draw {
+  stroke-dasharray: 300;
+  stroke-dashoffset: 300;
+  animation: draw 4s ease forwards;
+}
+
+.draw-1 { animation-delay: 0s; }
+.draw-2 { animation-delay: 0.2s; }
+.draw-3 { animation-delay: 0.4s; }
+
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}

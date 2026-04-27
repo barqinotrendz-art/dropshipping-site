@@ -115,10 +115,10 @@ const ProductCarousel: FC<ProductCarouselProps> = ({
           {products.length > 4 && (
             <div className="hidden sm:flex space-x-2">
               <button onClick={() => scroll('left')} className="p-2 rounded-full border hover:bg-gray-100">
-                <ChevronLeft className="w-5 h-5"/>
+                <ChevronLeft className="w-5 h-5" />
               </button>
               <button onClick={() => scroll('right')} className="p-2 rounded-full border hover:bg-gray-100">
-                <ChevronRight className="w-5 h-5"/>
+                <ChevronRight className="w-5 h-5" />
               </button>
             </div>
           )}
@@ -138,9 +138,8 @@ const ProductCarousel: FC<ProductCarouselProps> = ({
             className="overflow-x-auto no-scrollbar scroll-smooth"
           >
             <div
-              className={`flex gap-6 pb-4 ${
-                products.length <= 3 ? "justify-center" : ""
-              }`}
+              className={`flex gap-6 pb-4 ${products.length <= 3 ? "justify-center" : ""
+                }`}
             >
               {products.map(product => (
                 <div

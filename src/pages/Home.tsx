@@ -12,6 +12,7 @@ import ProductCarousel from '../components/home/ProductCarousel.tsx'
 import CategoriesSection from '../components/home/CategoriesSection.tsx'
 import NewsletterSection from '../components/home/NewsletterSection.tsx'
 import ProductPreviewModal from '../components/ProductPreviewModal.tsx'
+import './home.css'
 
 const Home: FC = () => {
   const { addItem } = useCart()
@@ -155,7 +156,7 @@ const Home: FC = () => {
 
         {/* Fallback: Single Latest Arrivals if no categories */}
         {(!processedProducts?.categoryBasedSections || processedProducts.categoryBasedSections.length === 0) && (
-          <div className="animate-fadeIn" style={{ animationDelay: '800ms' }}>
+          <div className="animate-fadeIn " style={{ animationDelay: '800ms' }}>
             <ProductCarousel
               title="Latest Arrivals"
               products={processedProducts?.latest}
@@ -163,12 +164,11 @@ const Home: FC = () => {
               error={productsError ? 'Failed to load latest products' : undefined}
               onAddToCart={handleAddToCart}
               onPreview={setPreviewProduct}
+
             />
+           
           </div>
         )}
-
-
-
 
 
         {/* Categories Section - Only show if more than 1 active category */}

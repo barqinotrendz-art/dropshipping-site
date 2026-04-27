@@ -1,27 +1,24 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import type { FC, ReactNode } from 'react'
 import './liquidbutton.css'
 
 interface Props {
   text: string
-  to: string
+  // to: string
   icon?: ReactNode
   className?: string   // ✅ add this
 }
 
-const LiquidButton: FC<Props> = ({ text, to, icon }) => {
+
+const LiquidButton: FC<Props> = ({ text, icon }) => {
   return (
-    <Link
-      to={to}
-      onClick={(e) => e.stopPropagation()}
-      className="liquid-btn"
-    >
+    <div className="liquid-btn">
       <span className="content">
         {icon}
         {text}
       </span>
       <div className="liquid"></div>
-    </Link>
+    </div>
   )
 }
 
