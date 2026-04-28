@@ -106,7 +106,7 @@ const ProductCarousel: FC<ProductCarouselProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex flex-col items-center justify-center w-full group">
-            <h2 className="text-xl md:text-2xl text-center w-1/2 scale-95 hover:scale-105 font-bold duration-500 capitalize text-gray-900">
+            <h2 className="text-xl  md:text-2xl text-center w-1/2 scale-95 hover:scale-105 font-bold duration-500 capitalize text-gray-900">
               {title}
             </h2>
             <div className="border-b-2 border-b-zinc-800 w-28 scale-95 group-hover:scale-110 animate-pulse duration-500"></div>

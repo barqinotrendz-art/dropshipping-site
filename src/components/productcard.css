@@ -1,0 +1,88 @@
+/* .product-title {
+  position: relative;
+  display: inline-block;
+}
+
+.product-title::before {
+  content: "";
+  position: absolute;
+  bottom: 15px;
+  left: 0;
+  width: 0%;
+  height: 1px; 
+  background-color: currentColor; 
+  transition: width 0.3s ease;
+}
+
+.product-title:hover::before {
+  width: 100%;
+} */
+
+/* .product-title {
+  position: relative;
+  display: inline-block;
+  overflow: hidden; 
+}
+
+.product-title::before {
+  content: "";
+  position: absolute;
+  bottom: 15px;
+  left: -100%;
+  width: 100%;
+  height: 1px;
+  background-color: currentColor;
+}
+
+.product-title:hover::before {
+  animation: slideUnderline 0.9s linear infinite;
+}
+
+@keyframes slideUnderline {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+} */
+
+.product-title {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+}
+
+.product-title::before {
+  content: "";
+  position: absolute;
+  bottom: 15px;
+  left: -100%;
+  width: 100%;
+  height: 1px;
+
+  /* gradient shimmer */
+  background: linear-gradient(
+    90deg,
+    transparent,
+    currentColor,
+    transparent
+  );
+
+  opacity: 0;
+}
+
+/* activate animation */
+.product-title:hover::before {
+  opacity: 1;
+  animation: shimmerSlide 1.5s ease-in-out infinite;
+}
+
+@keyframes shimmerSlide {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}

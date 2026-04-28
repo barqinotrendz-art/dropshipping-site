@@ -6,6 +6,8 @@ import { useCart } from '../hooks/useCart'
 import { useAuth } from '../hooks/useAuth'
 import toast from 'react-hot-toast'
 import { getCloudinaryUrl } from '../lib/cloudinary'
+import Reusablebtn from './Reusablebtn'
+import './productcard.css'
 
 interface ProductCardProps {
   product: {
@@ -168,7 +170,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <img
           src={getCloudinaryUrl(mainImage, 400, 400)}
           alt={product.title}
-          className={`w-full h-full object-cover ${secondImage ? 'transition-all duration-500' : ''} ${
+          className={`w-full h-full object-cover rounded-tl-xl rounded-tr-xl ${secondImage ? 'transition-all duration-500' : ''} ${
             isHovered && secondImage ? 'opacity-0' : 'opacity-100'
           }`}
         />
@@ -242,10 +244,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
       {/* Product Info */}
       <div className="p-2 sm:p-4">
         <Link to={`/product/${product.id || product.slug}`} className="block hover:bg-gray-50 rounded-md">
-          <h3 className="font-semibold text-sm sm:text-base text-gray-900 mb-1 sm:mb-2  overflow-hidden group-hover:text-black transition-colors h-[45px]">
+          <h3 className="font-semibold text-sm sm:text-base text-gray-900 mb-1 sm:mb-2  
+          overflow-hidden group-hover:text-black transition-colors h-[45px] product-title">
             {product.title.slice(0, 70)}{product.title.length > 60 ? '...' : ''}
           </h3>
-        </Link>
+        
 
         {/* Brand */}
         {product.brand && (
@@ -253,7 +256,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         )}
 
         {/* Rating */}
-        <div className="flex items-center mb-1 sm:mb-2">
+        {/* <div className="flex items-center mb-1 sm:mb-2">
           {product.reviewCount && product.reviewCount > 0 ? (
             <>
               <div className="flex items-center">
@@ -267,46 +270,49 @@ const ProductCard: React.FC<ProductCardProps> = ({
                   />
                 ))}
               </div>
-              {/* <span className="text-xs sm:text-sm text-gray-500 ml-1 sm:ml-2">
+              <span className="text-xs sm:text-sm text-gray-500 ml-1 sm:ml-2">
                 ({product.reviewCount})
-              </span> */}
+              </span>
             </>
           ) : (
             <span className="text-xs sm:text-sm text-gray-400 ">
               No reviews
             </span>
           )}
-        </div>
+        </div> */}
 
         {/* Price */}
         <div className="flex flex-col lg:flex-row items-start lg:items-center gap-2 mb-4 overflow-hidden min-h-[40px]">
-          <span className="font-bold text-gray-900 text-lg">
-            Rs {currentPrice.toFixed(2)}
+          <span className="font-semibold text-md text-[#ca5c54]">
+            {currentPrice.toFixed(2)} AED 
           </span>
 
           {hasDiscount ? (
-            <span className="text-sm text-gray-500 line-through">
-              Rs {product.price.toFixed(2)}
+            <span className="text-sm text-gray-500 line-through ">
+              {product.price.toFixed(2)} AED 
             </span>
           ) : (
             // Invisible placeholder keeps height same
             <span className="text-sm opacity-0 select-none">No discount</span>
           )}
         </div>
-
+</Link>
 
 
         {/* Action Buttons */}
         {layout === 'carousel' ? (
           <div className="flex flex-col space-y-1 sm:space-y-2">
             {/* Primary Actions */}
-            <div className="flex gap-1 flex-col lg:flex-row md:flex-row sm:flex-row xl:flex-row ">
-              <button
+            <div className="flex gap-1 flex-col lg:flex-row md:flex-row sm:flex-row xl:flex-row "
+             onClick={handleAddToCart}
+            >
+              <Reusablebtn text='Add to Cart' />
+              {/* <button
                 onClick={handleAddToCart}
                 className="flex-1 bg-white text-black py-1.5 sm:py-2 px-2 sm:px-4 rounded-lg border border-black hover:bg-gray-50 transition-colors text-xs sm:text-sm"
               >
                 Add to Cart
-              </button>
+              </button> */}
             
             </div>
             {/* Buy Now - Secondary Action */}
