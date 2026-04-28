@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ShoppingCart, Eye, Star, Flame, Heart } from 'lucide-react'
+import { ShoppingCart, Eye, Flame, Heart } from 'lucide-react'
 import { useWishlist } from '../hooks/useWishlist'
 import { useCart } from '../hooks/useCart'
 import { useAuth } from '../hooks/useAuth'
