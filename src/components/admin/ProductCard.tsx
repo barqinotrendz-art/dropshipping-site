@@ -8,6 +8,12 @@ import {
 import Button from "../ui/Button"
 import { getCloudinaryUrl } from "../../lib/cloudinary"
 
+type PriceTier = {
+  label: string
+  price: number
+  discountPrice?: number
+}
+
 interface ProductCardProps {
   product: {
     id: string
@@ -18,7 +24,9 @@ interface ProductCardProps {
     stock: number
     category: string
     isActive?: boolean
+    pricing?: PriceTier[]
   }
+
   onEdit: (productId: string) => void
   onDelete: (productId: string) => Promise<void>
   onToggleActive: (productId: string, isActive: boolean) => Promise<void>
@@ -54,7 +62,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const handleToggleActive = async () => {
     setIsToggling(true)
     try {
-      await onToggleActive(product.id, !product.isActive)
+      await onToggleActive(product.id, product.isActive ?? false)
     } catch (error) {
       console.error("Failed to toggle product status:", error)
     } finally {
@@ -68,23 +76,22 @@ const ProductCard: React.FC<ProductCardProps> = ({
     return getCloudinaryUrl(publicId, 400, 400)
   }
 
-  const displayImage = product.images?.[0] 
+  const displayImage = product.images?.[0]
     ? getImageUrl(product.images[0])
     : product.colors?.[0]?.images?.[0]
-    ? getImageUrl(product.colors[0].images[0])
-    : "/placeholder-image.jpg"
-    
+      ? getImageUrl(product.colors[0].images[0])
+      : "/placeholder-image.jpg"
+
   const secondImage = product.images?.[1]
     ? getImageUrl(product.images[1])
     : product.colors?.[1]?.images?.[0]
-    ? getImageUrl(product.colors[1].images[0])
-    : undefined
-
+      ? getImageUrl(product.colors[1].images[0])
+      : undefined
+  console.log(product.pricing)
   return (
     <div
-      className={`bg-white rounded-lg border shadow-sm hover:shadow-md transition-all duration-200 flex flex-col h-full ${
-        !product.isActive ? "opacity-75" : ""
-      }`}
+      className={`bg-white rounded-lg border shadow-sm hover:shadow-md transition-all duration-200 flex flex-col h-full ${!product.isActive ? "opacity-75" : ""
+        }`}
     >
       {/* Image Section */}
       <div className="relative aspect-square overflow-hidden rounded-t-lg group flex-shrink-0">
@@ -104,11 +111,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
         {/* Status Badge */}
         <div className="absolute top-2 left-2">
           <span
-            className={`px-2 py-1 rounded-full text-xs font-medium shadow-sm ${
-              product.isActive
-                ? "bg-green-100 text-green-800"
-                : "bg-red-100 text-red-800"
-            }`}
+            className={`px-2 py-1 rounded-full text-xs font-medium shadow-sm ${product.isActive
+              ? "bg-green-100 text-green-800"
+              : "bg-red-100 text-red-800"
+              }`}
           >
             {product.isActive ? "Active" : "Inactive"}
           </span>
@@ -135,9 +141,15 @@ const ProductCard: React.FC<ProductCardProps> = ({
             {product.name}
           </h3>
           <p className="text-sm text-gray-500 truncate">{product.category}</p>
-          <p className="text-lg font-bold text-gray-900 mt-1">
-            Rs {product.price.toFixed(2)}
-          </p>
+          <div className="flex gap-2 items-center">
+            <p className="text-md font-semibold text-[#c03e35] mt-1">
+              AED {product.pricing?.[0]?.discountPrice}
+
+            </p>
+            <p className="text-sm font-semibold text-gray-900 mt-1 line-through">
+              AED {product.pricing?.[0]?.price}
+            </p>
+          </div>
         </div>
 
         {/* Color Variants - Fixed Height Container */}
@@ -182,9 +194,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <div className="flex justify-between items-center text-sm">
             <span className="text-gray-500">Stock:</span>
             <span
-              className={`font-medium ${
-                product.stock < 10 ? "text-red-600" : "text-green-600"
-              }`}
+              className={`font-medium ${product.stock < 10 ? "text-red-600" : "text-green-600"
+                }`}
             >
               {product.stock} units
             </span>

@@ -129,12 +129,12 @@ const Home: FC = () => {
         {processedProducts?.categoryBasedSections && processedProducts.categoryBasedSections.length > 0 && (
           <div className="py-8">
             {/* Main Latest Arrivals Heading */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+            {/* <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
               <div className="text-center">
                 <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-2 ">Latest Arrivals</h2>
                 <p className="text-gray-600">Fresh new products just added to our collection</p>
               </div>
-            </div>
+            </div> */}
 
             {/* Category-based Latest Carousels */}
             {processedProducts.categoryBasedSections.map((section, index) =>
@@ -194,12 +194,12 @@ const Home: FC = () => {
         {processedProducts?.categoryBasedSections && processedProducts.categoryBasedSections.length > 0 && (
           <div className="py-8">
             {/* Main Top Selling Heading */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+            {/* <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
               <div className="text-center">
                 <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Top Selling Products</h2>
                 <p className="text-gray-600">Best-selling items loved by our customers</p>
               </div>
-            </div>
+            </div> */}
 
             {/* Category-based Top Selling Carousels */}
             {processedProducts.categoryBasedSections.map((section, index) =>
@@ -238,12 +238,12 @@ const Home: FC = () => {
         {processedProducts?.categoryBasedSections && processedProducts.categoryBasedSections.length > 0 && (
           <div className="py-8">
             {/* Main Featured Products Heading */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+            {/* <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
               <div className="text-center">
                 <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Featured Products</h2>
                 <p className="text-gray-600">Discover our handpicked selection across all categories</p>
               </div>
-            </div>
+            </div> */}
 
             {/* Category-based Featured Carousels */}
             {processedProducts.categoryBasedSections.map((section, index) =>

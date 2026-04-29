@@ -11,6 +11,12 @@ import LoadingSpinner from '../../components/ui/LoadingSpinner'
 import ProductCard from '../../components/admin/ProductCard'
 import ImageUpload from '../../components/ui/ImageUpload'
 
+type PriceTier = {
+  label: string
+  price: number
+  discountPrice?: number
+}
+
 type ProductForm = {
   title: string
   slug?: string
@@ -27,6 +33,7 @@ type ProductForm = {
   topSelling?: boolean
   imagePublicIds?: string
   attributes?: { [key: string]: any }
+  pricing?: PriceTier[]
 }
 
 type ColorVariant = {
@@ -52,22 +59,22 @@ const ProductsAdminPage: React.FC = () => {
   const qc = useQueryClient()
   const { data: products, isLoading } = useQuery({ queryKey: ['admin-products'], queryFn: fetchProducts })
   const { data: categories, isLoading: categoriesLoading } = useQuery({ queryKey: ['admin-categories'], queryFn: fetchCategories })
-  
+
   const { register, handleSubmit, reset, watch, setValue } = useForm<ProductForm>({
     defaultValues: { active: true, featured: false, topSelling: false, price: 0, discountPrice: 0, stock: 0 }
   })
-  
+
   const title = watch('title')
   const selectedCategoryId = watch('categoryId')
   const computedSlug = slugify(title || '')
-  
+
   // Filter active categories for dropdown
   const activeCategories = categories?.filter((c: any) => c.active !== false) || []
-  
+
   // Get selected category for dynamic attributes
   const selectedCategory = categories?.find((c: any) => c.id === selectedCategoryId)
   const dynamicAttributes = selectedCategory?.attributes || []
-  
+
   // UI State
   const [showAddForm, setShowAddForm] = useState(false)
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
@@ -75,14 +82,19 @@ const ProductsAdminPage: React.FC = () => {
   const [editingProduct, setEditingProduct] = useState<any>(null)
   const [productImages, setProductImages] = useState<string[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
-  
+  const [pricing, setPricing] = useState<PriceTier[]>([])
+  const [currentPrice, setCurrentPrice] = useState<PriceTier>({
+    label: '',
+    price: 0,
+    discountPrice: 0
+  })
   // Color variant management
   const [colorVariants, setColorVariants] = useState<ColorVariant[]>([])
-  const [currentColor, setCurrentColor] = useState<Partial<ColorVariant>>({ 
-    name: '', 
-    value: '#000000', 
-    images: [], 
-    stock: 0 
+  const [currentColor, setCurrentColor] = useState<Partial<ColorVariant>>({
+    name: '',
+    value: '#000000',
+    images: [],
+    stock: 0
   })
 
   const addColorVariant = () => {
@@ -90,24 +102,24 @@ const ProductsAdminPage: React.FC = () => {
       toast.error('Please enter a color name')
       return
     }
-    
+
     if (!currentColor.images || currentColor.images.length === 0) {
       toast.error('Please upload at least one image for this color')
       return
     }
-    
+
     if (currentColor.stock === undefined || currentColor.stock < 0) {
       toast.error('Please enter a valid stock quantity')
       return
     }
-    
+
     const newVariant: ColorVariant = {
       name: currentColor.name.trim(),
       value: currentColor.value || '#000000',
       images: currentColor.images,
       stock: currentColor.stock || 0
     }
-    
+
     setColorVariants(prev => [...prev, newVariant])
     setCurrentColor({ name: '', value: '#000000', images: [], stock: 0 })
     toast.success(`Color "${newVariant.name}" added successfully!`)
@@ -124,21 +136,25 @@ const ProductsAdminPage: React.FC = () => {
       toast.error('Please enter a product title')
       return
     }
-    
-    if (!values.price || values.price <= 0) {
-      toast.error('Please enter a valid price')
+
+    // if (!values.price || values.price <= 0) {
+    //   toast.error('Please enter a valid price')
+    //   return
+    // }
+    if ((!values.price || values.price <= 0) && pricing.length === 0) {
+      toast.error('Please enter a valid price or add at least one price tier')
       return
     }
-    
+
     if (values.discountPrice && values.discountPrice >= values.price) {
       toast.error('Discount price must be less than the regular price')
       return
     }
-    
+
     const isEditing = !!editingProduct
     setIsSubmitting(true)
     toast.loading(isEditing ? 'Updating product...' : 'Adding product...', { id: 'save-product' })
-    
+
     try {
       const payload = {
         title: values.title.trim(),
@@ -161,8 +177,9 @@ const ProductsAdminPage: React.FC = () => {
         colorVariants: colorVariants.length > 0 ? colorVariants : null,
         attributes: values.attributes || null,
         updatedAt: serverTimestamp(),
+        pricing: pricing,
       }
-      
+
       if (isEditing) {
         await updateDoc(doc(db, 'products', editingProduct.id), payload)
         toast.success(`Product "${values.title}" updated successfully!`, { id: 'save-product' })
@@ -175,35 +192,36 @@ const ProductsAdminPage: React.FC = () => {
         })
         toast.success(`Product "${values.title}" added successfully!`, { id: 'save-product' })
       }
-      
+
       resetForm()
       qc.invalidateQueries({ queryKey: ['admin-products'] })
       qc.invalidateQueries({ queryKey: ['products'] })
       qc.invalidateQueries({ queryKey: ['admin-categories'] })
-      
+
     } catch (error) {
       toast.error(`Failed to ${isEditing ? 'update' : 'add'} product. Please try again.`, { id: 'save-product' })
     } finally {
       setIsSubmitting(false)
     }
+    console.log("FINAL pricing:", pricing)
   }
 
   const handleDelete = async (id: string, productTitle: string) => {
     if (!confirm(`Are you sure you want to delete "${productTitle}"? This action cannot be undone.`)) {
       return
     }
-    
+
     // Store original data for potential rollback
     const originalData = qc.getQueryData(['admin-products'])
-    
+
     // Optimistic update - immediately remove from UI
     qc.setQueryData(['admin-products'], (oldData: any) => {
       if (!oldData) return oldData
       return oldData.filter((product: any) => product.id !== id)
     })
-    
+
     toast.success(`Product "${productTitle}" deleted successfully!`)
-    
+
     try {
       await deleteDoc(doc(db, 'products', id))
       // Refresh data to ensure consistency
@@ -221,14 +239,14 @@ const ProductsAdminPage: React.FC = () => {
     // Optimistic update - immediately update the UI
     qc.setQueryData(['admin-products'], (oldData: any) => {
       if (!oldData) return oldData
-      return oldData.map((product: any) => 
+      return oldData.map((product: any) =>
         product.id === id ? { ...product, active: !current } : product
       )
     })
-    
+
     const status = !current ? 'activated' : 'deactivated'
     toast.success(`Product "${productTitle}" ${status} successfully!`)
-    
+
     try {
       await updateDoc(doc(db, 'products', id), { active: !current, updatedAt: serverTimestamp() })
       // Refresh data to ensure consistency
@@ -240,7 +258,7 @@ const ProductsAdminPage: React.FC = () => {
       // Revert optimistic update on error
       qc.setQueryData(['admin-products'], (oldData: any) => {
         if (!oldData) return oldData
-        return oldData.map((product: any) => 
+        return oldData.map((product: any) =>
           product.id === id ? { ...product, active: current } : product
         )
       })
@@ -252,7 +270,7 @@ const ProductsAdminPage: React.FC = () => {
     if (product) {
       setEditingProduct(product)
       setShowAddForm(true)
-      
+
       reset({
         title: product.title,
         slug: product.slug,
@@ -267,9 +285,9 @@ const ProductsAdminPage: React.FC = () => {
         active: product.active !== false,
         featured: product.featured || false,
         topSelling: product.topSelling || false,
-        attributes: product.attributes || {}
+        attributes: product.attributes || {},
       })
-      
+      setPricing(product.pricing || [])
       setProductImages(product.imagePublicIds || [])
       setColorVariants(product.colorVariants || [])
     }
@@ -281,18 +299,18 @@ const ProductsAdminPage: React.FC = () => {
     setProductImages([])
     setColorVariants([])
     setCurrentColor({ name: '', value: '#000000', images: [], stock: 0 })
-    reset({ 
-      title: '', 
-      slug: '', 
-      description: '', 
-      brand: '', 
-      price: 0, 
-      discountPrice: 0, 
-      stock: 0, 
-      sku: '', 
-      tags: '', 
-      categoryId: undefined, 
-      active: true, 
+    reset({
+      title: '',
+      slug: '',
+      description: '',
+      brand: '',
+      price: 0,
+      discountPrice: 0,
+      stock: 0,
+      sku: '',
+      tags: '',
+      categoryId: undefined,
+      active: true,
       featured: false,
       topSelling: false,
       attributes: {}
@@ -304,6 +322,29 @@ const ProductsAdminPage: React.FC = () => {
     product.brand?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     product.sku?.toLowerCase().includes(searchTerm.toLowerCase())
   ) || []
+
+  const addPriceTier = () => {
+    if (!currentPrice.label.trim()) {
+      toast.error('Enter label (e.g. Small, Large)')
+      return
+    }
+
+    if (!currentPrice.price || currentPrice.price <= 0) {
+      toast.error('Enter valid price')
+      return
+    }
+
+    if (currentPrice.discountPrice && currentPrice.discountPrice >= currentPrice.price) {
+      toast.error('Discount must be less than price')
+      return
+    }
+
+    setPricing(prev => [...prev, currentPrice])
+    setCurrentPrice({ label: '', price: 0, discountPrice: 0 })
+  }
+
+  console.log(products)
+
 
   return (
     <div>
@@ -323,7 +364,7 @@ const ProductsAdminPage: React.FC = () => {
           >
             {showAddForm ? 'Cancel' : 'Add Product'}
           </Button>
-          
+
           <div className="flex items-center border border-gray-300 rounded-lg">
             <button
               onClick={() => setViewMode('grid')}
@@ -368,19 +409,19 @@ const ProductsAdminPage: React.FC = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Product Title *</label>
-                <input 
-                  className="w-full border border-gray-300 rounded-lg px-4 py-3 text-black focus:border-black focus:outline-none" 
+                <input
+                  className="w-full border border-gray-300 rounded-lg px-4 py-3 text-black focus:border-black focus:outline-none"
                   placeholder="Enter product title"
-                  {...register('title', { required: true })} 
+                  {...register('title', { required: true })}
                 />
                 {title && <p className="text-xs text-gray-500 mt-1">Slug preview: {computedSlug}</p>}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Brand</label>
-                <input 
-                  className="w-full border border-gray-300 rounded-lg px-4 py-3 text-black focus:border-black focus:outline-none" 
+                <input
+                  className="w-full border border-gray-300 rounded-lg px-4 py-3 text-black focus:border-black focus:outline-none"
                   placeholder="e.g., Apple, Samsung, Nike"
-                  {...register('brand')} 
+                  {...register('brand')}
                 />
               </div>
             </div>
@@ -388,51 +429,149 @@ const ProductsAdminPage: React.FC = () => {
             {/* Description */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
-              <textarea 
-                className="w-full border border-gray-300 rounded-lg px-4 py-3 text-black focus:border-black focus:outline-none" 
-                rows={4} 
+              <textarea
+                className="w-full border border-gray-300 rounded-lg px-4 py-3 text-black focus:border-black focus:outline-none"
+                rows={4}
                 placeholder="Detailed product description..."
-                {...register('description')} 
+                {...register('description')}
               />
+            </div>
+            {/* New Pricing */}
+            <div className="border-t pt-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Pricing (Multiple)</h3>
+
+              {/* Add New Price */}
+              <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                <h4 className="font-medium text-gray-800 mb-3">Add Price Tier</h4>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+
+                  {/* Label */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Label</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Small / 1KG"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                      value={currentPrice.label}
+                      onChange={(e) =>
+                        setCurrentPrice(prev => ({ ...prev, label: e.target.value }))
+                      }
+                    />
+                  </div>
+
+                  {/* Price */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Price</label>
+                    <input
+                      type="number"
+                      placeholder="0"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                      value={currentPrice.price}
+                      onChange={(e) =>
+                        setCurrentPrice(prev => ({ ...prev, price: Number(e.target.value) }))
+                      }
+                    />
+                  </div>
+
+                  {/* Discount */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Discount Price</label>
+                    <input
+                      type="number"
+                      placeholder="0"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                      value={currentPrice.discountPrice}
+                      onChange={(e) =>
+                        setCurrentPrice(prev => ({ ...prev, discountPrice: Number(e.target.value) }))
+                      }
+                    />
+                  </div>
+
+                  {/* Button */}
+                  <div className="flex items-end">
+                    <Button
+                      type="button"
+                      variant="primary"
+                      size="sm"
+                      onClick={addPriceTier}
+                      className="w-full"
+                    >
+                      Add Price
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Show Added Prices */}
+              {pricing.length > 0 && (
+                <div className="space-y-3">
+                  {pricing.map((p, i) => (
+                    <div key={i} className="flex justify-between items-center p-3 border rounded-lg">
+                      <div>
+                        <span className="font-medium">{p.label}</span>
+                        <span className="ml-3 line-through">AED {p.price}</span>
+                        {p.discountPrice && (
+                          <span className="ml-2 text-[#c03e35] font-semibold">
+                            AED {p.discountPrice}
+                          </span>
+                        )}
+                      </div>
+
+                      <Button
+                        type="button"
+                        variant="danger"
+                        size="sm"
+                        onClick={() =>
+                          setPricing(prev => prev.filter((_, index) => index !== i))
+                        }
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Pricing & Stock */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div>
+              {/* <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Price *</label>
-                <input 
-                  type="number" 
-                  step="0.01" 
-                  className="w-full border border-gray-300 rounded-lg px-4 py-3 text-black focus:border-black focus:outline-none" 
+                <input
+                  type="number"
+                  step="0.01"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-3 text-black focus:border-black focus:outline-none"
                   placeholder="0.00"
-                  {...register('price', { valueAsNumber: true })} 
+                  {...register('price', { valueAsNumber: true })}
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Discount Price</label>
-                <input 
-                  type="number" 
-                  step="0.01" 
-                  className="w-full border border-gray-300 rounded-lg px-4 py-3 text-black focus:border-black focus:outline-none" 
+                <input
+                  type="number"
+                  step="0.01"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-3 text-black focus:border-black focus:outline-none"
                   placeholder="0.00"
-                  {...register('discountPrice', { valueAsNumber: true })} 
+                  {...register('discountPrice', { valueAsNumber: true })}
                 />
-              </div>
+              </div> */}
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Stock Quantity</label>
-                <input 
-                  type="number" 
-                  className="w-full border border-gray-300 rounded-lg px-4 py-3 text-black focus:border-black focus:outline-none" 
+                <input
+                  type="number"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-3 text-black focus:border-black focus:outline-none"
                   placeholder="0"
-                  {...register('stock', { valueAsNumber: true })} 
+                  {...register('stock', { valueAsNumber: true })}
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Unique id</label>
-                <input 
-                  className="w-full border border-gray-300 rounded-lg px-4 py-3 text-black focus:border-black focus:outline-none" 
+                <input
+                  className="w-full border border-gray-300 rounded-lg px-4 py-3 text-black focus:border-black focus:outline-none"
                   placeholder="PROD-001"
-                  {...register('sku')} 
+                  {...register('sku')}
                 />
               </div>
             </div>
@@ -441,8 +580,8 @@ const ProductsAdminPage: React.FC = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
-                <select 
-                  className="w-full border border-gray-300 rounded-lg px-4 py-3 text-black focus:border-black focus:outline-none" 
+                <select
+                  className="w-full border border-gray-300 rounded-lg px-4 py-3 text-black focus:border-black focus:outline-none"
                   {...register('categoryId')}
                   disabled={categoriesLoading}
                 >
@@ -462,7 +601,7 @@ const ProductsAdminPage: React.FC = () => {
                   <div className="mt-1">
                     <p className="text-xs text-yellow-600">No active categories found.</p>
                     <p className="text-xs text-gray-500">
-                      {categories?.length 
+                      {categories?.length
                         ? `Found ${categories.length} categories but none are active. Activate them in Categories page.`
                         : 'Create categories first in the Categories management page.'
                       }
@@ -477,10 +616,10 @@ const ProductsAdminPage: React.FC = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Tags (comma separated)</label>
-                <input 
-                  className="w-full border border-gray-300 rounded-lg px-4 py-3 text-black focus:border-black focus:outline-none" 
+                <input
+                  className="w-full border border-gray-300 rounded-lg px-4 py-3 text-black focus:border-black focus:outline-none"
                   placeholder="luxury, premium, bestseller"
-                  {...register('tags')} 
+                  {...register('tags')}
                 />
               </div>
             </div>
@@ -497,7 +636,7 @@ const ProductsAdminPage: React.FC = () => {
                       <label className="block text-sm font-medium text-blue-800 mb-1">
                         {attr.label} {attr.required && <span className="text-red-500">*</span>}
                       </label>
-                      
+
                       {attr.type === 'text' && (
                         <input
                           type="text"
@@ -506,19 +645,19 @@ const ProductsAdminPage: React.FC = () => {
                           {...register(`attributes.${attr.key}`, { required: attr.required })}
                         />
                       )}
-                      
+
                       {attr.type === 'number' && (
                         <input
                           type="number"
                           className="w-full border border-blue-300 rounded-lg px-3 py-2 text-sm focus:border-blue-500 focus:outline-none bg-white"
                           placeholder={`Enter ${attr.label.toLowerCase()}`}
-                          {...register(`attributes.${attr.key}`, { 
+                          {...register(`attributes.${attr.key}`, {
                             required: attr.required,
-                            valueAsNumber: true 
+                            valueAsNumber: true
                           })}
                         />
                       )}
-                      
+
                       {attr.type === 'select' && (
                         <select
                           className="w-full border border-blue-300 rounded-lg px-3 py-2 text-sm focus:border-blue-500 focus:outline-none bg-white"
@@ -530,7 +669,7 @@ const ProductsAdminPage: React.FC = () => {
                           ))}
                         </select>
                       )}
-                      
+
                       {attr.type === 'boolean' && (
                         <label className="flex items-center gap-2 p-2 border border-blue-300 rounded-lg bg-white cursor-pointer">
                           <input
@@ -565,16 +704,16 @@ const ProductsAdminPage: React.FC = () => {
             {/* Color Variants */}
             <div className="border-t pt-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Color Variants (Optional)</h3>
-              
+
               {/* Add New Color */}
               <div className="bg-gray-50 rounded-lg p-4 mb-4">
                 <h4 className="font-medium text-gray-800 mb-3">Add New Color</h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Color Name</label>
-                    <input 
+                    <input
                       type="text"
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-black focus:border-black focus:outline-none" 
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-black focus:border-black focus:outline-none"
                       placeholder="e.g., Black, Orange"
                       value={currentColor.name || ''}
                       onChange={(e) => setCurrentColor(prev => ({ ...prev, name: e.target.value }))}
@@ -583,15 +722,15 @@ const ProductsAdminPage: React.FC = () => {
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Color Value</label>
                     <div className="flex items-center gap-2">
-                      <input 
+                      <input
                         type="color"
                         className="w-12 h-10 border border-gray-300 rounded cursor-pointer"
                         value={currentColor.value || '#000000'}
                         onChange={(e) => setCurrentColor(prev => ({ ...prev, value: e.target.value }))}
                       />
-                      <input 
+                      <input
                         type="text"
-                        className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-black focus:border-black focus:outline-none" 
+                        className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-black focus:border-black focus:outline-none"
                         placeholder="#000000"
                         value={currentColor.value || '#000000'}
                         onChange={(e) => setCurrentColor(prev => ({ ...prev, value: e.target.value }))}
@@ -600,17 +739,17 @@ const ProductsAdminPage: React.FC = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Stock for this color</label>
-                    <input 
+                    <input
                       type="number"
                       min="0"
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-black focus:border-black focus:outline-none" 
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-black focus:border-black focus:outline-none"
                       placeholder="0"
                       value={currentColor.stock || 0}
                       onChange={(e) => setCurrentColor(prev => ({ ...prev, stock: parseInt(e.target.value) || 0 }))}
                     />
                   </div>
                   <div className="flex items-end">
-                    <Button 
+                    <Button
                       type="button"
                       variant="primary"
                       size="sm"
@@ -621,7 +760,7 @@ const ProductsAdminPage: React.FC = () => {
                     </Button>
                   </div>
                 </div>
-                
+
                 {/* Color Images Upload */}
                 <ImageUpload
                   images={currentColor.images || []}
@@ -634,7 +773,7 @@ const ProductsAdminPage: React.FC = () => {
                   colorVariant={currentColor.name}
                 />
               </div>
-              
+
               {/* Existing Color Variants */}
               {colorVariants.length > 0 && (
                 <div>
@@ -643,7 +782,7 @@ const ProductsAdminPage: React.FC = () => {
                     {colorVariants.map((variant, index) => (
                       <div key={index} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
                         <div className="flex items-center gap-3">
-                          <div 
+                          <div
                             className="w-8 h-8 rounded-full border-2 border-gray-300"
                             style={{ backgroundColor: variant.value }}
                           ></div>
@@ -755,13 +894,13 @@ const ProductsAdminPage: React.FC = () => {
                   {filteredProducts.map((product: any) => {
                     // Find category name
                     const category = categories?.find((c: any) => c.id === product.categoryId)
-                    
+
                     // Transform color variants to match ProductCard interface
                     const transformedColors = product.colorVariants?.map((variant: any) => ({
                       name: variant.name,
                       images: variant.images || []
                     })) || []
-                    
+
                     return (
                       <ProductCard
                         key={product.id}
@@ -773,7 +912,8 @@ const ProductsAdminPage: React.FC = () => {
                           colors: transformedColors,
                           stock: product.stock || 0,
                           category: category?.name || 'Uncategorized',
-                          isActive: product.active !== false
+                          isActive: product.active !== false,
+                          pricing: product.pricing || []
                         }}
                         onEdit={handleEdit}
                         onDelete={async (id) => await handleDelete(id, product.title)}
@@ -787,17 +927,31 @@ const ProductsAdminPage: React.FC = () => {
                   {filteredProducts.map((p: any) => {
                     // Find category name
                     const category = categories?.find((c: any) => c.id === p.categoryId)
-                    
+                    console.log(p.pricing?.[0]?.discountPrice)
+
                     return (
                       <div key={p.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                           <div className="flex-1">
                             <div className="flex items-center gap-3 mb-2">
                               <h3 className="font-semibold text-gray-900">{p.title}</h3>
-                              <span className="text-lg font-bold text-green-600">Rs {p.price}</span>
-                              {p.discountPrice && (
-                                <span className="text-sm text-gray-500 line-through">Rs {p.discountPrice}</span>
+                              {p.pricing?.[0]?.discountPrice ? (
+                                <>
+                                  <span className="text-lg text-green-600 font-semibold">
+                                    AED {p.pricing[0].discountPrice}
+                                  </span>
+                                  <span className="text-sm text-gray-500 line-through">
+                                    AED {p.pricing[0].price}
+                                  </span>
+                                </>
+                              ) : (
+                                <span className="text-lg font-semibold text-gray-900">
+                                  AED {p.pricing?.[0]?.price}
+                                </span>
                               )}
+                              {/* <span className="text-sm font-semibold text-gray-500 line-through">
+                                AED {p.pricing?.[0]?.price}
+                              </span> */}
                             </div>
                             <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
                               <span>SKU: {p.sku || 'N/A'}</span>
@@ -809,9 +963,8 @@ const ProductsAdminPage: React.FC = () => {
                                   {Object.keys(p.attributes).length} custom field{Object.keys(p.attributes).length !== 1 ? 's' : ''}
                                 </span>
                               )}
-                              <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
-                                p.active !== false ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                              }`}>
+                              <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${p.active !== false ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                                }`}>
                                 {p.active !== false ? 'Active' : 'Inactive'}
                               </span>
                               {p.featured && (
