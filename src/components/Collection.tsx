@@ -1,7 +1,9 @@
 import React from 'react';
-import logo from '../assets/logo.jpeg';
+import collection1 from '../assets/collection1.webp'
+import collection2 from '../assets/collection2.webp'
 import { ChevronRight } from 'lucide-react';
 import './collection.css'
+import { Link } from 'react-router-dom';
 
 const Collection: React.FC = () => {
     return (
@@ -9,15 +11,15 @@ const Collection: React.FC = () => {
             <div className='md:w-[50%] w-[100%] flex md:flex-row flex-col gap-4 justify-center items-center'>
 
                 <div className='w-[90%] lg:w-[45%] lg:h-[400px] md:w-[35%] md:h-[350px] rounded-2xl
-             overflow-hidden'>
-                    <img src={logo} alt="" className='w-full h-full rounded-2xl transition-transform 
-                duration-300 ease-in-out hover:scale-110 cursor-pointer' />
+             overflow-hidden border border-gray-100'>
+                    <img src={collection1} alt="" className='w-full h-full rounded-2xl transition-transform 
+                duration-300 ease-in-out hover:scale-110 cursor-pointer object-cover' />
                 </div>
 
                 <div className='w-[90%] lg:w-[45%] lg:h-[400px] md:w-[35%] md:h-[350px] flex  
-            rounded-2xl overflow-hidden'>
-                    <img src={logo} alt="" className='w-full h-full rounded-2xl transition-transform 
-                duration-300 ease-in-out hover:scale-110 cursor-pointer' />
+            rounded-2xl overflow-hidden border border-gray-100'>
+                    <img src={collection2} alt="" className='w-full h-full rounded-2xl transition-transform 
+                duration-300 ease-in-out hover:scale-110 cursor-pointer object-cover' />
                 </div>
 
             </div>
@@ -32,7 +34,7 @@ const Collection: React.FC = () => {
 
                 <div className="category-list">
 
-                <div className='flex flex-row justify-between items-center cursor-pointer my-3 pb-3 border-b border-b-gray-200 cart-item'>
+                <Link  to="/categories?type=car-accessories" className='flex flex-row justify-between items-center cursor-pointer my-3 pb-3 border-b border-b-gray-200 cart-item'>
                     <h3 className='font-normal text-[24px]  cat-title'>Car Accessories</h3>
                     <div className='chevron-liquid'>
 
@@ -44,9 +46,9 @@ const Collection: React.FC = () => {
 
                     </div>
 
-                </div>
+                </Link>
 
-                <div className='flex flex-row justify-between items-center cursor-pointer my-3 pb-3 border-b border-b-gray-200 cart-item'>
+                <Link  to="/categories?type=health-beauty" className='flex flex-row justify-between items-center cursor-pointer my-3 pb-3 border-b border-b-gray-200 cart-item'>
                     <h3 className='font-normal text-[24px]  cat-title'>Health & Beauty</h3>
                     <div className='chevron-liquid'>
 
@@ -58,9 +60,9 @@ const Collection: React.FC = () => {
 
                     </div>
 
-                </div>
+                </Link>
 
-                <div className='flex flex-row justify-between items-center cursor-pointer my-3 pb-3 border-b border-b-gray-200 cart-item'>
+                <Link  to="/products" className='flex flex-row justify-between items-center cursor-pointer my-3 pb-3 border-b border-b-gray-200 cart-item'>
                     <h3 className='font-normal text-[24px]  cat-title'>Trending</h3>
                     <div className='chevron-liquid'>
 
@@ -72,7 +74,7 @@ const Collection: React.FC = () => {
 
                     </div>
 
-                </div>
+                </Link>
 
                 </div>
 
