@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useCart } from '../hooks/useCart'
 import { getCloudinaryUrl } from '../lib/cloudinary'
 import cartIcon from '../assets/empty-cart-svgrepo-com.svg'
-import type { CartItem, PriceTier } from '../types'
 
 const Cart: React.FC = () => {
   const { items, removeItem, updateQty, clear, loading, getTotal, getItemTotal  } = useCart()
