@@ -2,13 +2,34 @@ import React, { useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useCart } from '../hooks/useCart'
 import { getCloudinaryUrl } from '../lib/cloudinary'
-import  cartIcon  from '../assets/empty-cart-svgrepo-com.svg'
+import cartIcon from '../assets/empty-cart-svgrepo-com.svg'
+import type { CartItem, PriceTier } from '../types'
 
 const Cart: React.FC = () => {
-  const { items, removeItem, updateQty, clear, loading } = useCart()
+  const { items, removeItem, updateQty, clear, loading, getTotal, getItemTotal  } = useCart()
   const navigate = useNavigate()
 
-  const subtotal = items.reduce((sum, i) => sum + i.price * i.qty, 0)
+  //   const getItemTotal = (item:CartItem) => {
+  //   if (!item.pricing || item.pricing.length === 0) {
+  //     return item.price * item.qty
+  //   }
+
+  //   // Find matching tier (buy 1, buy 2, etc.)
+  //   const tier = item.pricing.find(
+  //     (p:PriceTier) => p.label === `buy ${item.qty}`
+  //   )
+
+  //   return (
+  //     tier?.discountPrice ??
+  //     tier?.price ??
+  //     item.price * item.qty
+  //   )
+  // }
+
+  // const subtotal = items.reduce((sum, i) => sum + i.price * i.qty, 0)
+
+  const subtotal = getTotal()
+  // const subtotal = items.reduce((sum, i) => sum + getItemTotal(i), 0)
 
   // Ensure cart page starts at top
   useEffect(() => {
@@ -28,7 +49,7 @@ const Cart: React.FC = () => {
           </div>
         </div>
       )}
-      
+
       <div className="flex items-center justify-between">
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Shopping Cart</h1>
         <span className="text-sm text-gray-600">{items.length} {items.length === 1 ? 'item' : 'items'}</span>
@@ -36,7 +57,7 @@ const Cart: React.FC = () => {
 
       {items.length === 0 ? (
         <div className="text-center py-12 flex flex-col justify-center items-center bg-white rounded-lg shadow-sm border border-gray-200">
-            <div className="text-6xl mb-4 h-48 w-48"><img src={cartIcon} alt="cartIcon" /></div>
+          <div className="text-6xl mb-4 h-48 w-48"><img src={cartIcon} alt="cartIcon" /></div>
           <h2 className="text-xl font-semibold mb-2">Your cart is empty</h2>
           <p className="text-gray-600 mb-6">Add some products to get started!</p>
           <Link to="/" className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors">
@@ -69,18 +90,21 @@ const Cart: React.FC = () => {
                       )}
                     </div>
                   </div>
-                  
+
                   {/* Product Details */}
                   <div className="flex-1">
                     <h3 className="font-semibold text-gray-900 mb-1">{i.name}</h3>
                     <p className="text-lg font-bold text-blue-600">Rs {i.price.toFixed(2)}</p>
-                    <p className="text-sm text-gray-500 mt-1">Total: Rs {(i.price * i.qty).toFixed(2)}</p>
+                    <p className="text-sm text-gray-500 mt-1">
+                      {/* Total: Rs {(i.price * i.qty).toFixed(2)}                    */}
+                      Total: Rs {getItemTotal(i).toFixed(2)}
+                    </p>
                   </div>
-                  
+
                   {/* Quantity Controls */}
                   <div className="flex items-center gap-3 sm:gap-4">
                     <div className="flex items-center border border-gray-300 rounded-lg">
-                      <button 
+                      <button
                         onClick={() => updateQty(i.id, Math.max(1, i.qty - 1))}
                         className="px-3 py-2 hover:bg-gray-100 transition-colors"
                       >
@@ -93,14 +117,14 @@ const Cart: React.FC = () => {
                         value={i.qty}
                         onChange={(e) => updateQty(i.id, Math.max(1, Number(e.target.value) || 1))}
                       />
-                      <button 
+                      <button
                         onClick={() => updateQty(i.id, i.qty + 1)}
                         className="px-3 py-2 hover:bg-gray-100 transition-colors"
                       >
                         +
                       </button>
                     </div>
-                    <button 
+                    <button
                       onClick={() => removeItem(i.id)}
                       className="px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors font-medium"
                     >
@@ -130,13 +154,13 @@ const Cart: React.FC = () => {
                   <span className="text-blue-600">Rs {subtotal.toFixed(2)}</span>
                 </div>
               </div>
-              <button 
+              <button
                 onClick={() => navigate('/checkout')}
                 className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors mb-3"
               >
                 Proceed to Checkout
               </button>
-              <button 
+              <button
                 onClick={clear}
                 className="w-full px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium transition-colors"
               >

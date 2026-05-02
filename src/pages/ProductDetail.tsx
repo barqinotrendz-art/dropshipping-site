@@ -26,7 +26,7 @@ const ProductDetail: React.FC = () => {
 
   // Handle color variants - must be defined before early returns
   const colorVariants: ColorVariant[] = product?.colorVariants || []
-  
+
   // Set default selected color on first load
   React.useEffect(() => {
     if (product && colorVariants.length > 0 && !selectedColor) {
@@ -37,7 +37,7 @@ const ProductDetail: React.FC = () => {
 
   // Early returns AFTER all hooks
   if (isLoading) return <LoadingPage message="Loading product details..." />
-  
+
   if (!product) {
     return (
       <ErrorPage
@@ -53,12 +53,12 @@ const ProductDetail: React.FC = () => {
   // Enhanced image logic with fallback to color variants (same as ProductCard)
   const getAllProductImages = () => {
     const allImages: string[] = []
-    
+
     // First, add main product images (default images)
     if (product.imagePublicIds && product.imagePublicIds.length > 0) {
       allImages.push(...product.imagePublicIds)
     }
-    
+
     // Then, add images from color variants
     if (product.colorVariants && product.colorVariants.length > 0) {
       product.colorVariants.forEach(variant => {
@@ -72,16 +72,25 @@ const ProductDetail: React.FC = () => {
         }
       })
     }
-    
+
     // If no images found, return fallback
     return allImages.length > 0 ? allImages : ['cld-sample-5']
   }
 
   const publicIds = getAllProductImages()
 
-  const currentPrice = product.discountPrice || product.price
+  // const currentPrice = product.discountPrice || product.price
   const hasDiscount = product.discountPrice && product.discountPrice < product.price
   const isInWishlist = wishlistItems.some(item => item.productId === product.id)
+
+  const firstTier = product.pricing?.[0]
+
+  const currentPrice =
+    firstTier?.discountPrice ??
+    firstTier?.price ??
+    product.discountPrice ??
+    product.price ??
+    0
 
   const onAddToCart = async () => {
     // Check if color is selected and in stock
@@ -95,23 +104,24 @@ const ProductDetail: React.FC = () => {
         return
       }
     }
-    
+
     // Check general stock
     const availableStock = selectedColor ? selectedColor.stock : product.stock ?? 0
     if (availableStock === 0) {
       toast.error('This product is out of stock')
       return
     }
-    
+
     // Use selected color's first image if available, otherwise use first available image
-    const cartImage = selectedColor && selectedColor.images.length > 0 
-      ? selectedColor.images[0] 
+    const cartImage = selectedColor && selectedColor.images.length > 0
+      ? selectedColor.images[0]
       : publicIds[0] !== 'cld-sample-5' ? publicIds[0] : 'cld-sample-5'
-    
+
     await addItem({
       id: product.id,
       name: `${product.title}${selectedColor ? ` - ${selectedColor.name}` : ''}`,
       price: currentPrice,
+        pricing: product.pricing ?? [],   // ✅ ADD THIS
       qty: 1,
       image: cartImage,
       maxQty: availableStock,
@@ -132,15 +142,15 @@ const ProductDetail: React.FC = () => {
       navigate('/login')
       return
     }
-    
+
     if (isInWishlist) {
       await removeFromWishlist(product.id)
     } else {
       // Use selected color's first image if available, otherwise use main product image
-      const wishlistImage = selectedColor && selectedColor.images.length > 0 
-        ? selectedColor.images[0] 
+      const wishlistImage = selectedColor && selectedColor.images.length > 0
+        ? selectedColor.images[0]
         : publicIds[0]
-      
+
       await addToWishlist({
         productId: product.id,
         title: product.title,
@@ -156,7 +166,7 @@ const ProductDetail: React.FC = () => {
     <div className="space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div>
-          <ProductGallery 
+          <ProductGallery
             publicIds={publicIds}
             colorVariants={colorVariants}
             selectedColor={selectedColor}
@@ -167,7 +177,7 @@ const ProductDetail: React.FC = () => {
           <div>
             <h1 className="text-3xl font-semibold">{product.title}</h1>
             {product.brand && (
-              <p className="text-lg text-gray-600 mt-1">{product.brand}</p>
+              <p className="text-lg text-gray-600 mt-1">{product.brand}4</p>
             )}
           </div>
 
@@ -243,29 +253,27 @@ const ProductDetail: React.FC = () => {
 
           <div className="flex gap-3">
             {(() => {
-              const availableStock = selectedColor ? selectedColor.stock : product.stock ?? 0
+              const availableStock = product.stock ?? 0
               const isOutOfStock = availableStock === 0
               const needsColorSelection = colorVariants.length > 0 && !selectedColor
-              
+
               return (
                 <>
-                  <button 
-                    className={`flex-1 px-4 py-3 rounded font-medium transition-colors ${
-                      isOutOfStock || needsColorSelection
-                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                        : 'bg-black text-white hover:bg-gray-800'
-                    }`}
+                  <button
+                    className={`flex-1 px-4 py-3 rounded font-medium transition-colors ${isOutOfStock || needsColorSelection
+                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      : 'bg-black text-white hover:bg-gray-800'
+                      }`}
                     onClick={onAddToCart}
                     disabled={isOutOfStock || needsColorSelection}
                   >
                     {isOutOfStock ? 'Out of Stock' : needsColorSelection ? 'Select Color' : 'Add to Cart'}
                   </button>
-                  <button 
-                    className={`flex-1 px-4 py-3 rounded font-medium border-2 transition-colors ${
-                      isOutOfStock || needsColorSelection
-                        ? 'border-gray-300 text-gray-500 cursor-not-allowed'
-                        : 'border-black text-black hover:bg-black hover:text-white'
-                    }`}
+                  <button
+                    className={`flex-1 px-4 py-3 rounded font-medium border-2 transition-colors ${isOutOfStock || needsColorSelection
+                      ? 'border-gray-300 text-gray-500 cursor-not-allowed'
+                      : 'border-black text-black hover:bg-black hover:text-white'
+                      }`}
                     onClick={onBuyNow}
                     disabled={isOutOfStock || needsColorSelection}
                   >
@@ -274,7 +282,7 @@ const ProductDetail: React.FC = () => {
                 </>
               )
             })()}
-            <button 
+            <button
               className={`px-4 py-3 border rounded ${isInWishlist ? 'bg-red-50 border-red-300 text-red-700' : 'border-gray-300'}`}
               onClick={toggleWishlist}
             >
@@ -298,8 +306,8 @@ const ProductDetail: React.FC = () => {
 
         {showReviewForm && (
           <div className="bg-gray-50 p-4 rounded mb-4">
-            <ReviewForm 
-              productId={product.id} 
+            <ReviewForm
+              productId={product.id}
               onSuccess={() => setShowReviewForm(false)}
             />
           </div>
@@ -310,7 +318,7 @@ const ProductDetail: React.FC = () => {
 
       {/* Product Recommendations */}
       <div className="border-t pt-8">
-        <ProductRecommendations 
+        <ProductRecommendations
           productId={product.id}
           categoryId={product.categoryId || ''}
           brand={product.brand}

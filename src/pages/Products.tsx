@@ -90,15 +90,40 @@ const ProductsPage: React.FC = () => {
 
   // Debug logs removed for production
 
+  // const handleAddToCart = async (product: any) => {
+  //   const currentPrice = product.discountPrice || product.price
+  //   await addItem({
+  //     id: product.id,
+  //     name: product.title,
+  //     price: currentPrice,
+  //     image: product.imagePublicIds?.[0],
+  //   })
+  // }
+
   const handleAddToCart = async (product: any) => {
-    const currentPrice = product.discountPrice || product.price
-    await addItem({
-      id: product.id,
-      name: product.title,
-      price: currentPrice,
-      image: product.imagePublicIds?.[0],
-    })
-  }
+  const firstTier = product.pricing?.[0]
+
+  const currentPrice =
+    firstTier?.discountPrice ??
+    firstTier?.price ??
+    product.discountPrice ??
+    product.price ??
+    0
+
+  console.log('ALL PRODUCTS ADD:', {
+    title: product.title,
+    finalPrice: currentPrice,
+    pricing: product.pricing
+  })
+
+  await addItem({
+    id: product.id,
+    name: product.title,
+    price: Number(currentPrice) || 0,
+    pricing: product.pricing || [], // 🔥 CRITICAL FIX
+    image: product.imagePublicIds?.[0],
+  })
+}
 
   if (productsLoading) {
     return (

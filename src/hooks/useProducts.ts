@@ -13,6 +13,12 @@ export type ProductVariant = {
   imagePublicIds?: string[]
 }
 
+type PriceTier = {
+  label: string
+  price: number
+  discountPrice?: number
+}
+
 export type Product = {
   id: string
   title: string
@@ -36,10 +42,12 @@ export type Product = {
   reviewCount?: number
   tags?: string[]
   active?: boolean
+  latest?: boolean
   featured?: boolean
   topSelling?: boolean
   createdAt?: Timestamp
   updatedAt?: Timestamp
+  pricing?: PriceTier[]
 }
 
 export function useProducts(opts?: { categoryId?: string | null; limit?: number }) {
@@ -48,12 +56,12 @@ export function useProducts(opts?: { categoryId?: string | null; limit?: number 
     queryFn: async (): Promise<Product[]> => {
       try {
         const base = collection(db, 'products')
-        
+
         // Build optimized query - get all products without active filter
         let q;
         if (opts?.categoryId) {
           q = query(
-            base, 
+            base,
             where('categoryId', '==', opts.categoryId),
             orderBy('title', 'asc'),
             ...(opts?.limit ? [limit(opts.limit)] : [])
@@ -67,7 +75,15 @@ export function useProducts(opts?: { categoryId?: string | null; limit?: number 
           )
         }
         const snap = await getDocs(q)
-        const products = snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Product, 'id'>) }))
+        const products = snap.docs.map((d) => {
+          const data = d.data() as Omit<Product, 'id'>
+
+          return {
+            id: d.id,
+            ...data,
+            pricing: Array.isArray(data.pricing) ? data.pricing : [] // ✅ now works
+          }
+        })
         // Filter out inactive products in code - this handles products created before active field was added
         // Only filter if active field exists and is explicitly false
         const activeProducts = products.filter(p => p.active !== false)

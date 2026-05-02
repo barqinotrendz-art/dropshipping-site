@@ -19,12 +19,36 @@ const CategoryProductsSection: React.FC<CategoryProductsSectionProps> = ({
 }) => {
   const { addItem } = useCart()
 
+  // const handleAddToCart = async (product: Product) => {
+  //   const currentPrice = product.discountPrice || product.price
+  //   await addItem({
+  //     id: product.id,
+  //     name: product.title,
+  //     price: currentPrice,
+  //     image: product.imagePublicIds?.[0],
+  //   })
+  // }
   const handleAddToCart = async (product: Product) => {
-    const currentPrice = product.discountPrice || product.price
+    const firstTier = product.pricing?.[0]
+
+    const currentPrice =
+      firstTier?.discountPrice ??
+      firstTier?.price ??
+      product.discountPrice ??
+      product.price
+
+    console.log('ADDING TO CART:', {
+      title: product.title,
+      productPrice: product.price,
+      pricing: product.pricing,
+      finalPrice: currentPrice
+    })
+
     await addItem({
       id: product.id,
       name: product.title,
-      price: currentPrice,
+      price: Number(currentPrice) || 0,   // 🔥 THIS FIXES 0 ISSUE
+      pricing: product.pricing || [],     // 🔥 REQUIRED FOR TIERS
       image: product.imagePublicIds?.[0],
     })
   }

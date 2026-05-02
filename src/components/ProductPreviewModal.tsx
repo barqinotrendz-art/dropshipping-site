@@ -7,6 +7,12 @@ import Button from './ui/Button'
 import toast from 'react-hot-toast'
 import { getCloudinaryUrl } from '../lib/cloudinary'
 
+type PriceTier = {
+  label: string
+  price: number
+  discountPrice?: number
+}
+
 interface Product {
   id: string
   title: string
@@ -25,6 +31,7 @@ interface Product {
     images: string[]
     stock: number
   }>
+  pricing?: PriceTier[]
 }
 
 interface ProductPreviewModalProps {
@@ -47,12 +54,12 @@ const ProductPreviewModal: React.FC<ProductPreviewModalProps> = ({
   // Enhanced image logic with fallback to color variants (same as ProductCard)
   const getAllImages = (): string[] => {
     const allImages: string[] = []
-    
+
     // First, add main product images
     if (product.imagePublicIds && product.imagePublicIds.length > 0) {
       allImages.push(...product.imagePublicIds)
     }
-    
+
     // Then, add images from color variants
     if (product.colorVariants && product.colorVariants.length > 0) {
       product.colorVariants.forEach(variant => {
@@ -66,15 +73,34 @@ const ProductPreviewModal: React.FC<ProductPreviewModalProps> = ({
         }
       })
     }
-    
+
     // If no images found, return fallback
     return allImages.length > 0 ? allImages : ['cld-sample-5']
   }
 
   const images = getAllImages()
-  const currentPrice = product.discountPrice || product.price
-  const hasDiscount = product.discountPrice && product.discountPrice < product.price
+  // const currentPrice = product.discountPrice || product.price
+  // const hasDiscount = product.discountPrice && product.discountPrice < product.price
   const isInWishlist = wishlistItems.some(item => item.productId === product.id)
+
+  const firstTier = product.pricing?.[0]
+
+  const currentPrice =
+    firstTier?.discountPrice ??
+    firstTier?.price ??
+    product.discountPrice ??
+    product.price ??
+    0
+
+  const originalPrice =
+    firstTier?.price ??
+    product.price
+
+  const hasDiscount =
+    firstTier?.discountPrice != null
+      ? firstTier.discountPrice < firstTier.price
+      : product.discountPrice != null &&
+      product.discountPrice < product.price
 
   const handleBuyNow = () => {
     onAddToCart(product)
@@ -92,7 +118,7 @@ const ProductPreviewModal: React.FC<ProductPreviewModalProps> = ({
       navigate('/login')
       return
     }
-    
+
     if (isInWishlist) {
       await removeFromWishlist(product.id)
     } else {
@@ -134,7 +160,7 @@ const ProductPreviewModal: React.FC<ProductPreviewModalProps> = ({
                 />
                 {hasDiscount && (
                   <span className="absolute top-4 left-4 bg-red-500 text-white text-sm font-medium px-3 py-1 rounded-lg shadow-lg">
-                    {Math.round((1 - currentPrice / product.price) * 100)}% OFF
+                    {Math.round((1 - currentPrice / originalPrice) * 100)}% OFF
                   </span>
                 )}
               </div>
@@ -146,11 +172,10 @@ const ProductPreviewModal: React.FC<ProductPreviewModalProps> = ({
                     <button
                       key={index}
                       onClick={() => setSelectedImageIndex(index)}
-                      className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
-                        selectedImageIndex === index
-                          ? 'border-black shadow-md'
-                          : 'border-gray-200 hover:border-gray-400'
-                      }`}
+                      className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${selectedImageIndex === index
+                        ? 'border-black shadow-md'
+                        : 'border-gray-200 hover:border-gray-400'
+                        }`}
                     >
                       <img
                         src={getCloudinaryUrl(img, 100, 100)}
@@ -173,28 +198,33 @@ const ProductPreviewModal: React.FC<ProductPreviewModalProps> = ({
               </div>
 
               {/* Rating */}
-              {product.rating && product.rating > 0 && (
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`w-5 h-5 ${
-                          i < Math.floor(product.rating!)
+              <div className='w-[100%] '>
+
+                {product.rating != null && product.rating > 0 && (
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center">
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`w-5 h-5 ${i < Math.floor(product.rating!)
                             ? 'text-yellow-400 fill-current'
                             : 'text-gray-300'
-                        }`}
-                      />
-                    ))}
+                            }`}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-sm text-gray-600">
+                      {product.rating.toFixed(1)} ({product.reviewCount || 0} reviews)
+                    </span>
                   </div>
-                  <span className="text-sm text-gray-600">
-                    {product.rating.toFixed(1)} ({product.reviewCount || 0} reviews)
-                  </span>
-                </div>
-              )}
+
+
+
+                )}
+              </div>
 
               {/* Price */}
-              <div className="flex items-center gap-3">
+              {/* <div className="flex items-center gap-3">
                 <span className="text-3xl font-bold text-gray-900">
                   Rs {currentPrice.toFixed(2)}
                 </span>
@@ -208,7 +238,22 @@ const ProductPreviewModal: React.FC<ProductPreviewModalProps> = ({
                     </span>
                   </>
                 )}
-              </div>
+              </div> */}
+
+              <span className="text-xl font-semibold text-[#c03e35] me-2">
+                Rs {currentPrice.toFixed(2)}
+              </span>
+
+              {hasDiscount && (
+                <>
+                  <span className="text-xl text-gray-500 line-through">
+                    AED {originalPrice.toFixed(2)}
+                  </span>
+                  <span className="bg-red-100 text-red-700 px-2 py-1 rounded text-sm font-medium ms-2">
+                    Save AED {(originalPrice - currentPrice).toFixed(2)}
+                  </span>
+                </>
+              )}
 
               {/* Stock Status */}
               <div className="flex items-center gap-2">
@@ -233,11 +278,10 @@ const ProductPreviewModal: React.FC<ProductPreviewModalProps> = ({
                       <button
                         key={index}
                         onClick={() => setSelectedColor(index)}
-                        className={`w-12 h-12 rounded-lg border-2 overflow-hidden transition-all ${
-                          selectedColor === index
-                            ? 'border-black shadow-md scale-110'
-                            : 'border-gray-200 hover:border-gray-400'
-                        }`}
+                        className={`w-12 h-12 rounded-lg border-2 overflow-hidden transition-all ${selectedColor === index
+                          ? 'border-black shadow-md scale-110'
+                          : 'border-gray-200 hover:border-gray-400'
+                          }`}
                       >
                         <img
                           src={getCloudinaryUrl(variant.images[0], 50, 50)}
@@ -288,11 +332,10 @@ const ProductPreviewModal: React.FC<ProductPreviewModalProps> = ({
                 <div className="flex gap-3">
                   <button
                     onClick={toggleWishlist}
-                    className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${
-                      isInWishlist
-                        ? 'bg-red-50 border-red-300 text-red-700'
-                        : 'border-gray-300 text-gray-700 hover:border-red-300 hover:bg-red-50 hover:text-red-700'
-                    }`}
+                    className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${isInWishlist
+                      ? 'bg-red-50 border-red-300 text-red-700'
+                      : 'border-gray-300 text-gray-700 hover:border-red-300 hover:bg-red-50 hover:text-red-700'
+                      }`}
                   >
                     <Heart className={`w-5 h-5 ${isInWishlist ? 'fill-current' : ''}`} />
                     {isInWishlist ? 'In Wishlist' : 'Add to Wishlist'}

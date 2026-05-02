@@ -8,6 +8,11 @@ import toast from 'react-hot-toast'
 import { getCloudinaryUrl } from '../lib/cloudinary'
 import Reusablebtn from './Reusablebtn'
 import './productcard.css'
+type PriceTier = {
+  label: string
+  price: number
+  discountPrice?: number
+}
 
 interface ProductCardProps {
   product: {
@@ -27,6 +32,8 @@ interface ProductCardProps {
     reviewCount?: number
     brand?: string
     stock?: number
+    pricing?: PriceTier[]
+
   }
   showBestsellerTag?: boolean
   onAddToCart: (product: any) => void
@@ -53,19 +60,19 @@ const ProductCard: React.FC<ProductCardProps> = ({
     if (product.imagePublicIds?.[index]) {
       return product.imagePublicIds[index]
     }
-    
+
     // Check if colorVariants exist
     if (!product.colorVariants || product.colorVariants.length === 0) {
       return null
     }
-    
+
     // For index 0, try first color variant's first image
     if (index === 0) {
       const firstVariant = product.colorVariants[0]
       if (firstVariant?.images?.[0]) {
         return firstVariant.images[0]
       }
-    } 
+    }
     // For index 1, try multiple strategies to get a different image
     else if (index === 1) {
       // Strategy 1: Second image from first color variant
@@ -73,13 +80,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
       if (firstVariant?.images?.[1]) {
         return firstVariant.images[1]
       }
-      
+
       // Strategy 2: First image from second color variant
       const secondVariant = product.colorVariants[1]
       if (secondVariant?.images?.[0]) {
         return secondVariant.images[0]
       }
-      
+
       // Strategy 3: Any other image from any variant
       for (let variantIndex = 0; variantIndex < product.colorVariants.length; variantIndex++) {
         const variant = product.colorVariants[variantIndex]
@@ -88,20 +95,56 @@ const ProductCard: React.FC<ProductCardProps> = ({
         }
       }
     }
-    
+
     // Return null if no image found at this index
     return null
   }
 
   const mainImageId = getImagePublicId(0)
   const secondImageId = getImagePublicId(1)
-  
+
   // Use fallback only for main image, and only use second image if it exists and is different
   const mainImage = mainImageId || 'cld-sample-5'
   const secondImage = secondImageId && secondImageId !== mainImageId ? secondImageId : null
-  
-  const currentPrice = product.discountPrice || product.price
-  const hasDiscount = product.discountPrice && product.discountPrice < product.price
+
+  // const currentPrice = product.discountPrice || product.price
+  // const hasDiscount = product.discountPrice && product.discountPrice < product.price
+  // const firstTier = product.pricing?.[0]
+
+  // const currentPrice =
+  //   firstTier?.discountPrice ??
+  //   firstTier?.price ??
+  //   product.discountPrice ??
+  //   0
+
+  // const originalPrice =
+  //   firstTier?.price ??
+  //   product.discountPrice ??
+  //   0
+
+  // const hasDiscount =
+  //   firstTier?.discountPrice &&
+  //   firstTier.discountPrice < firstTier.price
+
+  const firstTier = product.pricing?.[0]
+
+  const basePrice =
+    firstTier?.discountPrice ??
+    firstTier?.price ??
+    product.discountPrice ??
+    product.price
+
+  const originalPrice =
+    firstTier?.price ??
+    product.price
+
+  const currentPrice = Number(basePrice)
+  const hasDiscount =
+    firstTier?.discountPrice != null
+      ? firstTier.discountPrice < firstTier.price
+      : product.discountPrice != null &&
+      product.discountPrice < product.price
+
   const isInCart = cartItems.some(item => item.id === product.id)
   const isInWishlist = wishlistItems.some(item => item.productId === product.id)
   const isOutOfStock = !product.stock || product.stock === 0
@@ -158,6 +201,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
     e.stopPropagation()
     onPreview?.(product)
   }
+  console.log('PRICE CHECK:', {
+    title: product.title,
+    price: product.price,
+    discountPrice: product.discountPrice
+  })
 
   return (
     <div
@@ -170,9 +218,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <img
           src={getCloudinaryUrl(mainImage, 400, 400)}
           alt={product.title}
-          className={`w-full h-full object-cover rounded-tl-xl rounded-tr-xl ${secondImage ? 'transition-all duration-500' : ''} ${
-            isHovered && secondImage ? 'opacity-0' : 'opacity-100'
-          }`}
+          className={`w-full h-full object-cover rounded-tl-xl rounded-tr-xl ${secondImage ? 'transition-all duration-500' : ''} ${isHovered && secondImage ? 'opacity-0' : 'opacity-100'
+            }`}
         />
 
         {/* Second Image on Hover */}
@@ -194,7 +241,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           )}
           {!isOutOfStock && hasDiscount && (
             <span className="bg-black text-white text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded shadow-md">
-              {Math.round((1 - currentPrice / product.price) * 100)}% OFF
+              {Math.round((1 - currentPrice / originalPrice) * 100)}% OFF
             </span>
           )}
           {!isOutOfStock && showBestsellerTag && (
@@ -211,8 +258,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <button
               onClick={toggleWishlist}
               className={`p-2 sm:p-3 rounded-full shadow-lg transition-colors ${isInWishlist
-                  ? 'bg-red-500 text-white hover:bg-red-600'
-                  : 'bg-white text-gray-700 hover:text-red-500'
+                ? 'bg-red-500 text-white hover:bg-red-600'
+                : 'bg-white text-gray-700 hover:text-red-500'
                 }`}
               title={isInWishlist ? 'Remove from Wishlist' : 'Add to Wishlist'}
             >
@@ -221,8 +268,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <button
               onClick={handleAddToCart}
               className={`p-2 sm:p-3 rounded-full shadow-lg transition-colors ${isInCart
-                  ? 'bg-red-500 text-white hover:bg-red-600'
-                  : 'bg-white text-gray-700 hover:text-red-500 '
+                ? 'bg-red-500 text-white hover:bg-red-600'
+                : 'bg-white text-gray-700 hover:text-red-500 '
                 }`}
               title={isInCart ? 'Remove from Cart' : 'Add to Cart'}
             >
@@ -244,19 +291,19 @@ const ProductCard: React.FC<ProductCardProps> = ({
       {/* Product Info */}
       <div className="p-2 sm:p-4">
         <Link to={`/product/${product.id || product.slug}`} className="block hover:bg-gray-50 rounded-md">
-          <h3 className="font-semibold text-sm sm:text-base text-gray-900 mb-1 sm:mb-2  
+          <h3 className="font-semibold text-sm sm:text-base text-gray-900 mb-1 sm:mb-0  
           overflow-hidden group-hover:text-black transition-colors h-[45px] product-title">
             {product.title.slice(0, 70)}{product.title.length > 60 ? '...' : ''}
           </h3>
-        
 
-        {/* Brand */}
-        {product.brand && (
-          <p className="text-xs text-gray-500 mb-1 sm:mb-2">{product.brand}</p>
-        )}
 
-        {/* Rating */}
-        {/* <div className="flex items-center mb-1 sm:mb-2">
+          {/* Brand */}
+          {product.brand && (
+            <p className="text-xs text-gray-500 mb-1 sm:mb-2">{product.brand}</p>
+          )}
+
+          {/* Rating */}
+          {/* <div className="flex items-center mb-1 sm:mb-2">
           {product.reviewCount && product.reviewCount > 0 ? (
             <>
               <div className="flex items-center">
@@ -281,22 +328,24 @@ const ProductCard: React.FC<ProductCardProps> = ({
           )}
         </div> */}
 
-        {/* Price */}
-        <div className="flex flex-col lg:flex-row items-start lg:items-center gap-2 mb-4 overflow-hidden min-h-[40px]">
-          <span className="font-semibold text-md text-[#ca5c54]">
-            {currentPrice.toFixed(2)} AED 
-          </span>
-
-          {hasDiscount ? (
-            <span className="text-sm text-gray-500 line-through ">
-              {product.price.toFixed(2)} AED 
+          {/* Price */}
+          <div className="flex flex-col lg:flex-row items-start lg:items-center gap-2 mb-4 overflow-hidden min-h-[40px]">
+            <span className="font-semibold text-md text-[#ca5c54]">
+              {currentPrice.toFixed(2)} AED
             </span>
-          ) : (
-            // Invisible placeholder keeps height same
-            <span className="text-sm opacity-0 select-none">No discount</span>
-          )}
-        </div>
-</Link>
+
+            {hasDiscount ? (
+              <span className="text-sm text-gray-500 line-through ">
+                {/* {product.price.toFixed(2)} AED */}
+                {originalPrice.toFixed(2)} AED
+
+              </span>
+            ) : (
+              // Invisible placeholder keeps height same
+              <span className="text-sm opacity-0 select-none">No discount</span>
+            )}
+          </div>
+        </Link>
 
 
         {/* Action Buttons */}
@@ -304,7 +353,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <div className="flex flex-col space-y-1 sm:space-y-2">
             {/* Primary Actions */}
             <div className="flex gap-1 flex-col lg:flex-row md:flex-row sm:flex-row xl:flex-row "
-             onClick={handleAddToCart}
+              onClick={handleAddToCart}
             >
               <Reusablebtn text='Add to Cart' />
               {/* <button
@@ -313,7 +362,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               >
                 Add to Cart
               </button> */}
-            
+
             </div>
             {/* Buy Now - Secondary Action */}
             <button
@@ -332,7 +381,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               <ShoppingCart className="w-3 h-3 sm:w-4 sm:h-4" />
               Add to Cart
             </button>
-            
+
           </div>
         )}
       </div>

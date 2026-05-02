@@ -1,0 +1,55 @@
+/* container */
+.chevron-liquid {
+  position: relative;
+  overflow: hidden;
+  border-radius: 50%;
+  background: white;
+}
+
+/* fill */
+.chevron-fill {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 0%;
+  background: #1f473e;
+  transition: height 0.4s ease;
+  z-index: 1;
+}
+
+/* hover trigger */
+.cart-item:hover .chevron-fill {
+  height: 100%;
+}
+
+/* icon above fill */
+.chevron-liquid .icon {
+  position: relative;
+  z-index: 2;
+  transition: color 0.3s ease;
+}
+
+/* icon color on hover */
+/* icon color */
+.cart-item:hover .chevron-liquid .icon {
+  color: white;
+}
+
+/* border */
+.cart-item:hover .chevron-liquid {
+  border-color: #1f473e;
+}
+
+.cat-title {
+  color: #1f2937; /* gray-800 */
+  transition: color 0.3s ease;
+}
+
+.category-list:hover .cat-title {
+  color: #9ca3af !important;
+}
+
+.category-list .cart-item:hover .cat-title {
+  color: #1f2937 !important;
+}

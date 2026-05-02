@@ -13,6 +13,7 @@ import CategoriesSection from '../components/home/CategoriesSection.tsx'
 import NewsletterSection from '../components/home/NewsletterSection.tsx'
 import ProductPreviewModal from '../components/ProductPreviewModal.tsx'
 import './home.css'
+import Collection from '../components/Collection.tsx'
 
 const Home: FC = () => {
   const { addItem } = useCart()
@@ -24,56 +25,106 @@ const Home: FC = () => {
   const { data: categories, isLoading: categoriesLoading, error: categoriesError } = useCategories()
 
   // Process products for different sections with category-based grouping
+  // const processedProducts = useMemo(() => {
+  //   if (!products || !categories || products.length === 0 || categories.length === 0) return null
+
+  //   // Filter active products and categories
+  //   const activeProducts = products.filter(p => p.active !== false && p.stock && p.stock > 0)
+  //   const activeCategories = categories.filter(c => c.active !== false || c.isActive !== false)
+
+  //   // Group products by category for each section
+  //   const categoryBasedSections = activeCategories.map(category => {
+  //     const categoryProducts = activeProducts.filter(p => p.categoryId === category.id)
+
+  //     return {
+  //       category,
+  //       featured: categoryProducts.filter(p => p.featured === true).slice(0, 8),
+  //       topSelling: categoryProducts.filter(p => p.topSelling === true).slice(0, 8),
+  //       latest: categoryProducts
+  //         .sort((a, b) => {
+  //           const aTime = a.createdAt?.seconds || 0
+  //           const bTime = b.createdAt?.seconds || 0
+  //           return bTime - aTime
+  //         })
+  //         .slice(0, 6),
+  //       all: categoryProducts
+  //     }
+  //   }).filter(section => section.all.length > 0) // Only include categories with products
+
+  //   return {
+  //     categoryBasedSections,
+  //     // Fallback: all products grouped by type (if no categories)
+  //     featured: activeProducts.filter(p => p.featured === true).slice(0, 8),
+  //     topSelling: activeProducts.filter(p => p.topSelling === true).slice(0, 8),
+  //     latest: activeProducts
+  //       .sort((a, b) => {
+  //         const aTime = a.createdAt?.seconds || 0
+  //         const bTime = b.createdAt?.seconds || 0
+  //         return bTime - aTime
+  //       })
+  //       .slice(0, 6),
+  //     all: activeProducts
+  //   }
+  // }, [products, categories])
   const processedProducts = useMemo(() => {
-    if (!products || !categories || products.length === 0 || categories.length === 0) return null
+    if (!products || products.length === 0) return null
 
-    // Filter active products and categories
-    const activeProducts = products.filter(p => p.active !== false && p.stock && p.stock > 0)
-    const activeCategories = categories.filter(c => c.active !== false || c.isActive !== false)
+    const activeProducts = products.filter(
+      p => p.active !== false && p.stock && p.stock > 0
+    )
 
-    // Group products by category for each section
-    const categoryBasedSections = activeCategories.map(category => {
-      const categoryProducts = activeProducts.filter(p => p.categoryId === category.id)
+    // ✅ GLOBAL SECTIONS (FLAG BASED)
+    const latest = activeProducts.filter(p => p.latest === true).slice(0, 8)
+    const featured = activeProducts.filter(p => p.featured === true).slice(0, 8)
+    const topSelling = activeProducts.filter(p => p.topSelling === true).slice(0, 8)
+
+    // ✅ CATEGORY SECTION (ONLY grouping, NO flags logic here)
+    const categoryBasedSections = categories?.map(category => {
+      const categoryProducts = activeProducts.filter(
+        p => p.categoryId === category.id
+      )
 
       return {
         category,
-        featured: categoryProducts.filter(p => p.featured === true).slice(0, 8),
-        topSelling: categoryProducts.filter(p => p.topSelling === true).slice(0, 8),
-        latest: categoryProducts
-          .sort((a, b) => {
-            const aTime = a.createdAt?.seconds || 0
-            const bTime = b.createdAt?.seconds || 0
-            return bTime - aTime
-          })
-          .slice(0, 6),
-        all: categoryProducts
+        products: categoryProducts
       }
-    }).filter(section => section.all.length > 0) // Only include categories with products
+    }).filter(section => section.products.length > 0)
 
     return {
+      latest,
+      featured,
+      topSelling,
       categoryBasedSections,
-      // Fallback: all products grouped by type (if no categories)
-      featured: activeProducts.filter(p => p.featured === true).slice(0, 8),
-      topSelling: activeProducts.filter(p => p.topSelling === true).slice(0, 8),
-      latest: activeProducts
-        .sort((a, b) => {
-          const aTime = a.createdAt?.seconds || 0
-          const bTime = b.createdAt?.seconds || 0
-          return bTime - aTime
-        })
-        .slice(0, 6),
       all: activeProducts
     }
   }, [products, categories])
-
   // Handle add to cart - adapter function to handle type differences
-  const handleAddToCart = async (product: { id: string; title: string; price: number; discountPrice?: number; imagePublicIds?: string[] }) => {
-    const currentPrice = product.discountPrice || product.price
+  // const handleAddToCart = async (product: { id: string; title: string; price: number; discountPrice?: number; imagePublicIds?: string[] }) => {
+  //   const currentPrice = product.discountPrice || product.price
+  //   await addItem({
+  //     id: product.id,
+  //     name: product.title,
+  //     price: currentPrice,
+  //     image: product.imagePublicIds?.[0],
+  //   })
+  // }
+  const handleAddToCart = async (product: any) => {
+    const firstTier = product.pricing?.[0]
+
+    const currentPrice =
+      firstTier?.discountPrice ??
+      firstTier?.price ??
+      product.discountPrice ??
+      product.price ??
+      0
+
     await addItem({
       id: product.id,
       name: product.title,
       price: currentPrice,
       image: product.imagePublicIds?.[0],
+      pricing: product.pricing, // ✅ ADD THIS
+
     })
   }
 
@@ -126,18 +177,19 @@ const Home: FC = () => {
         </div>
 
         {/* Latest Arrivals Section - Category Based */}
-        {processedProducts?.categoryBasedSections && processedProducts.categoryBasedSections.length > 0 && (
+        {/* {processedProducts?.categoryBasedSections && processedProducts.categoryBasedSections.length > 0 && ( */}
+        {(processedProducts?.latest?.length ?? 0) > 0 && (
           <div className="py-8">
             {/* Main Latest Arrivals Heading */}
-            {/* <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
               <div className="text-center">
                 <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-2 ">Latest Arrivals</h2>
                 <p className="text-gray-600">Fresh new products just added to our collection</p>
               </div>
-            </div> */}
+            </div>
 
             {/* Category-based Latest Carousels */}
-            {processedProducts.categoryBasedSections.map((section, index) =>
+            {/* {processedProducts.categoryBasedSections.map((section, index) =>
               section.latest.length > 0 && (
                 <div key={`latest-${section.category.id}`} className="animate-fadeIn" style={{ animationDelay: `${800 + (index * 100)}ms` }}>
                   <ProductCarousel
@@ -150,12 +202,22 @@ const Home: FC = () => {
                   />
                 </div>
               )
-            )}
+            )} */}
+            <ProductCarousel
+              title="Latest Arrivals"
+              products={processedProducts?.latest || []}
+              onAddToCart={handleAddToCart}
+              isLoading={productsLoading}
+              showBestsellerTag={true}
+              onPreview={setPreviewProduct}
+
+            />
+
           </div>
         )}
 
         {/* Fallback: Single Latest Arrivals if no categories */}
-        {(!processedProducts?.categoryBasedSections || processedProducts.categoryBasedSections.length === 0) && (
+        {/* {(!processedProducts?.categoryBasedSections || processedProducts.categoryBasedSections.length === 0) && (
           <div className="animate-fadeIn " style={{ animationDelay: '800ms' }}>
             <ProductCarousel
               title="Latest Arrivals"
@@ -166,9 +228,9 @@ const Home: FC = () => {
               onPreview={setPreviewProduct}
 
             />
-           
+
           </div>
-        )}
+        )} */}
 
 
         {/* Categories Section - Only show if more than 1 active category */}
@@ -190,19 +252,20 @@ const Home: FC = () => {
           </div>
         )}
 
+
         {/* Top Selling Products Section - Category Based */}
         {processedProducts?.categoryBasedSections && processedProducts.categoryBasedSections.length > 0 && (
           <div className="py-8">
             {/* Main Top Selling Heading */}
-            {/* <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
               <div className="text-center">
                 <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Top Selling Products</h2>
                 <p className="text-gray-600">Best-selling items loved by our customers</p>
               </div>
-            </div> */}
+            </div>
 
             {/* Category-based Top Selling Carousels */}
-            {processedProducts.categoryBasedSections.map((section, index) =>
+            {/* {processedProducts.categoryBasedSections.map((section, index) =>
               section.topSelling.length > 0 && (
                 <div key={`topselling-${section.category.id}`} className="animate-fadeIn" style={{ animationDelay: `${600 + (index * 100)}ms` }}>
                   <ProductCarousel
@@ -215,9 +278,23 @@ const Home: FC = () => {
                   />
                 </div>
               )
+            )} */}
+            {processedProducts?.topSelling?.length > 0 && (
+              <div className="animate-fadeIn" style={{ animationDelay: '600ms' }}>
+                <ProductCarousel
+                  title="Top Selling Products"
+                  products={processedProducts.topSelling}
+                  isLoading={productsLoading}
+                  showBestsellerTag={true}
+                  onAddToCart={handleAddToCart}
+                  onPreview={setPreviewProduct}
+                />
+              </div>
             )}
           </div>
         )}
+
+        
 
         {/* Fallback: Single Top Selling if no categories */}
         {(!processedProducts?.categoryBasedSections || processedProducts.categoryBasedSections.length === 0) && (
@@ -233,20 +310,21 @@ const Home: FC = () => {
             />
           </div>
         )}
+        <Collection />
 
         {/* Featured Products Section - Category Based */}
         {processedProducts?.categoryBasedSections && processedProducts.categoryBasedSections.length > 0 && (
           <div className="py-8">
             {/* Main Featured Products Heading */}
-            {/* <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
               <div className="text-center">
                 <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Featured Products</h2>
                 <p className="text-gray-600">Discover our handpicked selection across all categories</p>
               </div>
-            </div> */}
+            </div>
 
             {/* Category-based Featured Carousels */}
-            {processedProducts.categoryBasedSections.map((section, index) =>
+            {/* {processedProducts.categoryBasedSections.map((section, index) =>
               section.featured.length > 0 && (
                 <div key={`featured-${section.category.id}`} className="animate-fadeIn" style={{ animationDelay: `${200 + (index * 100)}ms` }}>
                   <ProductCarousel
@@ -258,6 +336,18 @@ const Home: FC = () => {
                   />
                 </div>
               )
+            )} */}
+
+            {processedProducts?.featured?.length > 0 && (
+              <div className="animate-fadeIn" style={{ animationDelay: '200ms' }}>
+                <ProductCarousel
+                  title="Featured Products"
+                  products={processedProducts.featured}
+                  isLoading={productsLoading}
+                  onAddToCart={handleAddToCart}
+                  onPreview={setPreviewProduct}
+                />
+              </div>
             )}
           </div>
         )}

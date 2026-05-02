@@ -1,5 +1,11 @@
 import type { Timestamp } from 'firebase/firestore'
 
+export type PriceTier = {
+  label: string
+  price: number
+  discountPrice?: number
+}
+
 export interface User {
   uid: string
   email: string
@@ -25,6 +31,8 @@ export interface CartItem {
   qty: number
   image?: string
   maxQty?: number
+  pricing?: PriceTier[]  // ✅ ADD THIS LINE
+
 }
 
 export interface ColorVariant {
@@ -35,6 +43,7 @@ export interface ColorVariant {
 }
 
 export interface Product {
+  pricing: any
   id: string
   title: string // Changed from 'name' to 'title' to match Firestore
   slug?: string

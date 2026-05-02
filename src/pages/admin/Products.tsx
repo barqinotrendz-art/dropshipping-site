@@ -29,6 +29,7 @@ type ProductForm = {
   sku?: string
   tags?: string
   active?: boolean
+  latest?:boolean
   featured?: boolean
   topSelling?: boolean
   imagePublicIds?: string
@@ -172,6 +173,7 @@ const ProductsAdminPage: React.FC = () => {
           .map((s) => s.trim())
           .filter(Boolean),
         active: values.active !== false,
+        latest: values.latest || false,
         featured: values.featured || false,
         topSelling: values.topSelling || false,
         colorVariants: colorVariants.length > 0 ? colorVariants : null,
@@ -283,6 +285,7 @@ const ProductsAdminPage: React.FC = () => {
         sku: product.sku || '',
         tags: product.tags?.join(', ') || '',
         active: product.active !== false,
+        latest: product.latest || false,
         featured: product.featured || false,
         topSelling: product.topSelling || false,
         attributes: product.attributes || {},
@@ -311,6 +314,7 @@ const ProductsAdminPage: React.FC = () => {
       tags: '',
       categoryId: undefined,
       active: true,
+      latest:false,
       featured: false,
       topSelling: false,
       attributes: {}
@@ -817,6 +821,13 @@ const ProductsAdminPage: React.FC = () => {
                   <div>
                     <span className="text-sm font-semibold text-gray-900 block">Active</span>
                     <span className="text-xs text-gray-500">Visible to customers on the store</span>
+                  </div>
+                </label>
+                 <label className="flex items-start gap-3 p-4 border-2 border-gray-200 rounded-lg hover:border-black transition-colors cursor-pointer">
+                  <input type="checkbox" className="mt-1 rounded border-gray-300" {...register('latest')} />
+                  <div>
+                    <span className="text-sm font-semibold text-gray-900 block">Latest Arrival</span>
+                    <span className="text-xs text-gray-500">Show in "Latest Arrival Products" section</span>
                   </div>
                 </label>
                 <label className="flex items-start gap-3 p-4 border-2 border-gray-200 rounded-lg hover:border-black transition-colors cursor-pointer">

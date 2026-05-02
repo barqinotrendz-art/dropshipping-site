@@ -22,12 +22,31 @@ const Wishlist: React.FC = () => {
       .filter(Boolean)
   }, [items, allProducts])
 
+  // const handleAddToCart = async (product: any) => {
+  //   const currentPrice = product.discountPrice || product.price
+  //   await addToCart({
+  //     id: product.id,
+  //     name: product.title,
+  //     price: currentPrice,
+  //     image: product.imagePublicIds?.[0],
+  //   })
+  // }
+
   const handleAddToCart = async (product: any) => {
-    const currentPrice = product.discountPrice || product.price
+    const firstTier = product.pricing?.[0]
+
+    const currentPrice =
+      firstTier?.discountPrice ??
+      firstTier?.price ??
+      product.discountPrice ??
+      product.price ??
+      0
+
     await addToCart({
       id: product.id,
       name: product.title,
-      price: currentPrice,
+      price: Number(currentPrice) || 0,
+      pricing: product.pricing || [], // 🔥 CRITICAL
       image: product.imagePublicIds?.[0],
     })
   }
