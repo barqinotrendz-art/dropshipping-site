@@ -7,14 +7,17 @@ import { ShoppingCart, Filter, X } from 'lucide-react'
 import LoadingSpinner from '../components/ui/LoadingSpinner'
 import ProductCard from '../components/ProductCard'
 import ProductPreviewModal from '../components/ProductPreviewModal'
+import { generateCartId } from '../types/index'
+
 
 const ProductsPage: React.FC = () => {
   const [searchParams] = useSearchParams()
   const searchQuery = searchParams.get('search') || ''
-  
+
   const { data: products, isLoading: productsLoading } = useProducts()
   const { data: categories } = useCategories()
-  const { addItem } = useCart()
+  // const { addItem } = useCart()
+  const { addItem, removeItem, items } = useCart()
 
   // Calculate max price from all products
   const maxPrice = useMemo(() => {
@@ -44,7 +47,7 @@ const ProductsPage: React.FC = () => {
     // Search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase()
-      filtered = filtered.filter(p => 
+      filtered = filtered.filter(p =>
         p.title.toLowerCase().includes(query) ||
         p.description?.toLowerCase().includes(query) ||
         p.brand?.toLowerCase().includes(query) ||
@@ -100,30 +103,68 @@ const ProductsPage: React.FC = () => {
   //   })
   // }
 
+  // const handleAddToCart = async (product: any) => {
+  //   const firstTier = product.pricing?.[0]
+
+  //   const currentPrice =
+  //     firstTier?.discountPrice ??
+  //     firstTier?.price ??
+  //     product.discountPrice ??
+  //     product.price ??
+  //     0
+
+  //   console.log('ALL PRODUCTS ADD:', {
+  //     title: product.title,
+  //     finalPrice: currentPrice,
+  //     pricing: product.pricing
+  //   })
+  //   const color =
+  // product.colorVariants?.[0]?.name || 'default'
+
+  //   await addItem({
+  //     // id: product.id,
+  //     id: generateCartId(product.id, color),
+  //     productId: product.id,
+  //     name: product.title,
+  //     price: Number(currentPrice) || 0,
+  //     pricing: product.pricing || [], // 🔥 CRITICAL FIX
+  //     image: product.imagePublicIds?.[0],
+  //   })
+  // }
+
   const handleAddToCart = async (product: any) => {
-  const firstTier = product.pricing?.[0]
+    const firstTier = product.pricing?.[0]
 
-  const currentPrice =
-    firstTier?.discountPrice ??
-    firstTier?.price ??
-    product.discountPrice ??
-    product.price ??
-    0
+    const currentPrice =
+      firstTier?.discountPrice ??
+      firstTier?.price ??
+      product.discountPrice ??
+      product.price ??
+      0
 
-  console.log('ALL PRODUCTS ADD:', {
-    title: product.title,
-    finalPrice: currentPrice,
-    pricing: product.pricing
-  })
+    const color =
+      product.colorVariants?.[0]?.name || 'default'
 
-  await addItem({
-    id: product.id,
-    name: product.title,
-    price: Number(currentPrice) || 0,
-    pricing: product.pricing || [], // 🔥 CRITICAL FIX
-    image: product.imagePublicIds?.[0],
-  })
-}
+    const cartId = generateCartId(product.id, color)
+
+    // TOGGLE LOGIC
+    const existing = items.find(i => i.id === cartId)
+
+    if (existing) {
+      await removeItem(cartId)
+      return
+    }
+
+    await addItem({
+      id: cartId,
+      productId: product.id,
+      name: product.title,
+      price: currentPrice,
+      image: product.imagePublicIds?.[0],
+      pricing: product.pricing,
+      qty: 1
+    })
+  }
 
   if (productsLoading) {
     return (
@@ -165,9 +206,8 @@ const ProductsPage: React.FC = () => {
                 <div className="space-y-2">
                   <button
                     onClick={() => setSelectedCategory('all')}
-                    className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
-                      selectedCategory === 'all' ? 'bg-black text-white' : 'hover:bg-gray-100'
-                    }`}
+                    className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${selectedCategory === 'all' ? 'bg-black text-white' : 'hover:bg-gray-100'
+                      }`}
                   >
                     All Categories
                   </button>
@@ -175,9 +215,8 @@ const ProductsPage: React.FC = () => {
                     <button
                       key={cat.id}
                       onClick={() => setSelectedCategory(cat.id)}
-                      className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
-                        selectedCategory === cat.id ? 'bg-black text-white' : 'hover:bg-gray-100'
-                      }`}
+                      className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${selectedCategory === cat.id ? 'bg-black text-white' : 'hover:bg-gray-100'
+                        }`}
                     >
                       {cat.name}
                     </button>
@@ -204,8 +243,8 @@ const ProductsPage: React.FC = () => {
                 <h3 className="font-semibold text-gray-900 mb-3">Price Range</h3>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-sm text-gray-600">
-                    <span>Rs {priceRange[0]}</span>
-                    <span>Rs {priceRange[1].toLocaleString()}</span>
+                    <span>AED {priceRange[0]}</span>
+                    <span>AED {priceRange[1].toLocaleString()}</span>
                   </div>
                   <input
                     type="range"
@@ -216,7 +255,7 @@ const ProductsPage: React.FC = () => {
                     onChange={(e) => setPriceRange([0, parseInt(e.target.value)])}
                     className="w-full"
                   />
-                  <p className="text-xs text-gray-500">Max: Rs {maxPrice.toLocaleString()}</p>
+                  <p className="text-xs text-gray-500">Max: AED {maxPrice.toLocaleString()}</p>
                 </div>
               </div>
 

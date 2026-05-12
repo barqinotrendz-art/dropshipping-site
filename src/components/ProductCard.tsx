@@ -8,6 +8,7 @@ import toast from 'react-hot-toast'
 import { getCloudinaryUrl } from '../lib/cloudinary'
 import Reusablebtn from './Reusablebtn'
 import './productcard.css'
+import { generateCartId } from '../types'
 type PriceTier = {
   label: string
   price: number
@@ -145,7 +146,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
       : product.discountPrice != null &&
       product.discountPrice < product.price
 
-  const isInCart = cartItems.some(item => item.id === product.id)
+  // const isInCart = cartItems.some(item => item.id === product.id)
+  const defaultCartId = generateCartId(product.id, 'default')
+
+  const isInCart = cartItems.some(
+    item => item.id === defaultCartId
+  )
   const isInWishlist = wishlistItems.some(item => item.productId === product.id)
   const isOutOfStock = !product.stock || product.stock === 0
 
@@ -175,13 +181,32 @@ const ProductCard: React.FC<ProductCardProps> = ({
     }
   }
 
+  // const handleAddToCart = (e: React.MouseEvent) => {
+  //   e.preventDefault()
+  //   e.stopPropagation()
+  //   if (isOutOfStock) {
+  //     toast.error('This product is out of stock')
+  //     return
+  //   }
+  //   onAddToCart(product)
+  // }
+
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
+
+    // Products with variants/colors
+    // must be selected from detail page
+    if ((product.colorVariants?.length ?? 0) > 1) {
+      navigate(`/product/${product.slug}`)
+      return
+    }
+
     if (isOutOfStock) {
       toast.error('This product is out of stock')
       return
     }
+
     onAddToCart(product)
   }
 
@@ -290,7 +315,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
       {/* Product Info */}
       <div className="p-2 sm:p-4">
-        <Link to={`/product/${product.id || product.slug}`} className="block hover:bg-gray-50 rounded-md">
+        <Link to={`/product/${product.slug}`} className="block hover:bg-gray-50 rounded-md">
           <h3 className="font-semibold text-sm sm:text-base text-gray-900 mb-1 sm:mb-0  
           overflow-hidden group-hover:text-black transition-colors h-[45px] product-title">
             {product.title.slice(0, 70)}{product.title.length > 60 ? '...' : ''}

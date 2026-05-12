@@ -14,9 +14,11 @@ import NewsletterSection from '../components/home/NewsletterSection.tsx'
 import ProductPreviewModal from '../components/ProductPreviewModal.tsx'
 import './home.css'
 import Collection from '../components/Collection.tsx'
+import { generateCartId } from '../types/index.ts'
 
 const Home: FC = () => {
-  const { addItem } = useCart()
+  // const { addItem } = useCart()
+  const { addItem, removeItem, items } = useCart()
   const [previewProduct, setPreviewProduct] = useState<any>(null)
 
   // Data fetching
@@ -98,7 +100,9 @@ const Home: FC = () => {
       all: activeProducts
     }
   }, [products, categories])
+
   // Handle add to cart - adapter function to handle type differences
+
   // const handleAddToCart = async (product: { id: string; title: string; price: number; discountPrice?: number; imagePublicIds?: string[] }) => {
   //   const currentPrice = product.discountPrice || product.price
   //   await addItem({
@@ -108,6 +112,30 @@ const Home: FC = () => {
   //     image: product.imagePublicIds?.[0],
   //   })
   // }
+  // const handleAddToCart = async (product: any) => {
+  //   const firstTier = product.pricing?.[0]
+
+  //   const currentPrice =
+  //     firstTier?.discountPrice ??
+  //     firstTier?.price ??
+  //     product.discountPrice ??
+  //     product.price ??
+  //     0
+  //   const color =
+  //     product.colorVariants?.[0]?.name || 'default'
+
+  //   await addItem({
+  //     // id: product.id,
+  //     id: generateCartId(product.id, color),
+  //     productId: product.id,
+  //     name: product.title,
+  //     price: currentPrice,
+  //     image: product.imagePublicIds?.[0],
+  //     pricing: product.pricing, // ✅ ADD THIS
+
+  //   })
+  // }
+
   const handleAddToCart = async (product: any) => {
     const firstTier = product.pricing?.[0]
 
@@ -118,13 +146,27 @@ const Home: FC = () => {
       product.price ??
       0
 
+    const color =
+      product.colorVariants?.[0]?.name || 'default'
+
+    const cartId = generateCartId(product.id, color)
+
+    // TOGGLE LOGIC
+    const existing = items.find(i => i.id === cartId)
+
+    if (existing) {
+      await removeItem(cartId)
+      return
+    }
+
     await addItem({
-      id: product.id,
+      id: cartId,
+      productId: product.id,
       name: product.title,
       price: currentPrice,
       image: product.imagePublicIds?.[0],
-      pricing: product.pricing, // ✅ ADD THIS
-
+      pricing: product.pricing,
+      qty: 1
     })
   }
 
@@ -294,7 +336,7 @@ const Home: FC = () => {
           </div>
         )}
 
-        
+
 
         {/* Fallback: Single Top Selling if no categories */}
         {(!processedProducts?.categoryBasedSections || processedProducts.categoryBasedSections.length === 0) && (

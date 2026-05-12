@@ -1,5 +1,5 @@
 import React from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useProductBySlug } from '../hooks/useProductBySlug'
 import ProductGallery from '../components/ProductGallery'
 import { useCart } from '../hooks/useCart'
@@ -13,6 +13,10 @@ import { type ColorVariant } from '../types'
 import toast from 'react-hot-toast'
 import ErrorPage from '../components/common/ErrorPage'
 import LoadingPage from '../components/common/LoadingPage'
+import { addBusinessDays, formatDate } from '../utils/delivery'
+import { CircleSmall } from 'lucide-react'
+import { type PriceTier } from '../types/index'
+import { generateCartId } from '../types/index'
 
 const ProductDetail: React.FC = () => {
   const { slug } = useParams()
@@ -23,6 +27,22 @@ const ProductDetail: React.FC = () => {
   const { addItem: addToWishlist, items: wishlistItems, remove: removeFromWishlist } = useWishlist()
   const [showReviewForm, setShowReviewForm] = React.useState(false)
   const [selectedColor, setSelectedColor] = React.useState<ColorVariant | null>(null)
+  const [quantity, setQuantity] = React.useState(1)
+  const activeTier = product?.pricing?.[quantity - 1]
+
+  React.useEffect(() => {
+    if (product?.pricing?.length) {
+      setQuantity(1) // default to Buy 1
+    }
+  }, [product])
+
+  console.log("Desc", product?.pricing)
+
+  const today = new Date()
+
+  // UAE delivery estimate: 1 to 3 business days
+  const minDeliveryDate = addBusinessDays(today, 1)
+  const maxDeliveryDate = addBusinessDays(today, 3)
 
   // Handle color variants - must be defined before early returns
   const colorVariants: ColorVariant[] = product?.colorVariants || []
@@ -80,7 +100,7 @@ const ProductDetail: React.FC = () => {
   const publicIds = getAllProductImages()
 
   // const currentPrice = product.discountPrice || product.price
-  const hasDiscount = product.discountPrice && product.discountPrice < product.price
+  // const hasDiscount = product.discountPrice && product.discountPrice < product.price
   const isInWishlist = wishlistItems.some(item => item.productId === product.id)
 
   const firstTier = product.pricing?.[0]
@@ -91,6 +111,14 @@ const ProductDetail: React.FC = () => {
     product.discountPrice ??
     product.price ??
     0
+
+  const originalPrice =
+    firstTier?.price ??
+    product.price ??
+    0
+
+  const hasDiscount = currentPrice < originalPrice
+
 
   const onAddToCart = async () => {
     // Check if color is selected and in stock
@@ -117,14 +145,23 @@ const ProductDetail: React.FC = () => {
       ? selectedColor.images[0]
       : publicIds[0] !== 'cld-sample-5' ? publicIds[0] : 'cld-sample-5'
 
+    const cartId = generateCartId(
+      product.id,
+      product.colorVariants?.[0]?.name
+    )
     await addItem({
-      id: product.id,
+      id: cartId,
+      productId: product.id,
       name: `${product.title}${selectedColor ? ` - ${selectedColor.name}` : ''}`,
-      price: currentPrice,
-        pricing: product.pricing ?? [],   // ✅ ADD THIS
-      qty: 1,
+      // price: currentPrice,
+      price: activeTier?.discountPrice ?? activeTier?.price,
+      pricing: product.pricing ?? [],   // ✅ ADD THIS
+      // qty: 1,
+      qty: quantity,
       image: cartImage,
       maxQty: availableStock,
+      tierLabel: activeTier?.label,
+      replaceQty: true,
     })
   }
 
@@ -174,32 +211,22 @@ const ProductDetail: React.FC = () => {
           />
         </div>
         <div className="space-y-4">
+          <span className="bg-[#c03e35] text-white px-3 py-1 rounded-2xl md:text-sm text-[12px]  font-medium">
+            -{Math.round((1 - currentPrice / originalPrice) * 100)}%
+          </span>
           <div>
-            <h1 className="text-3xl font-semibold">{product.title}</h1>
-            {product.brand && (
-              <p className="text-lg text-gray-600 mt-1">{product.brand}4</p>
-            )}
+            <h1 className="md:text-3xl text-2xl font-semibold">{product.title}</h1>
+            {/* {product.brand && (
+              <p className="text-lg text-gray-600 mt-1">{product.brand}</p>
+            )} */}
           </div>
-
-          <div className="flex items-center gap-3">
-            <span className="text-2xl font-bold">Rs {currentPrice.toFixed(2)}</span>
-            {hasDiscount && (
-              <>
-                <span className="text-lg text-gray-500 line-through">Rs {product.price.toFixed(2)}</span>
-                <span className="bg-red-100 text-red-700 px-2 py-1 rounded text-sm font-medium">
-                  {Math.round((1 - currentPrice / product.price) * 100)}% OFF
-                </span>
-              </>
-            )}
-          </div>
-
           {product.rating && product.rating > 0 && (
             <div className="flex items-center gap-2">
               <div className="flex items-center">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <span
                     key={star}
-                    className={star <= product.rating! ? 'text-yellow-400' : 'text-gray-300'}
+                    className={`text-[18px] ${star <= (product.rating ?? 0) ? 'text-[#ff9c05]' : 'text-gray-300'} `}
                   >
                     ★
                   </span>
@@ -210,6 +237,173 @@ const ProductDetail: React.FC = () => {
               </span>
             </div>
           )}
+
+          <div className="flex items-center md:gap-3 gap-2">
+            <span className="lg:text-2xl md:text-[18px] text-[16px] text-[#c03e35] font-bold">{currentPrice.toFixed(2)} AED</span>
+            {/* {hasDiscount && (
+              <>
+                <span className="text-lg text-gray-500 line-through">AED {currentPrice.toFixed(2)}</span>
+                <span className="bg-red-100 text-red-700 px-2 py-1 rounded text-sm font-medium">
+                  {Math.round((1 - currentPrice / product.price) * 100)}% OFF
+                </span>
+              </>
+            )} */}
+            {hasDiscount && (
+              <>
+                <span className="lg:text-lg md:text-[16px] text-[14px] font-semibold text-gray-500 line-through">
+                  {originalPrice.toFixed(2)} AED
+                </span>
+
+                <span className="text-[#c03e35] px-2 py-1 rounded lg:text-lg md:text-[16px] text-[14px]  font-semibold">
+                  Save {(Math.round((originalPrice - currentPrice) * 100) / 100).toFixed(2)} AED
+                </span>
+              </>
+            )}
+          </div>
+          <div>
+            <p className='text-gray-800 text-[14px]'>
+              Free <Link to={'/shipping'} className='underline font-medium'>shipping</Link> across UAE
+            </p>
+          </div>
+          {/* Esyimated delivery time  */}
+
+
+          <div className='border border-gray-100 rounded w-full max-w-lg'>
+            <p className='text-gray-700 py-3 ps-2'>
+              <span className='font-semibold text-black'>
+                {formatDate(minDeliveryDate)} to {formatDate(maxDeliveryDate)}
+              </span>{' '}
+              Estimated Delivery
+            </p>
+          </div>
+
+          {/* inStock & ready to ship  */}
+
+          <div className="flex items-center gap-3 ps-1.5">
+            <span className="relative flex h-3 w-3">
+
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-600 opacity-75"></span>
+
+              <span className="relative inline-flex h-3 w-3 items-center justify-center rounded-full bg-[#14854e]">
+
+                <span className="h-1.5 w-1.5 rounded-full bg-white"></span>
+
+              </span>
+            </span>
+
+            <span className="text-[16px] font-medium text-green-700 mb-[2px]">
+              In Stock and ready to ship
+            </span>
+          </div>
+
+          {/* Hurry up Emergency text */}
+
+          {/* <div>
+            <p className='text-medium font-medium text-gray-600'>
+              Hurry up! Only 2 items left in stock
+            </p>
+          </div> */}
+
+          <div className="w-full max-w-lg">
+
+            <p className="mb-3 text-md font-medium text-gray-600">
+              Hurry up! Only 2 items left in stock
+            </p>
+
+            <div className="h-[5px] w-full rounded-full bg-gray-200">
+              <div className="h-[5px] w-[97%] rounded-full bg-[#c03e35]"></div>
+            </div>
+
+          </div>
+
+          {/* Limited offer tag & save more */}
+
+          <div className='max-w-lg border border-dashed rounded-xl
+           border-[#14854e] flex flex-col justify-center items-center gap-2.5 bg-[#f6faf8] mt-[22px]'>
+
+            <div className='pt-3.5'>
+              <h3 className='text-[#14854e] md:text-lg text-[16px] font-medium'>
+                🔥 Limited Time Offer
+              </h3>
+            </div>
+
+            <div className='pb-3.5'>
+              <p className='md:text-[16px] text-[14px] text-[#14854e] font-medium'>
+                Hurry up and place your order now!
+              </p>
+            </div>
+
+          </div>
+
+          <div className="max-w-lg relative py-3">
+
+            {/* Line */}
+            <div className="absolute top-1/2 left-0 w-full border-t border border-[#bbc7c5]"></div>
+
+            {/* Center Text */}
+            <div className="relative flex justify-center">
+              <span className="bg-white px-4 text-sm font-medium text-gray-500">
+                Save More !
+              </span>
+            </div>
+
+          </div>
+
+          {/* Tier Pricing  */}
+
+          <div className="space-y-3 max-w-lg">
+            {product && product.pricing?.map((item: PriceTier, i: number) => {
+
+              const isActive = quantity === i + 1
+
+              return (
+                <div
+                  key={i}
+                  onClick={() => setQuantity(i + 1)}
+                  className={`border-2 rounded-xl p-4 flex justify-between items-center`}
+                >
+                  <div>
+                    <div className='flex items-center gap-4 justify-center'>
+                      {isActive ? 'yes' : 'no'}
+                      <CircleSmall />
+                      <div>
+                        <h4 className="font-semibold">
+                          {item.label}
+                        </h4>
+                        <p className="text-sm text-gray-500">
+                          Best for family pack
+                        </p>
+
+                      </div>
+
+                    </div>
+
+
+
+                  </div>
+
+                  <div className="text-right">
+                    <p className="text-xl font-bold text-[#c03e35]">
+                      {/* {tier.discountPrice} AED */}
+                    </p>
+
+                    <p className="text-sm line-through text-gray-400">
+                      {/* {tier.price} AED */}
+                    </p>
+                  </div>
+                </div>
+              )
+            }
+            )}
+          </div>
+          <button
+            onClick={onAddToCart}
+            className="w-full mt-4 px-4 py-3 rounded bg-black text-white font-medium"
+          >
+            Add to Cart — {activeTier?.label} • {activeTier?.discountPrice ?? activeTier?.price} AED
+          </button>
+
+
 
           {/* Color Selector */}
           {colorVariants.length > 0 && (

@@ -5,7 +5,7 @@ import { getCloudinaryUrl } from '../lib/cloudinary'
 import cartIcon from '../assets/empty-cart-svgrepo-com.svg'
 
 const Cart: React.FC = () => {
-  const { items, removeItem, updateQty, clear, loading, getTotal, getItemTotal  } = useCart()
+  const { items, removeItem, updateQty, clear, loading, getTotal, getItemTotal } = useCart()
   const navigate = useNavigate()
 
   //   const getItemTotal = (item:CartItem) => {
@@ -36,6 +36,7 @@ const Cart: React.FC = () => {
     document.documentElement.scrollTop = 0
     document.body.scrollTop = 0
   }, [])
+  console.log(items)
 
   return (
     <div className="space-y-6">
@@ -93,10 +94,18 @@ const Cart: React.FC = () => {
                   {/* Product Details */}
                   <div className="flex-1">
                     <h3 className="font-semibold text-gray-900 mb-1">{i.name}</h3>
-                    <p className="text-lg font-bold text-blue-600">Rs {i.price.toFixed(2)}</p>
+                    <p className="text-lg font-bold text-blue-600">
+                       AED {
+    (
+      i.pricing?.[0]?.discountPrice ??
+      i.pricing?.[0]?.price ??
+      i.price
+    ).toFixed(2)
+  }
+                    </p>
                     <p className="text-sm text-gray-500 mt-1">
-                      {/* Total: Rs {(i.price * i.qty).toFixed(2)}                    */}
-                      Total: Rs {getItemTotal(i).toFixed(2)}
+                      {/* Total: AED {(i.price * i.qty).toFixed(2)}                    */}
+                      Total: AED {getItemTotal(i).toFixed(2)}
                     </p>
                   </div>
 
@@ -142,7 +151,7 @@ const Cart: React.FC = () => {
               <div className="space-y-3 mb-6">
                 <div className="flex justify-between text-gray-600">
                   <span>Subtotal ({items.length} items)</span>
-                  <span className="font-medium">Rs {subtotal.toFixed(2)}</span>
+                  <span className="font-medium">AED {subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-gray-600 text-sm">
                   <span>Shipping</span>
@@ -150,7 +159,7 @@ const Cart: React.FC = () => {
                 </div>
                 <div className="border-t pt-3 flex justify-between text-lg font-bold">
                   <span>Subtotal</span>
-                  <span className="text-blue-600">Rs {subtotal.toFixed(2)}</span>
+                  <span className="text-blue-600">AED {subtotal.toFixed(2)}</span>
                 </div>
               </div>
               <button

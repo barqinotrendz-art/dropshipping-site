@@ -285,7 +285,496 @@
 //   isFirstAuthStateChange = false
 // })
 
+// import { create } from 'zustand'
+// import { persist } from 'zustand/middleware'
+// import type { CartItem } from '../types'
+// import { db, auth } from '../lib/firebase'
+// import { doc, setDoc, onSnapshot } from 'firebase/firestore'
+// import { onAuthStateChanged } from 'firebase/auth'
+// import toast from 'react-hot-toast'
+
+// interface CartState {
+//   items: CartItem[]
+//   loading: boolean
+//   initialized: boolean
+
+//   addItem: (item: Omit<CartItem, 'qty'> & { qty?: number }) => Promise<void>
+//   removeItem: (id: string) => Promise<void>
+//   updateQty: (id: string, qty: number) => Promise<void>
+//   clear: () => Promise<void>
+//   reset: () => Promise<void>
+
+//   getTotal: () => number
+//   getItemCount: () => number
+//   getItemTotal: (item: CartItem) => number
+
+//   syncCart: (userId: string) => void
+//   stopSync: () => void
+// }
+
+// let unsubscribeSnapshot: (() => void) | null = null
+
+// // ✅ MAIN PRICE CALCULATOR (FIXED)
+// const calculateItemTotal = (item: CartItem) => {
+//   const basePrice = Number(item.price) || 0
+
+//   if (!item.pricing || item.pricing.length === 0) {
+//     return basePrice * item.qty
+//   }
+
+//   const tiers = item.pricing
+//     .map((t: any) => ({
+//       qty: parseInt(t.label.match(/\d+/)?.[0] || '0', 10),
+//       price: Number(t.discountPrice ?? t.price) || 0
+//     }))
+//     .filter((t: any) => t.qty > 0)
+//     .sort((a: any, b: any) => b.qty - a.qty) // DESC
+
+//   let remaining = item.qty
+//   let total = 0
+
+//   for (const tier of tiers) {
+//     if (remaining >= tier.qty) {
+//       const count = Math.floor(remaining / tier.qty)
+//       total += count * tier.price
+//       remaining -= count * tier.qty
+//     }
+//   }
+
+//   if (remaining > 0) {
+//     total += remaining * basePrice
+//   }
+
+//   return total
+// }
+
+// // ✅ CART TOTAL
+// const calculateCartTotal = (items: CartItem[]) =>
+//   items.reduce((sum, i) => sum + calculateItemTotal(i), 0)
+
+// export const useCart = create<CartState>((set, get) => ({
+//   items: [],
+//   loading: false,
+//   initialized: false,
+
+//   // ✅ EXPOSE TO UI
+//   getItemTotal: (item) => calculateItemTotal(item),
+
+//   addItem: async (item) => {
+//     set({ loading: true })
+//     try {
+//       const { items } = get()
+//       const existing = items.find(i => i.id === item.id)
+
+//       let newItems: CartItem[]
+
+//       if (existing) {
+//         newItems = items.map(i =>
+//           i.id === item.id
+//             ? { ...i, qty: i.qty + (item.qty || 1) }
+//             : i
+//         )
+//       } else {
+//         newItems = [...items, { ...item, qty: item.qty || 1 }]
+//         toast.success('Added to cart', { duration: 1500 })
+//       }
+
+//       set({ items: newItems })
+
+//       const user = auth.currentUser
+//       if (user) {
+//         await setDoc(doc(db, 'carts', user.uid), {
+//           items: newItems,
+//           total: calculateCartTotal(newItems),
+//           updatedAt: new Date().toISOString()
+//         })
+//       }
+//     } catch (e) {
+//       console.error(e)
+//       toast.error('Cart error')
+//     } finally {
+//       set({ loading: false })
+//     }
+//   },
+
+//   removeItem: async (id) => {
+//     set({ loading: true })
+//     try {
+//       const newItems = get().items.filter(i => i.id !== id)
+//       set({ items: newItems })
+
+//       const user = auth.currentUser
+//       if (user) {
+//         await setDoc(doc(db, 'carts', user.uid), {
+//           items: newItems,
+//           total: calculateCartTotal(newItems),
+//           updatedAt: new Date().toISOString()
+//         })
+//       }
+//     } finally {
+//       set({ loading: false })
+//     }
+//   },
+
+//   updateQty: async (id, qty) => {
+//     if (qty <= 0) return get().removeItem(id)
+
+//     set({ loading: true })
+//     try {
+//       const newItems = get().items.map(i =>
+//         i.id === id ? { ...i, qty } : i
+//       )
+
+//       set({ items: newItems })
+
+//       const user = auth.currentUser
+//       if (user) {
+//         await setDoc(doc(db, 'carts', user.uid), {
+//           items: newItems,
+//           total: calculateCartTotal(newItems),
+//           updatedAt: new Date().toISOString()
+//         })
+//       }
+//     } finally {
+//       set({ loading: false })
+//     }
+//   },
+
+//   clear: async () => {
+//     set({ loading: true })
+//     try {
+//       set({ items: [] })
+
+//       const user = auth.currentUser
+//       if (user) {
+//         await setDoc(doc(db, 'carts', user.uid), {
+//           items: [],
+//           total: 0,
+//           updatedAt: new Date().toISOString()
+//         })
+//       }
+//     } finally {
+//       set({ loading: false })
+//     }
+//   },
+
+//   reset: async () => {
+//     await get().clear()
+//   },
+
+//   // ✅ TOTALS
+//   getTotal: () => {
+//     return calculateCartTotal(get().items)
+//   },
+
+//   getItemCount: () => {
+//     return get().items.reduce((c, i) => c + i.qty, 0)
+//   },
+
+//   // ✅ FIREBASE SYNC
+//   syncCart: (userId) => {
+//     if (unsubscribeSnapshot) unsubscribeSnapshot()
+
+//     const ref = doc(db, 'carts', userId)
+
+//     unsubscribeSnapshot = onSnapshot(ref, async (snap) => {
+//       if (snap.exists()) {
+//         set({ items: snap.data().items || [], initialized: true })
+//       } else {
+//         await setDoc(ref, {
+//           items: [],
+//           total: 0,
+//           createdAt: new Date().toISOString(),
+//           updatedAt: new Date().toISOString()
+//         })
+//         set({ items: [], initialized: true })
+//       }
+//     })
+//   },
+
+//   stopSync: () => {
+//     if (unsubscribeSnapshot) unsubscribeSnapshot()
+//     unsubscribeSnapshot = null
+//     set({ items: [], initialized: false })
+//   }
+// }))
+
+// // ✅ AUTH LISTENER
+// let first = true
+
+// onAuthStateChanged(auth, (user) => {
+//   if (user) {
+//     useCart.getState().syncCart(user.uid)
+//   } else if (!first) {
+//     useCart.getState().stopSync()
+//   }
+//   first = false
+// })
+
+
+// import { create } from 'zustand'
+// import { persist } from 'zustand/middleware'
+// import type { CartItem } from '../types'
+// import { db, auth } from '../lib/firebase'
+// import { doc, setDoc, onSnapshot } from 'firebase/firestore'
+// import { onAuthStateChanged } from 'firebase/auth'
+// import toast from 'react-hot-toast'
+
+// interface CartState {
+//   items: CartItem[]
+//   loading: boolean
+//   initialized: boolean
+
+//   addItem: (item: Omit<CartItem, 'qty'> & { qty?: number }) => Promise<void>
+//   removeItem: (id: string) => Promise<void>
+//   updateQty: (id: string, qty: number) => Promise<void>
+//   clear: () => Promise<void>
+//   reset: () => Promise<void>
+
+//   getTotal: () => number
+//   getItemCount: () => number
+//   getItemTotal: (item: CartItem) => number
+
+//   syncCart: (userId: string) => void
+//   stopSync: () => void
+// }
+
+// let unsubscribeSnapshot: (() => void) | null = null
+
+// // ✅ MAIN PRICE CALCULATOR
+// const calculateItemTotal = (item: CartItem) => {
+//   const basePrice = Number(item.price) || 0
+
+//   if (!item.pricing || item.pricing.length === 0) {
+//     return basePrice * item.qty
+//   }
+
+//   const tiers = item.pricing
+//     .map((t: any) => ({
+//       qty: parseInt(t.label.match(/\d+/)?.[0] || '0', 10),
+//       price: Number(t.discountPrice ?? t.price) || 0
+//     }))
+//     .filter((t: any) => t.qty > 0)
+//     .sort((a: any, b: any) => b.qty - a.qty)
+
+//   let remaining = item.qty
+//   let total = 0
+
+//   for (const tier of tiers) {
+//     if (remaining >= tier.qty) {
+//       const count = Math.floor(remaining / tier.qty)
+//       total += count * tier.price
+//       remaining -= count * tier.qty
+//     }
+//   }
+
+//   if (remaining > 0) {
+//     total += remaining * basePrice
+//   }
+
+//   return total
+// }
+
+// // ✅ CART TOTAL
+// const calculateCartTotal = (items: CartItem[]) =>
+//   items.reduce((sum, i) => sum + calculateItemTotal(i), 0)
+
+// export const useCart = create<CartState>()(
+//   persist(
+//     (set, get) => ({
+//       items: [],
+//       loading: false,
+//       initialized: false,
+
+//       // ✅ EXPOSE TO UI
+//       getItemTotal: (item) => calculateItemTotal(item),
+
+//       addItem: async (item) => {
+//         set({ loading: true })
+
+//         try {
+//           const { items } = get()
+//           const existing = items.find(i => i.id === item.id)
+
+//           let newItems: CartItem[]
+
+//           if (existing) {
+//             newItems = items.map(i =>
+//               i.id === item.id
+//                 ? { ...i, qty: i.qty + (item.qty || 1) }
+//                 : i
+//             )
+//           } else {
+//             newItems = [...items, { ...item, qty: item.qty || 1 }]
+//             toast.success('Added to cart', { duration: 1500 })
+//           }
+
+//           set({ items: newItems })
+
+//           const user = auth.currentUser
+
+//           if (user) {
+//             await setDoc(doc(db, 'carts', user.uid), {
+//               items: newItems,
+//               total: calculateCartTotal(newItems),
+//               updatedAt: new Date().toISOString()
+//             })
+//           }
+//         } catch (e) {
+//           console.error(e)
+//           toast.error('Cart error')
+//         } finally {
+//           set({ loading: false })
+//         }
+//       },
+
+//       removeItem: async (id) => {
+//         set({ loading: true })
+
+//         try {
+//           const newItems = get().items.filter(i => i.id !== id)
+
+//           set({ items: newItems })
+
+//           const user = auth.currentUser
+
+//           if (user) {
+//             await setDoc(doc(db, 'carts', user.uid), {
+//               items: newItems,
+//               total: calculateCartTotal(newItems),
+//               updatedAt: new Date().toISOString()
+//             })
+//           }
+//         } finally {
+//           set({ loading: false })
+//         }
+//       },
+
+//       updateQty: async (id, qty) => {
+//         if (qty <= 0) return get().removeItem(id)
+
+//         set({ loading: true })
+
+//         try {
+//           const newItems = get().items.map(i =>
+//             i.id === id ? { ...i, qty } : i
+//           )
+
+//           set({ items: newItems })
+
+//           const user = auth.currentUser
+
+//           if (user) {
+//             await setDoc(doc(db, 'carts', user.uid), {
+//               items: newItems,
+//               total: calculateCartTotal(newItems),
+//               updatedAt: new Date().toISOString()
+//             })
+//           }
+//         } finally {
+//           set({ loading: false })
+//         }
+//       },
+
+//       clear: async () => {
+//         set({ loading: true })
+
+//         try {
+//           set({ items: [] })
+
+//           const user = auth.currentUser
+
+//           if (user) {
+//             await setDoc(doc(db, 'carts', user.uid), {
+//               items: [],
+//               total: 0,
+//               updatedAt: new Date().toISOString()
+//             })
+//           }
+//         } finally {
+//           set({ loading: false })
+//         }
+//       },
+
+//       reset: async () => {
+//         await get().clear()
+//       },
+
+//       // ✅ TOTALS
+//       getTotal: () => {
+//         return calculateCartTotal(get().items)
+//       },
+
+//       getItemCount: () => {
+//         return get().items.reduce((c, i) => c + i.qty, 0)
+//       },
+
+//       // ✅ FIREBASE SYNC
+//       syncCart: (userId) => {
+//         if (unsubscribeSnapshot) unsubscribeSnapshot()
+
+//         const ref = doc(db, 'carts', userId)
+
+//         unsubscribeSnapshot = onSnapshot(ref, async (snap) => {
+//           if (snap.exists()) {
+//             const firestoreItems = snap.data().items || []
+
+//             set({
+//               items: firestoreItems,
+//               initialized: true
+//             })
+//           } else {
+//             await setDoc(ref, {
+//               items: [],
+//               total: 0,
+//               createdAt: new Date().toISOString(),
+//               updatedAt: new Date().toISOString()
+//             })
+
+//             set({
+//               items: [],
+//               initialized: true
+//             })
+//           }
+//         })
+//       },
+
+//       stopSync: () => {
+//         if (unsubscribeSnapshot) unsubscribeSnapshot()
+
+//         unsubscribeSnapshot = null
+
+//         set({
+//           items: [],
+//           initialized: false
+//         })
+//       }
+//     }),
+//     {
+//       name: 'cart-storage',
+
+//       partialize: (state) => ({
+//         items: state.items
+//       })
+//     }
+//   )
+// )
+
+// // ✅ AUTH LISTENER
+// let first = true
+
+// onAuthStateChanged(auth, (user) => {
+//   if (user) {
+//     useCart.getState().syncCart(user.uid)
+//   } else if (!first) {
+//     useCart.getState().stopSync()
+//   }
+
+//   first = false
+// })
+
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 import type { CartItem } from '../types'
 import { db, auth } from '../lib/firebase'
 import { doc, setDoc, onSnapshot } from 'firebase/firestore'
@@ -297,7 +786,13 @@ interface CartState {
   loading: boolean
   initialized: boolean
 
-  addItem: (item: Omit<CartItem, 'qty'> & { qty?: number }) => Promise<void>
+  addItem: (
+    item: Omit<CartItem, 'qty'> & {
+      qty?: number
+      replaceQty?: boolean
+    }
+  ) => Promise<void>
+
   removeItem: (id: string) => Promise<void>
   updateQty: (id: string, qty: number) => Promise<void>
   clear: () => Promise<void>
@@ -313,7 +808,7 @@ interface CartState {
 
 let unsubscribeSnapshot: (() => void) | null = null
 
-// ✅ MAIN PRICE CALCULATOR (FIXED)
+// ✅ MAIN PRICE CALCULATOR
 const calculateItemTotal = (item: CartItem) => {
   const basePrice = Number(item.price) || 0
 
@@ -327,7 +822,7 @@ const calculateItemTotal = (item: CartItem) => {
       price: Number(t.discountPrice ?? t.price) || 0
     }))
     .filter((t: any) => t.qty > 0)
-    .sort((a: any, b: any) => b.qty - a.qty) // DESC
+    .sort((a: any, b: any) => b.qty - a.qty)
 
   let remaining = item.qty
   let total = 0
@@ -335,7 +830,9 @@ const calculateItemTotal = (item: CartItem) => {
   for (const tier of tiers) {
     if (remaining >= tier.qty) {
       const count = Math.floor(remaining / tier.qty)
+
       total += count * tier.price
+
       remaining -= count * tier.qty
     }
   }
@@ -351,152 +848,275 @@ const calculateItemTotal = (item: CartItem) => {
 const calculateCartTotal = (items: CartItem[]) =>
   items.reduce((sum, i) => sum + calculateItemTotal(i), 0)
 
-export const useCart = create<CartState>((set, get) => ({
-  items: [],
-  loading: false,
-  initialized: false,
+export const useCart = create<CartState>()(
+  persist(
+    (set, get) => ({
+      items: [],
+      loading: false,
+      initialized: false,
 
-  // ✅ EXPOSE TO UI
-  getItemTotal: (item) => calculateItemTotal(item),
+      // ✅ EXPOSE TO UI
+      getItemTotal: (item) => calculateItemTotal(item),
 
-  addItem: async (item) => {
-    set({ loading: true })
-    try {
-      const { items } = get()
-      const existing = items.find(i => i.id === item.id)
+      // ✅ ADD ITEM
+      // addItem: async (item) => {
+      //   set({ loading: true })
 
-      let newItems: CartItem[]
+      //   try {
+      //     const { items } = get()
 
-      if (existing) {
-        newItems = items.map(i =>
-          i.id === item.id
-            ? { ...i, qty: i.qty + (item.qty || 1) }
-            : i
-        )
-      } else {
-        newItems = [...items, { ...item, qty: item.qty || 1 }]
-        toast.success('Added to cart', { duration: 1500 })
-      }
+      //     const existing = items.find(i => i.id === item.id)
 
-      set({ items: newItems })
+      //     let newItems: CartItem[]
 
-      const user = auth.currentUser
-      if (user) {
-        await setDoc(doc(db, 'carts', user.uid), {
-          items: newItems,
-          total: calculateCartTotal(newItems),
-          updatedAt: new Date().toISOString()
+      //     if (existing) {
+      //       newItems = items.map(i => {
+      //         if (i.id !== item.id) return i
+
+      //         return {
+      //           ...i,
+      //           ...item,
+
+      //           // ✅ Replace qty for ProductDetail tiers
+      //           // ✅ Increment qty for normal Add To Cart
+      //           qty: item.replaceQty
+      //             ? (item.qty || 1)
+      //             : i.qty + (item.qty || 1)
+      //         }
+      //       })
+      //     } else {
+      //       newItems = [
+      //         ...items,
+      //         {
+      //           ...item,
+      //           qty: item.qty || 1
+      //         }
+      //       ]
+
+      //       toast.success('Added to cart', {
+      //         duration: 1500
+      //       })
+      //     }
+
+      //     set({ items: newItems })
+
+      //     const user = auth.currentUser
+
+      //     if (user) {
+      //       await setDoc(doc(db, 'carts', user.uid), {
+      //         items: newItems,
+      //         total: calculateCartTotal(newItems),
+      //         updatedAt: new Date().toISOString()
+      //       })
+      //     }
+      //   } catch (e) {
+      //     console.error(e)
+      //     toast.error('Cart error')
+      //   } finally {
+      //     set({ loading: false })
+      //   }
+      // },
+
+      addItem: async (item) => {
+        set({ loading: true })
+
+        try {
+          const { items } = get()
+
+          const existing = items.find(i => i.id === item.id)
+
+          let newItems: CartItem[]
+
+          if (existing) {
+            newItems = items.map(i => {
+              if (i.id !== item.id) return i
+
+              return {
+                ...i,
+                ...item,
+
+                // IMPORTANT FIX
+                qty: item.replaceQty
+                  ? (item.qty ?? 1)
+                  : i.qty + (item.qty ?? 1),
+              }
+            })
+          } else {
+            newItems = [
+              ...items,
+              {
+                ...item,
+                qty: item.qty ?? 1
+              }
+            ]
+
+            toast.success('Added to cart', {
+              duration: 1500
+            })
+          }
+
+          set({ items: newItems })
+
+          const user = auth.currentUser
+
+          if (user) {
+            await setDoc(doc(db, 'carts', user.uid), {
+              items: newItems,
+              total: calculateCartTotal(newItems),
+              updatedAt: new Date().toISOString()
+            })
+          }
+        } catch (e) {
+          console.error(e)
+          toast.error('Cart error')
+        } finally {
+          set({ loading: false })
+        }
+      },
+
+      // ✅ REMOVE ITEM
+      removeItem: async (id) => {
+        set({ loading: true })
+
+        try {
+          const newItems = get().items.filter(i => i.id !== id)
+
+          set({ items: newItems })
+
+          const user = auth.currentUser
+
+          if (user) {
+            await setDoc(doc(db, 'carts', user.uid), {
+              items: newItems,
+              total: calculateCartTotal(newItems),
+              updatedAt: new Date().toISOString()
+            })
+          }
+        } finally {
+          set({ loading: false })
+        }
+      },
+
+      // ✅ UPDATE QTY
+      updateQty: async (id, qty) => {
+        if (qty <= 0) {
+          return get().removeItem(id)
+        }
+
+        set({ loading: true })
+
+        try {
+          const newItems = get().items.map(i =>
+            i.id === id
+              ? { ...i, qty }
+              : i
+          )
+
+          set({ items: newItems })
+
+          const user = auth.currentUser
+
+          if (user) {
+            await setDoc(doc(db, 'carts', user.uid), {
+              items: newItems,
+              total: calculateCartTotal(newItems),
+              updatedAt: new Date().toISOString()
+            })
+          }
+        } finally {
+          set({ loading: false })
+        }
+      },
+
+      // ✅ CLEAR CART
+      clear: async () => {
+        set({ loading: true })
+
+        try {
+          set({ items: [] })
+
+          const user = auth.currentUser
+
+          if (user) {
+            await setDoc(doc(db, 'carts', user.uid), {
+              items: [],
+              total: 0,
+              updatedAt: new Date().toISOString()
+            })
+          }
+        } finally {
+          set({ loading: false })
+        }
+      },
+
+      reset: async () => {
+        await get().clear()
+      },
+
+      // ✅ TOTALS
+      getTotal: () => {
+        return calculateCartTotal(get().items)
+      },
+
+      getItemCount: () => {
+        return get().items.reduce((c, i) => c + i.qty, 0)
+      },
+
+      // ✅ FIREBASE SYNC
+      syncCart: (userId) => {
+        if (unsubscribeSnapshot) {
+          unsubscribeSnapshot()
+        }
+
+        const ref = doc(db, 'carts', userId)
+
+        unsubscribeSnapshot = onSnapshot(ref, async (snap) => {
+          if (snap.exists()) {
+            const firestoreItems = snap.data().items || []
+
+            set({
+              items: firestoreItems,
+              initialized: true
+            })
+          } else {
+            await setDoc(ref, {
+              items: [],
+              total: 0,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString()
+            })
+
+            set({
+              items: [],
+              initialized: true
+            })
+          }
         })
-      }
-    } catch (e) {
-      console.error(e)
-      toast.error('Cart error')
-    } finally {
-      set({ loading: false })
-    }
-  },
+      },
 
-  removeItem: async (id) => {
-    set({ loading: true })
-    try {
-      const newItems = get().items.filter(i => i.id !== id)
-      set({ items: newItems })
+      // ✅ STOP SYNC
+      stopSync: () => {
+        if (unsubscribeSnapshot) {
+          unsubscribeSnapshot()
+        }
 
-      const user = auth.currentUser
-      if (user) {
-        await setDoc(doc(db, 'carts', user.uid), {
-          items: newItems,
-          total: calculateCartTotal(newItems),
-          updatedAt: new Date().toISOString()
-        })
-      }
-    } finally {
-      set({ loading: false })
-    }
-  },
+        unsubscribeSnapshot = null
 
-  updateQty: async (id, qty) => {
-    if (qty <= 0) return get().removeItem(id)
-
-    set({ loading: true })
-    try {
-      const newItems = get().items.map(i =>
-        i.id === id ? { ...i, qty } : i
-      )
-
-      set({ items: newItems })
-
-      const user = auth.currentUser
-      if (user) {
-        await setDoc(doc(db, 'carts', user.uid), {
-          items: newItems,
-          total: calculateCartTotal(newItems),
-          updatedAt: new Date().toISOString()
-        })
-      }
-    } finally {
-      set({ loading: false })
-    }
-  },
-
-  clear: async () => {
-    set({ loading: true })
-    try {
-      set({ items: [] })
-
-      const user = auth.currentUser
-      if (user) {
-        await setDoc(doc(db, 'carts', user.uid), {
+        set({
           items: [],
-          total: 0,
-          updatedAt: new Date().toISOString()
+          initialized: false
         })
       }
-    } finally {
-      set({ loading: false })
+    }),
+    {
+      name: 'cart-storage',
+
+      partialize: (state) => ({
+        items: state.items
+      })
     }
-  },
-
-  reset: async () => {
-    await get().clear()
-  },
-
-  // ✅ TOTALS
-  getTotal: () => {
-    return calculateCartTotal(get().items)
-  },
-
-  getItemCount: () => {
-    return get().items.reduce((c, i) => c + i.qty, 0)
-  },
-
-  // ✅ FIREBASE SYNC
-  syncCart: (userId) => {
-    if (unsubscribeSnapshot) unsubscribeSnapshot()
-
-    const ref = doc(db, 'carts', userId)
-
-    unsubscribeSnapshot = onSnapshot(ref, async (snap) => {
-      if (snap.exists()) {
-        set({ items: snap.data().items || [], initialized: true })
-      } else {
-        await setDoc(ref, {
-          items: [],
-          total: 0,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        })
-        set({ items: [], initialized: true })
-      }
-    })
-  },
-
-  stopSync: () => {
-    if (unsubscribeSnapshot) unsubscribeSnapshot()
-    unsubscribeSnapshot = null
-    set({ items: [], initialized: false })
-  }
-}))
+  )
+)
 
 // ✅ AUTH LISTENER
 let first = true
@@ -507,5 +1127,6 @@ onAuthStateChanged(auth, (user) => {
   } else if (!first) {
     useCart.getState().stopSync()
   }
+
   first = false
 })

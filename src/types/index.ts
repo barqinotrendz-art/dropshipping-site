@@ -27,11 +27,14 @@ export interface Address {
 export interface CartItem {
   id: string
   name: string
+  productId?: string   // original product id
   price: number
   qty: number
   image?: string
   maxQty?: number
   pricing?: PriceTier[]  // ✅ ADD THIS LINE
+  tierLabel?: string   // optional but useful
+  color?: string
 
 }
 
@@ -154,4 +157,11 @@ export interface Banner {
   isActive: boolean
   order: number
   createdAt?: Timestamp
+}
+
+export const generateCartId = (
+  productId: string,
+  color?: string
+) => {
+  return `${productId}-${(color || 'default').toLowerCase().trim()}`
 }
