@@ -68,6 +68,8 @@ export interface Product {
   sort?: number
   createdAt?: Timestamp
   updatedAt?: Timestamp
+  descriptionImages?: string[]
+  descriptionVideos?: string[]
 }
 
 export interface Category {

@@ -14,9 +14,13 @@ import toast from 'react-hot-toast'
 import ErrorPage from '../components/common/ErrorPage'
 import LoadingPage from '../components/common/LoadingPage'
 import { addBusinessDays, formatDate } from '../utils/delivery'
-import { CircleSmall } from 'lucide-react'
+// import { CircleSmall } from 'lucide-react'
 import { type PriceTier } from '../types/index'
 import { generateCartId } from '../types/index'
+import './productdetails.css'
+import { getCloudinaryUrl, getCloudinaryVideoUrl } from '../lib/cloudinary'
+import ProductTicker from '../components/ProductTicker'
+import Smartessentialsection from './Smartessentialsection'
 
 const ProductDetail: React.FC = () => {
   const { slug } = useParams()
@@ -36,7 +40,7 @@ const ProductDetail: React.FC = () => {
     }
   }, [product])
 
-  console.log("Desc", product?.pricing)
+  console.log("Desc", product)
 
   const today = new Date()
 
@@ -209,6 +213,18 @@ const ProductDetail: React.FC = () => {
             selectedColor={selectedColor}
             onColorChange={setSelectedColor}
           />
+          <div className='border border-1 w-[100%] h-[450px]'>
+            {product.descriptionVideos?.map((video: string, i: number) => (
+              <video
+                key={i}
+                src={getCloudinaryVideoUrl(video)}
+                controls
+                className="w-full rounded-xl h-[100%]"
+              />
+            ))}
+
+          </div>
+
         </div>
         <div className="space-y-4">
           <span className="bg-[#c03e35] text-white px-3 py-1 rounded-2xl md:text-sm text-[12px]  font-medium">
@@ -351,30 +367,85 @@ const ProductDetail: React.FC = () => {
 
           {/* Tier Pricing  */}
 
-          <div className="space-y-3 max-w-lg">
+          <div className="space-y-5 max-w-lg flex flex-col justify-between">
             {product && product.pricing?.map((item: PriceTier, i: number) => {
 
               const isActive = quantity === i + 1
 
+              console.log(product?.pricing?.[0]?.discountPrice)
+
+              const discountPrice = item.discountPrice ?? item.price
+
+              const normalPrice = product?.pricing?.[0]?.discountPrice * 2
+
+              const thirdTierPrice = product?.pricing?.[0]?.discountPrice * 3
               return (
                 <div
                   key={i}
                   onClick={() => setQuantity(i + 1)}
-                  className={`border-2 rounded-xl p-4 flex justify-between items-center`}
+                  className={`${isActive ? 'ring-1 ring-[#1f473e] border-[#1f473e]' : 'border hover:ring-2 hover:ring-gray-400'} 
+                  border rounded-xl p-6 flex justify-between items-center cursor-pointer`}
                 >
-                  <div>
-                    <div className='flex items-center gap-4 justify-center'>
-                      {isActive ? 'yes' : 'no'}
-                      <CircleSmall />
-                      <div>
-                        <h4 className="font-semibold">
-                          {item.label}
-                        </h4>
-                        <p className="text-sm text-gray-500">
-                          Best for family pack
-                        </p>
+                  <div className='w-full'>
+                    <div className='flex items-center gap-4'>
+                      {/* {isActive ? 'yes' : 'no'} */}
+                      {isActive ?
+                        (<>
+                          <div>
+
+                            <span className="relative flex h-5.5 w-5.5 rounded-full border border-2 border-[#1f473e]">
+
+                              {/* <span className="absolute inline-flex h-full w-full animate-ping rounded-full
+                               bg-green-600 opacity-75"></span> */}
+
+                              <span className="relative inline-flex h-5 w-5 items-center justify-center rounded-full bg-white">
+
+                                <span className="h-3.5 w-3.5 rounded-full bg-[#1f473e]"></span>
+
+                              </span>
+                            </span>
+                          </div>
+
+                        </>)
+                        : (
+                          <>
+                            <div>
+
+                              <span className="relative flex h-5.5 w-5.5">
+
+                                <span className="relative inline-flex h-5 w-5 items-center justify-center rounded-full bg-[#fff]
+                              border-2 border-gray-400">
+
+                                </span>
+                              </span>
+                            </div>
+
+                          </>
+                        )}
+                      {/* <CircleSmall /> */}
+                      <div className='flex justify-between w-full'>
+                        <div className=''>
+                          <h4 className="font-semibold text-xl">
+                            {item.label}
+                          </h4>
+                          <p className="md:text-[16px] text-[14px] text-gray-500">
+                            {i === 0 ? 'Standard price' : i === 1 ? `Extra ${Math.round(((normalPrice - discountPrice) / normalPrice) * 100)}% Off` : `Extra ${Math.round(((thirdTierPrice - discountPrice) / thirdTierPrice) * 100)}% off`}
+                          </p>
+
+                        </div>
+
+                        <div className=''>
+                          <h4 className="font-semibold text-xl">
+                            {item.discountPrice} AED
+                          </h4>
+                          <p className="md:text-[16px] text-[14px] text-gray-500 line-through text-end">
+                            {item.price} AED
+                          </p>
+                        </div>
 
                       </div>
+
+
 
                     </div>
 
@@ -396,33 +467,132 @@ const ProductDetail: React.FC = () => {
             }
             )}
           </div>
-          <button
+          {/* <button
             onClick={onAddToCart}
-            className="w-full mt-4 px-4 py-3 rounded bg-black text-white font-medium"
+            className="w-full max-w-lg mt-4 px-4 py-2 rounded-[20px] bg-black text-white font-medium"
           >
             Add to Cart — {activeTier?.label} • {activeTier?.discountPrice ?? activeTier?.price} AED
+            Add to Cart <span className='ps-2'>{activeTier?.discountPrice ?? activeTier?.price} AED</span>
+
+          </button> */}
+          <button
+            onClick={onAddToCart}
+            className="addcart-liquid-btn w-full max-w-lg mt-4 px-4 py-2 rounded-[20px] font-medium border border-black"
+          >
+            {/* animated bg */}
+            <span className="addcart-liquid-fill"></span>
+
+            {/* content */}
+            <span className="addcart-liquid-content flex items-center justify-center">
+              Add to Cart
+              <span className="ps-2">
+                {activeTier?.discountPrice ?? activeTier?.price} AED
+              </span>
+            </span>
           </button>
+          <div className="max-w-lg flex gap-3">
+            {(() => {
+              const availableStock = product.stock ?? 0
+              const isOutOfStock = availableStock === 0
+              const needsColorSelection = colorVariants.length > 0 && !selectedColor
+
+              return (
+                <>
+                  {/* <button
+                    className={`flex-1 px-4 py-3 rounded font-medium transition-colors ${isOutOfStock || needsColorSelection
+                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      : 'bg-black text-white hover:bg-gray-800'
+                      }`}
+                    onClick={onAddToCart}
+                    disabled={isOutOfStock || needsColorSelection}
+                  >
+                    {isOutOfStock ? 'Out of Stock' : needsColorSelection ? 'Select Color' : 'Add to Cart'}
+                  </button> */}
+                  {/* <button
+                    className={`flex-1 px-4 py-2 rounded-[20px] font-medium border transition-colors transition-all duration-500
+                       ${isOutOfStock || needsColorSelection
+                      ? 'border-gray-300 text-gray-500 cursor-not-allowed'
+                      : 'border-[#1f473e] text-[#1f473e] hover:bg-[#1f473e] hover:text-white '
+                      }`}
+                    onClick={onBuyNow}
+                    disabled={isOutOfStock || needsColorSelection}
+                  >
+                    {isOutOfStock ? 'Out of Stock' : needsColorSelection ? 'Select Color' : 'Buy Now'}
+                  </button> */}
+                  <button
+                    className={`relative overflow-hidden flex-1 px-4 py-2 rounded-[20px] font-medium border transition-colors duration-500 group
+    ${isOutOfStock || needsColorSelection
+                        ? 'border-gray-300 text-gray-500 cursor-not-allowed'
+                        : 'border-[#1f473e] text-[#1f473e]'
+                      }`}
+                    onClick={onBuyNow}
+                    disabled={isOutOfStock || needsColorSelection}
+                  >
+                    {/* Hover Background */}
+                    {!isOutOfStock && !needsColorSelection && (
+                      <span className="absolute inset-0 bg-[#1f473e] origin-bottom scale-y-0 transition-transform duration-500 group-hover:scale-y-100 z-0"></span>
+                    )}
+
+                    {/* Button Text */}
+                    <span className="relative z-10 group-hover:text-white transition-colors duration-500">
+                      {isOutOfStock
+                        ? 'Out of Stock'
+                        : needsColorSelection
+                          ? 'Select Color'
+                          : 'Buy Now'}
+                    </span>
+                  </button>
+                </>
+              )
+            })()}
+            <button
+              className={`px-4 py-2 border rounded ${isInWishlist ? 'bg-red-50 border-red-300 text-red-700' : 'border-gray-300'}`}
+              onClick={toggleWishlist}
+            >
+              {isInWishlist ? '♥' : '♡'}
+            </button>
+          </div>
+
 
 
 
           {/* Color Selector */}
-          {colorVariants.length > 0 && (
-            <ColorSelector
-              variants={colorVariants}
-              selectedColor={selectedColor}
-              onColorChange={setSelectedColor}
-              className="py-2"
-            />
-          )}
+          {
+            colorVariants.length > 0 && (
+              <ColorSelector
+                variants={colorVariants}
+                selectedColor={selectedColor}
+                onColorChange={setSelectedColor}
+                className="py-2"
+              />
+            )
+          }
 
-          {product.description && (
-            <div>
-              <h3 className="font-medium mb-2">Description</h3>
-              <p className="text-gray-700 leading-relaxed">{product.description}</p>
-            </div>
-          )}
+          {
+            product.description && (
+              <div>
+                <h3 className="font-medium mb-2">Description</h3>
+                <p className="text-gray-700 leading-relaxed" dangerouslySetInnerHTML={{ __html: product.description }} />
+                {/* {product.description} */}
+                {/* </p> */}
+              </div>
+            )
+          }
+          <div>
 
-          <div className="text-sm text-gray-600">
+            {product.descriptionImages?.map((img: string, i: number) => (
+              <img
+                key={i}
+                src={getCloudinaryUrl(img, 1200, 1200)}
+                alt=""
+                className="w-full h-[450px] rounded-xl my-4"
+              />
+            ))}
+          </div>
+
+
+
+          {/* <div className="text-sm text-gray-600">
             <div>SKU: {product.sku || 'N/A'}</div>
             <div>
               Stock: {selectedColor ? selectedColor.stock : product.stock ?? 0} units available
@@ -430,22 +600,25 @@ const ProductDetail: React.FC = () => {
                 <span className="text-red-600 ml-2">• Out of stock</span>
               )}
             </div>
-          </div>
+          </div> */}
 
-          {product.tags && product.tags.length > 0 && (
-            <div>
-              <h3 className="font-medium mb-2">Tags</h3>
-              <div className="flex flex-wrap gap-2">
-                {product.tags.map((tag, index) => (
-                  <span key={index} className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-sm">
-                    {tag}
-                  </span>
-                ))}
+          {
+            product.tags && product.tags.length > 0 && (
+              <div>
+                <h3 className="font-medium mb-2">Tags</h3>
+                <div className="flex flex-wrap gap-2">
+                  {product.tags.map((tag, index) => (
+                    <span key={index} className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-sm">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            )
+          }
 
-          <div className="flex gap-3">
+
+          {/* <div className="flex gap-3">
             {(() => {
               const availableStock = product.stock ?? 0
               const isOutOfStock = availableStock === 0
@@ -482,12 +655,16 @@ const ProductDetail: React.FC = () => {
             >
               {isInWishlist ? '♥' : '♡'}
             </button>
-          </div>
+          </div> */}
         </div>
       </div>
+      <ProductTicker />
+      <Smartessentialsection />
+
 
       {/* Customer reviews (bottom) - only reviews shown before recommendations */}
       <div className="border-t pt-8">
+
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold">Customer Reviews</h3>
           <button

@@ -52,3 +52,27 @@ export const getUploadUrl = (): string => {
   const cloud = getCloudName();
   return `https://api.cloudinary.com/v1_1/${cloud}/image/upload`;
 };
+
+/**
+ * Generate optimized video URL
+ */
+export const getCloudinaryVideoUrl = (
+  publicId: string
+): string => {
+  if (!publicId) return "";
+
+  if (publicId.startsWith('http')) return publicId;
+
+  const cloud = getCloudName();
+
+  return `https://res.cloudinary.com/${cloud}/video/upload/q_auto,f_auto/${publicId}`;
+};
+
+/**
+ * Video upload endpoint
+ */
+export const getVideoUploadUrl = (): string => {
+  const cloud = getCloudName();
+
+  return `https://api.cloudinary.com/v1_1/${cloud}/video/upload`;
+};

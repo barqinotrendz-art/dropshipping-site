@@ -10,6 +10,7 @@ import Button from '../../components/ui/Button'
 import LoadingSpinner from '../../components/ui/LoadingSpinner'
 import ProductCard from '../../components/admin/ProductCard'
 import ImageUpload from '../../components/ui/ImageUpload'
+import VideoUpload from '../../components/ui/VideoUpload'
 
 type PriceTier = {
   label: string
@@ -29,12 +30,14 @@ type ProductForm = {
   sku?: string
   tags?: string
   active?: boolean
-  latest?:boolean
+  latest?: boolean
   featured?: boolean
   topSelling?: boolean
   imagePublicIds?: string
   attributes?: { [key: string]: any }
   pricing?: PriceTier[]
+  descriptionImages?: string[]
+  descriptionVideos?: string[]
 }
 
 type ColorVariant = {
@@ -97,6 +100,8 @@ const ProductsAdminPage: React.FC = () => {
     images: [],
     stock: 0
   })
+  const [descriptionImages, setDescriptionImages] = useState<string[]>([])
+  const [descriptionVideos, setDescriptionVideos] = useState<string[]>([])
 
   const addColorVariant = () => {
     if (!currentColor.name?.trim()) {
@@ -166,6 +171,8 @@ const ProductsAdminPage: React.FC = () => {
         discountPrice: values.discountPrice ? Number(values.discountPrice) : null,
         categoryId: values.categoryId || null,
         imagePublicIds: productImages.filter(Boolean),
+        descriptionImages: descriptionImages,
+        descriptionVideos: descriptionVideos,
         stock: Number(values.stock || 0),
         sku: values.sku || '',
         tags: (values.tags || '')
@@ -293,6 +300,8 @@ const ProductsAdminPage: React.FC = () => {
       setPricing(product.pricing || [])
       setProductImages(product.imagePublicIds || [])
       setColorVariants(product.colorVariants || [])
+      setDescriptionImages(product.descriptionImages || [])
+      setDescriptionVideos(product.descriptionVideos || [])
     }
   }
 
@@ -300,6 +309,8 @@ const ProductsAdminPage: React.FC = () => {
     setEditingProduct(null)
     setShowAddForm(false)
     setProductImages([])
+    setDescriptionImages([])
+    setDescriptionVideos([])
     setColorVariants([])
     setCurrentColor({ name: '', value: '#000000', images: [], stock: 0 })
     reset({
@@ -314,7 +325,7 @@ const ProductsAdminPage: React.FC = () => {
       tags: '',
       categoryId: undefined,
       active: true,
-      latest:false,
+      latest: false,
       featured: false,
       topSelling: false,
       attributes: {}
@@ -440,6 +451,31 @@ const ProductsAdminPage: React.FC = () => {
                 {...register('description')}
               />
             </div>
+            {/* Description Images */}
+
+            <ImageUpload
+              images={descriptionImages}
+              onImagesChange={(images) => {
+                setDescriptionImages(images)
+                setValue('descriptionImages', images)
+              }}
+              maxImages={10}
+              label="Description Images"
+              showImageNames={true}
+            />
+            
+
+            {/* Description Videos */}
+            <VideoUpload
+              videos={descriptionVideos}
+              onVideosChange={(videos) => {
+                setDescriptionVideos(videos)
+                setValue('descriptionVideos', videos)
+              }}
+              maxVideos={3}
+              label="Description Videos"
+            />
+
             {/* New Pricing */}
             <div className="border-t pt-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Pricing (Multiple)</h3>
@@ -823,7 +859,7 @@ const ProductsAdminPage: React.FC = () => {
                     <span className="text-xs text-gray-500">Visible to customers on the store</span>
                   </div>
                 </label>
-                 <label className="flex items-start gap-3 p-4 border-2 border-gray-200 rounded-lg hover:border-black transition-colors cursor-pointer">
+                <label className="flex items-start gap-3 p-4 border-2 border-gray-200 rounded-lg hover:border-black transition-colors cursor-pointer">
                   <input type="checkbox" className="mt-1 rounded border-gray-300" {...register('latest')} />
                   <div>
                     <span className="text-sm font-semibold text-gray-900 block">Latest Arrival</span>
