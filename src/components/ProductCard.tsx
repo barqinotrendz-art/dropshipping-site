@@ -314,8 +314,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
       </div>
 
       {/* Product Info */}
-      <div className="p-2 sm:p-4">
-        <Link to={`/product/${product.slug}`} className="block hover:bg-gray-50 rounded-md">
+      <div className="p-2 sm:p-4 main-prd">
+        <Link to={`/product/${product.slug}`} className="block hover:bg-gray-50 rounded-md ">
           <h3 className="font-semibold text-sm sm:text-base text-gray-900 mb-1 sm:mb-0  
           overflow-hidden group-hover:text-black transition-colors h-[45px] product-title">
             {product.title.slice(0, 70)}{product.title.length > 60 ? '...' : ''}

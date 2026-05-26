@@ -25,11 +25,13 @@ interface ProductCardProps {
     category: string
     isActive?: boolean
     pricing?: PriceTier[]
+    currency: string,
+    market: string,
   }
 
-  onEdit: (productId: string) => void
+onEdit: (productId: string) => void
   onDelete: (productId: string) => Promise<void>
-  onToggleActive: (productId: string, isActive: boolean) => Promise<void>
+onToggleActive: (productId: string, isActive: boolean) => Promise<void>
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -143,11 +145,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <p className="text-sm text-gray-500 truncate">{product.category}</p>
           <div className="flex gap-2 items-center">
             <p className="text-md font-semibold text-[#c03e35] mt-1">
-              AED {product.pricing?.[0]?.discountPrice}
+              {product.currency} {product.pricing?.[0]?.discountPrice}
 
             </p>
             <p className="text-sm font-semibold text-gray-900 mt-1 line-through">
-              AED {product.pricing?.[0]?.price}
+              {product.currency} {product.pricing?.[0]?.price}
             </p>
           </div>
         </div>

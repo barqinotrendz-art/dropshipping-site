@@ -24,9 +24,11 @@ import {
   X,
   Menu,
   Package,
-  Handbag
+  Handbag,
+  Globe
 } from 'lucide-react'
 import HeaderTicker from './HeaderTicker'
+import { useCountryStore } from '../hooks/useCountryStore'
 
 interface NavItem {
   path: string
@@ -133,6 +135,7 @@ const NavBar: React.FC = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+  const {selectedCountry, setSelectedCountry} = useCountryStore()
   const dropdownRef = useRef<HTMLDivElement>(null)
   const searchRef = useRef<HTMLInputElement>(null)
 
@@ -214,14 +217,14 @@ const NavBar: React.FC = () => {
     { path: `${ADMIN_BASE_PATH}/banners`, label: 'Banners', icon: Image },
   ]
 
-  
+
 
   return (
     <>
-        <HeaderTicker />
+      <HeaderTicker />
       <div className='sticky top-0 z-50'>
         {/* Desktop Header */}
-        <header className="hidden md:block bg-white/95 shadow-xl backdrop-blur-lg border-b border-gray-100">
+        <header className="hidden lg:block bg-white/95 shadow-xl backdrop-blur-lg border-b border-gray-100">
           <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-20">
 
@@ -272,6 +275,22 @@ const NavBar: React.FC = () => {
                 >
                   <Search className="w-5 h-5" />
                 </button>
+
+                {/* Country Selector */}
+                <div className="relative">
+                  <div className="flex items-center gap-2 px-4 py-2 rounded-full border-2 border-gray-200 bg-white shadow-md hover:border-black transition-all duration-300">
+                    <Globe className="w-4 h-4 text-gray-700" />
+
+                    <select
+                      value={selectedCountry}
+                      onChange={(e) => setSelectedCountry(e.target.value)}
+                      className="bg-transparent text-sm font-medium outline-none cursor-pointer"
+                    >
+                      <option value="United Arab Emirates">🇦🇪 UAE</option>
+                      <option value="Saudi Arabia">🇸🇦 Saudi Arabia</option>
+                    </select>
+                  </div>
+                </div>
 
                 {/* User Navigation */}
 
@@ -416,7 +435,7 @@ const NavBar: React.FC = () => {
         )}
 
         {/* Mobile Header + Bottom Nav */}
-        <header className="md:hidden bg-white/95 backdrop-blur-lg sticky top-0 z-40 shadow-lg border-b border-gray-100">
+        <header className="lg:hidden bg-white/95 backdrop-blur-lg sticky top-0 z-40 shadow-lg border-b border-gray-100">
           <div className="px-4 py-3 flex items-center justify-between">
             {/* Menu Button */}
             <button
@@ -443,6 +462,31 @@ const NavBar: React.FC = () => {
             >
               <Search className="w-6 h-6 text-gray-700" />
             </button>
+
+            {/* <div className="flex items-center gap-2"> */}
+            {/* Country Selector */}
+            {/* <div className="flex items-center px-2 py-1 rounded-lg border border-gray-200 bg-white">
+                <Globe className="w-4 h-4 text-gray-600 mr-1" />
+
+                <select
+                  value={selectedCountry}
+                  onChange={(e) => setSelectedCountry(e.target.value)}
+                  className="bg-transparent text-xs font-medium outline-none"
+                >
+                  <option value="UAE">🇦🇪 UAE</option>
+                  <option value="Saudi Arabia">🇸🇦 Saudi Arabia</option>
+                </select>
+              </div> */}
+
+            {/* Search Button */}
+            {/* <button
+                onClick={() => setIsSearchOpen(true)}
+                className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <Search className="w-6 h-6 text-gray-700" />
+              </button> */}
+            {/* </div> */}
+
           </div>
         </header>
 
@@ -451,12 +495,12 @@ const NavBar: React.FC = () => {
           <>
             {/* Overlay */}
             <div
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] md:hidden animate-fadeIn"
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] lg:hidden animate-fadeIn"
               onClick={() => setIsMobileMenuOpen(false)}
             />
 
             {/* Drawer */}
-            <div className="fixed top-0 left-0 bottom-0 w-80 bg-white z-[70] md:hidden shadow-2xl transform transition-transform duration-300">
+            <div className="fixed top-0 left-0 bottom-0 w-80 bg-white z-[70] lg:hidden shadow-2xl transform transition-transform duration-300">
               {/* Drawer Header */}
               <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50">
                 <div className="flex items-center space-x-3">
@@ -475,6 +519,21 @@ const NavBar: React.FC = () => {
 
               {/* Drawer Content */}
               <div className="overflow-y-auto h-[calc(100vh-73px)]">
+                {/* Country Selector */}
+                <div className="p-4 border-b border-gray-200">
+                  <div className="flex items-center gap-3 px-4 py-3 bg-gray-50 rounded-xl">
+                    <Globe className="w-5 h-5 text-gray-700" />
+
+                    <select
+                      value={selectedCountry}
+                      onChange={(e) => setSelectedCountry(e.target.value)}
+                      className="flex-1 bg-transparent outline-none font-medium text-sm"
+                    >
+                      <option value="United Arab Emirates">🇦🇪 United Arab Emirates</option>
+                      <option value="Saudi Arabia">🇸🇦 Saudi Arabia</option>
+                    </select>
+                  </div>
+                </div>
                 {/* Navigation Links */}
                 <div className="p-4 space-y-2">
                   <Link

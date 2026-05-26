@@ -27,12 +27,12 @@ const HeaderTicker = () => {
 
   return (
     <div style={{ backgroundColor: bgColor }} className="py-2 overflow-hidden">
-      <Ticker duration={20}>
+      <Ticker duration={18}>
         {texts.map((text, index) => (
           <div
             key={index}
             style={{
-              margin: "0 30px",
+              margin: "0 110px",
               whiteSpace: "nowrap",
               color: "#fff",
               fontSize: "14px",

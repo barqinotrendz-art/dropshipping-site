@@ -38,6 +38,9 @@ type ProductForm = {
   pricing?: PriceTier[]
   descriptionImages?: string[]
   descriptionVideos?: string[]
+  market?: 'UAE' | 'KSA'
+  country?: string
+  currency?: string
 }
 
 type ColorVariant = {
@@ -65,11 +68,12 @@ const ProductsAdminPage: React.FC = () => {
   const { data: categories, isLoading: categoriesLoading } = useQuery({ queryKey: ['admin-categories'], queryFn: fetchCategories })
 
   const { register, handleSubmit, reset, watch, setValue } = useForm<ProductForm>({
-    defaultValues: { active: true, featured: false, topSelling: false, price: 0, discountPrice: 0, stock: 0 }
+    defaultValues: { active: true, featured: false, topSelling: false, price: 0, discountPrice: 0, stock: 0, market: 'UAE' }
   })
 
   const title = watch('title')
   const selectedCategoryId = watch('categoryId')
+  const selectedMarket = watch('market')
   const computedSlug = slugify(title || '')
 
   // Filter active categories for dropdown
@@ -161,6 +165,10 @@ const ProductsAdminPage: React.FC = () => {
     setIsSubmitting(true)
     toast.loading(isEditing ? 'Updating product...' : 'Adding product...', { id: 'save-product' })
 
+    const country = values.market === 'KSA' ? 'Saudi Arabia' : 'United Arab Emirates'
+
+    const currency = values.market === 'KSA' ? 'SAR' : 'AED'
+
     try {
       const payload = {
         title: values.title.trim(),
@@ -187,6 +195,9 @@ const ProductsAdminPage: React.FC = () => {
         attributes: values.attributes || null,
         updatedAt: serverTimestamp(),
         pricing: pricing,
+        market: values.market || 'UAE',
+        country,
+        currency,
       }
 
       if (isEditing) {
@@ -296,6 +307,7 @@ const ProductsAdminPage: React.FC = () => {
         featured: product.featured || false,
         topSelling: product.topSelling || false,
         attributes: product.attributes || {},
+        market: product.market || 'UAE',
       })
       setPricing(product.pricing || [])
       setProductImages(product.imagePublicIds || [])
@@ -328,7 +340,8 @@ const ProductsAdminPage: React.FC = () => {
       latest: false,
       featured: false,
       topSelling: false,
-      attributes: {}
+      attributes: {},
+      market: 'UAE',
     })
   }
 
@@ -463,7 +476,7 @@ const ProductsAdminPage: React.FC = () => {
               label="Description Images"
               showImageNames={true}
             />
-            
+
 
             {/* Description Videos */}
             <VideoUpload
@@ -550,10 +563,10 @@ const ProductsAdminPage: React.FC = () => {
                     <div key={i} className="flex justify-between items-center p-3 border rounded-lg">
                       <div>
                         <span className="font-medium">{p.label}</span>
-                        <span className="ml-3 line-through">AED {p.price}</span>
+                        <span className="ml-3 line-through">{selectedMarket === 'KSA' ? 'SAR' : 'AED'} {p.price}</span>
                         {p.discountPrice && (
                           <span className="ml-2 text-[#c03e35] font-semibold">
-                            AED {p.discountPrice}
+                            {selectedMarket === 'KSA' ? 'SAR' : 'AED'} {p.discountPrice}
                           </span>
                         )}
                       </div>
@@ -882,6 +895,32 @@ const ProductsAdminPage: React.FC = () => {
                 </label>
               </div>
             </div>
+            {/* Market Selection */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Market / Country
+                </label>
+
+                <select
+                  className="w-full border border-gray-300 rounded-lg px-4 py-3 text-black focus:border-black focus:outline-none"
+                  {...register('market')}
+                >
+                  <option value="UAE">UAE</option>
+                  <option value="KSA">KSA</option>
+                </select>
+              </div>
+
+              <div className="flex items-end">
+                <div className="w-full border border-gray-200 rounded-lg px-4 py-3 bg-gray-50">
+                  <p className="text-sm text-gray-500">Currency</p>
+
+                  <p className="font-semibold text-gray-900">
+                    {selectedMarket === 'KSA' ? 'SAR' : 'AED'}
+                  </p>
+                </div>
+              </div>
+            </div>
 
             {/* Submit */}
             <div className="flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 pt-4 border-t">
@@ -960,7 +999,9 @@ const ProductsAdminPage: React.FC = () => {
                           stock: product.stock || 0,
                           category: category?.name || 'Uncategorized',
                           isActive: product.active !== false,
-                          pricing: product.pricing || []
+                          pricing: product.pricing || [],
+                          currency: product.currency || 'AED',
+                          market: product.market || 'UAE',
                         }}
                         onEdit={handleEdit}
                         onDelete={async (id) => await handleDelete(id, product.title)}
@@ -985,19 +1026,19 @@ const ProductsAdminPage: React.FC = () => {
                               {p.pricing?.[0]?.discountPrice ? (
                                 <>
                                   <span className="text-lg text-green-600 font-semibold">
-                                    AED {p.pricing[0].discountPrice}
+                                    {selectedMarket === 'KSA' ? 'SAR' : 'AED'} {p.pricing[0].discountPrice}
                                   </span>
                                   <span className="text-sm text-gray-500 line-through">
-                                    AED {p.pricing[0].price}
+                                    {selectedMarket === 'KSA' ? 'SAR' : 'AED'} {p.pricing[0].price}
                                   </span>
                                 </>
                               ) : (
                                 <span className="text-lg font-semibold text-gray-900">
-                                  AED {p.pricing?.[0]?.price}
+                                  {selectedMarket === 'KSA' ? 'SAR' : 'AED'} {p.pricing?.[0]?.price}
                                 </span>
                               )}
                               {/* <span className="text-sm font-semibold text-gray-500 line-through">
-                                AED {p.pricing?.[0]?.price}
+                                {selectedMarket === 'KSA' ? 'SAR' : 'AED'} {p.pricing?.[0]?.price}
                               </span> */}
                             </div>
                             <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">

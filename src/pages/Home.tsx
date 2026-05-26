@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { FC } from 'react'
 import { useBanners } from '../hooks/useBanners'
 import { useProducts } from '../hooks/useProducts'
@@ -15,16 +15,19 @@ import ProductPreviewModal from '../components/ProductPreviewModal.tsx'
 import './home.css'
 import Collection from '../components/Collection.tsx'
 import { generateCartId } from '../types/index.ts'
+import { useCountryStore } from '../hooks/useCountryStore.ts'
 
 const Home: FC = () => {
   // const { addItem } = useCart()
   const { addItem, removeItem, items } = useCart()
   const [previewProduct, setPreviewProduct] = useState<any>(null)
+  const [countryLoading, setCountryLoading] = useState(false)
 
   // Data fetching
   const { data: banners, isLoading: bannersLoading, error: bannersError } = useBanners()
   const { data: products, isLoading: productsLoading, error: productsError } = useProducts()
   const { data: categories, isLoading: categoriesLoading, error: categoriesError } = useCategories()
+  const { selectedCountry } = useCountryStore()
 
   // Process products for different sections with category-based grouping
   // const processedProducts = useMemo(() => {
@@ -71,8 +74,18 @@ const Home: FC = () => {
   const processedProducts = useMemo(() => {
     if (!products || products.length === 0) return null
 
+    // const activeProducts = products.filter(
+    //   p => p.active !== false && p.stock && p.stock > 0
+    // )
     const activeProducts = products.filter(
-      p => p.active !== false && p.stock && p.stock > 0
+      p =>
+        p.active !== false &&
+        p.stock &&
+        p.stock > 0 &&
+        (
+          !p.country ||
+          p.country === selectedCountry
+        )
     )
 
     // ✅ GLOBAL SECTIONS (FLAG BASED)
@@ -99,7 +112,17 @@ const Home: FC = () => {
       categoryBasedSections,
       all: activeProducts
     }
-  }, [products, categories])
+  }, [products, categories, selectedCountry])
+
+  useEffect(() => {
+    setCountryLoading(true)
+
+    const timer = setTimeout(() => {
+      setCountryLoading(false)
+    }, 1000)
+
+    return () => clearTimeout(timer)
+  }, [selectedCountry])
 
   // Handle add to cart - adapter function to handle type differences
 
@@ -171,6 +194,9 @@ const Home: FC = () => {
   }
 
   if (bannersLoading && productsLoading && categoriesLoading) {
+    return <LoadingPage message="Loading homepage..." />
+  }
+  if (countryLoading) {
     return <LoadingPage message="Loading homepage..." />
   }
 
