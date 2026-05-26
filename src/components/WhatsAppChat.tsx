@@ -22,7 +22,7 @@ const WhatsAppChat: React.FC = () => {
   };
 
   return (
-    <div className="fixed right-4 bottom-24 sm:right-6 sm:bottom-6 z-50 flex flex-col items-end">
+    <div className="fixed right-4 bottom-24 lg:right-6 lg:bottom-6 z-50 flex flex-col items-end">
       {/* Toggle Message List */}
       {showMessages && (
         <div className="mb-2 bg-white border rounded-lg shadow-lg overflow-hidden w-64 animate-fadeIn">
