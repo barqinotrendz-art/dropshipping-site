@@ -135,7 +135,7 @@ const NavBar: React.FC = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
-  const {selectedCountry, setSelectedCountry} = useCountryStore()
+  const {selectedCountry, setSelectedCountry, hydrateCountry} = useCountryStore()
   const dropdownRef = useRef<HTMLDivElement>(null)
   const searchRef = useRef<HTMLInputElement>(null)
 
@@ -171,6 +171,12 @@ const NavBar: React.FC = () => {
       searchRef.current.focus()
     }
   }, [isSearchOpen])
+
+  /*Country Selector consistency */
+
+  useEffect(() => {
+    hydrateCountry()
+  },[])
 
   /* Filter products based on search query */
   const searchResults = useMemo(() => {
@@ -473,7 +479,7 @@ const NavBar: React.FC = () => {
                   onChange={(e) => setSelectedCountry(e.target.value)}
                   className="bg-transparent text-xs font-medium outline-none"
                 >
-                  <option value="UAE">🇦🇪 UAE</option>
+                  <option value="'United Arab Emirates'">🇦🇪 UAE</option>
                   <option value="Saudi Arabia">🇸🇦 Saudi Arabia</option>
                 </select>
               </div> */}

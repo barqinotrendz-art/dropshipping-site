@@ -27,7 +27,7 @@ const Home: FC = () => {
   const { data: banners, isLoading: bannersLoading, error: bannersError } = useBanners()
   const { data: products, isLoading: productsLoading, error: productsError } = useProducts()
   const { data: categories, isLoading: categoriesLoading, error: categoriesError } = useCategories()
-  const { selectedCountry } = useCountryStore()
+  const { selectedCountry, hasHydrated, hydrateCountry } = useCountryStore()
 
   // Process products for different sections with category-based grouping
   // const processedProducts = useMemo(() => {
@@ -115,6 +115,8 @@ const Home: FC = () => {
   }, [products, categories, selectedCountry])
 
   useEffect(() => {
+    if (!hasHydrated) return
+
     setCountryLoading(true)
 
     const timer = setTimeout(() => {
@@ -122,7 +124,11 @@ const Home: FC = () => {
     }, 1000)
 
     return () => clearTimeout(timer)
-  }, [selectedCountry])
+  }, [selectedCountry, hasHydrated])
+
+  useEffect(() => {
+      hydrateCountry()
+  }, [])
 
   // Handle add to cart - adapter function to handle type differences
 
@@ -196,7 +202,7 @@ const Home: FC = () => {
   if (bannersLoading && productsLoading && categoriesLoading) {
     return <LoadingPage message="Loading homepage..." />
   }
-  if (countryLoading) {
+  if (!hasHydrated || countryLoading) {
     return <LoadingPage message="Loading homepage..." />
   }
 
