@@ -17,6 +17,8 @@ interface Product {
   rating?: number
   reviewCount?: number
   slug?: string
+  currency?: string,
+  market?: string,
 }
 
 interface MobileProductCarouselProps {
@@ -103,11 +105,10 @@ const MobileProductCarousel: FC<MobileProductCarouselProps> = ({
               <button
                 key={index}
                 onClick={() => scrollToPage(index)}
-                className={`transition-all duration-300 rounded-full ${
-                  index === currentIndex
+                className={`transition-all duration-300 rounded-full ${index === currentIndex
                     ? 'bg-black w-6 h-2'
                     : 'bg-gray-300 w-2 h-2'
-                }`}
+                  }`}
                 aria-label={`Go to page ${index + 1}`}
               />
             ))}
@@ -119,4 +120,3 @@ const MobileProductCarousel: FC<MobileProductCarouselProps> = ({
 }
 
 export default MobileProductCarousel
-  

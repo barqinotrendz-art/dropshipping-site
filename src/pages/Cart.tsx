@@ -3,11 +3,15 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useCart } from '../hooks/useCart'
 import { getCloudinaryUrl } from '../lib/cloudinary'
 import cartIcon from '../assets/empty-cart-svgrepo-com.svg'
+import { useCountryStore } from '../hooks/useCountryStore'
 
 const Cart: React.FC = () => {
+  const { selectedCountry } = useCountryStore()
   const { items, removeItem, updateQty, clear, loading, getTotal, getItemTotal } = useCart()
   const navigate = useNavigate()
-
+  const filteredItems = items.filter(
+    item => item.country === selectedCountry
+  )
   //   const getItemTotal = (item:CartItem) => {
   //   if (!item.pricing || item.pricing.length === 0) {
   //     return item.price * item.qty
@@ -27,7 +31,12 @@ const Cart: React.FC = () => {
 
   // const subtotal = items.reduce((sum, i) => sum + i.price * i.qty, 0)
 
-  const subtotal = getTotal()
+  // const subtotal = getTotal()
+
+  const subtotal = filteredItems.reduce(
+    (sum, item) => sum + getItemTotal(item),
+    0
+  )
   // const subtotal = items.reduce((sum, i) => sum + getItemTotal(i), 0)
 
   // Ensure cart page starts at top
@@ -36,7 +45,12 @@ const Cart: React.FC = () => {
     document.documentElement.scrollTop = 0
     document.body.scrollTop = 0
   }, [])
-  console.log(items)
+  console.log(items);
+
+  const currency =
+  selectedCountry === 'Saudi Arabia'
+    ? 'SAR'
+    : 'AED'
 
   return (
     <div className="space-y-6">
@@ -52,10 +66,13 @@ const Cart: React.FC = () => {
 
       <div className="flex items-center justify-between">
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Shopping Cart</h1>
-        <span className="text-sm text-gray-600">{items.length} {items.length === 1 ? 'item' : 'items'}</span>
+        <span className="text-sm text-gray-600">
+          {/* {items.length} {items.length === 1 ? 'item' : 'items'} */}
+          {filteredItems.length} {filteredItems.length === 1 ? 'item' : 'items'}
+        </span>
       </div>
 
-      {items.length === 0 ? (
+      {filteredItems.length === 0 ? (
         <div className="text-center py-12 flex flex-col justify-center items-center bg-white rounded-lg shadow-sm border border-gray-200">
           <div className="text-6xl mb-4 h-48 w-48"><img src={cartIcon} alt="cartIcon" /></div>
           <h2 className="text-xl font-semibold mb-2">Your cart is empty</h2>
@@ -68,7 +85,7 @@ const Cart: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-3">
-            {items.map((i) => (
+            {filteredItems.map((i) => (
               <div key={i.id} className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex flex-col sm:flex-row gap-4">
                   {/* Product Image */}
@@ -95,17 +112,17 @@ const Cart: React.FC = () => {
                   <div className="flex-1">
                     <h3 className="font-semibold text-gray-900 mb-1">{i.name}</h3>
                     <p className="text-lg font-bold text-blue-600">
-                       AED {
-    (
-      i.pricing?.[0]?.discountPrice ??
-      i.pricing?.[0]?.price ??
-      i.price
-    ).toFixed(2)
-  }
+                      {currency} {
+                        (
+                          i.pricing?.[0]?.discountPrice ??
+                          i.pricing?.[0]?.price ??
+                          i.price
+                        ).toFixed(2)
+                      }
                     </p>
                     <p className="text-sm text-gray-500 mt-1">
                       {/* Total: AED {(i.price * i.qty).toFixed(2)}                    */}
-                      Total: AED {getItemTotal(i).toFixed(2)}
+                      Total: {currency} {getItemTotal(i).toFixed(2)}
                     </p>
                   </div>
 
@@ -150,8 +167,9 @@ const Cart: React.FC = () => {
               <h2 className="text-xl font-bold mb-4">Order Summary</h2>
               <div className="space-y-3 mb-6">
                 <div className="flex justify-between text-gray-600">
-                  <span>Subtotal ({items.length} items)</span>
-                  <span className="font-medium">AED {subtotal.toFixed(2)}</span>
+                  {/* <span>Subtotal ({items.length} items)</span> */}
+                  <span>Subtotal ({filteredItems.length} items)</span>
+                  <span className="font-medium">{currency} {subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-gray-600 text-sm">
                   <span>Shipping</span>
@@ -159,7 +177,7 @@ const Cart: React.FC = () => {
                 </div>
                 <div className="border-t pt-3 flex justify-between text-lg font-bold">
                   <span>Subtotal</span>
-                  <span className="text-blue-600">AED {subtotal.toFixed(2)}</span>
+                  <span className="text-blue-600">{currency} {subtotal.toFixed(2)}</span>
                 </div>
               </div>
               <button

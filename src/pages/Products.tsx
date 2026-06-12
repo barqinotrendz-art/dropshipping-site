@@ -8,11 +8,19 @@ import LoadingSpinner from '../components/ui/LoadingSpinner'
 import ProductCard from '../components/ProductCard'
 import ProductPreviewModal from '../components/ProductPreviewModal'
 import { generateCartId } from '../types/index'
+import { useCountryStore } from '../hooks/useCountryStore'
 
 
 const ProductsPage: React.FC = () => {
   const [searchParams] = useSearchParams()
   const searchQuery = searchParams.get('search') || ''
+  const { selectedCountry } = useCountryStore()
+  console.log(selectedCountry, 'all products')
+
+  const currency =
+    selectedCountry === 'Saudi Arabia'
+      ? 'SAR'
+      : 'AED'
 
   const { data: products, isLoading: productsLoading } = useProducts()
   const { data: categories } = useCategories()
@@ -42,7 +50,10 @@ const ProductsPage: React.FC = () => {
     if (!products) return []
 
     // Show all active products (including out of stock)
-    let filtered = products.filter(p => p.active !== false)
+    // let filtered = products.filter(p => p.active !== false)
+    let filtered = products.filter(
+      p => p.active !== false && p.country === selectedCountry
+    )
 
     // Search filter
     if (searchQuery) {
@@ -89,7 +100,7 @@ const ProductsPage: React.FC = () => {
     }
 
     return filtered
-  }, [products, searchQuery, selectedCategory, sortBy, priceRange])
+  }, [products, searchQuery, selectedCategory, sortBy, priceRange, selectedCountry])
 
   // Debug logs removed for production
 
@@ -162,7 +173,10 @@ const ProductsPage: React.FC = () => {
       price: currentPrice,
       image: product.imagePublicIds?.[0],
       pricing: product.pricing,
-      qty: 1
+      qty: 1,
+      currency: product.currency,
+      country: product.country,
+      market: product.market,
     })
   }
 
@@ -243,8 +257,8 @@ const ProductsPage: React.FC = () => {
                 <h3 className="font-semibold text-gray-900 mb-3">Price Range</h3>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-sm text-gray-600">
-                    <span>AED {priceRange[0]}</span>
-                    <span>AED {priceRange[1].toLocaleString()}</span>
+                    <span>{currency} {priceRange[0]}</span>
+                    <span>{currency} {priceRange[1].toLocaleString()}</span>
                   </div>
                   <input
                     type="range"
@@ -255,7 +269,7 @@ const ProductsPage: React.FC = () => {
                     onChange={(e) => setPriceRange([0, parseInt(e.target.value)])}
                     className="w-full"
                   />
-                  <p className="text-xs text-gray-500">Max: AED {maxPrice.toLocaleString()}</p>
+                  <p className="text-xs text-gray-500">Max: {currency} {maxPrice.toLocaleString()}</p>
                 </div>
               </div>
 
@@ -292,6 +306,7 @@ const ProductsPage: React.FC = () => {
                     onAddToCart={handleAddToCart}
                     onPreview={setPreviewProduct}
                     layout="carousel"
+
                   />
                 ))}
               </div>

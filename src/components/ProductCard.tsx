@@ -9,6 +9,7 @@ import { getCloudinaryUrl } from '../lib/cloudinary'
 import Reusablebtn from './Reusablebtn'
 import './productcard.css'
 import { generateCartId } from '../types'
+
 type PriceTier = {
   label: string
   price: number
@@ -34,7 +35,9 @@ interface ProductCardProps {
     brand?: string
     stock?: number
     pricing?: PriceTier[]
-
+    currency?: string,
+    market?: string,
+    country?:string
   }
   showBestsellerTag?: boolean
   onAddToCart: (product: any) => void
@@ -176,7 +179,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
         title: product.title,
         imagePublicId: mainImageId || 'cld-sample-5',
         price: currentPrice,
-        slug: product.slug
+        slug: product.slug,
+        
       })
     }
   }
@@ -318,7 +322,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <Link to={`/product/${product.slug}`} className="block hover:bg-gray-50 rounded-md ">
           <h3 className="font-semibold text-sm sm:text-base text-gray-900 mb-1 sm:mb-0  
           overflow-hidden group-hover:text-black transition-colors h-[45px] product-title">
-            {product.title.slice(0, 70)}{product.title.length > 60 ? '...' : ''}
+            {product.title.slice(0, 70)}{product.title.length > 60 ? '...' : ''}2
           </h3>
 
 
@@ -356,13 +360,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
           {/* Price */}
           <div className="flex flex-col lg:flex-row items-start lg:items-center gap-2 mb-4 overflow-hidden min-h-[40px]">
             <span className="font-semibold text-md text-[#ca5c54]">
-              {currentPrice.toFixed(2)} AED
+              {currentPrice.toFixed(2)} {product.currency || (product.country === 'Saudi Arabia' ? 'SAR' : 'AED')}
             </span>
 
             {hasDiscount ? (
               <span className="text-sm text-gray-500 line-through ">
                 {/* {product.price.toFixed(2)} AED */}
-                {originalPrice.toFixed(2)} AED
+                {originalPrice.toFixed(2)} {product.currency || (product.country === 'Saudi Arabia' ? 'SAR' : 'AED')}
 
               </span>
             ) : (

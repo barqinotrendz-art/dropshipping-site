@@ -49,6 +49,8 @@ export type Product = {
   updatedAt?: Timestamp
   pricing?: PriceTier[]
   country?: string
+  currency?: string
+  market?: string
 }
 
 export function useProducts(opts?: { categoryId?: string | null; limit?: number }) {

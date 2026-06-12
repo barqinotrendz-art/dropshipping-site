@@ -35,6 +35,9 @@ export interface CartItem {
   pricing?: PriceTier[]  // ✅ ADD THIS LINE
   tierLabel?: string   // optional but useful
   color?: string
+  currency?: string
+  country?: string
+  market?: string
 
 }
 
@@ -70,6 +73,10 @@ export interface Product {
   updatedAt?: Timestamp
   descriptionImages?: string[]
   descriptionVideos?: string[]
+  currency?: string,
+  market?: string,
+  country?: string
+
 }
 
 export interface Category {

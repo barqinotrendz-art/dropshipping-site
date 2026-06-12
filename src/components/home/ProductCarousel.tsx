@@ -9,6 +9,8 @@ interface Product {
   title: string
   price: number
   discountPrice?: number
+  currency?: string,
+  market?: string,
   imagePublicIds?: string[]
   colorVariants?: Array<{
     name: string
@@ -19,6 +21,7 @@ interface Product {
   rating?: number
   reviewCount?: number
   slug?: string
+
 }
 
 interface ProductCarouselProps {
@@ -29,6 +32,7 @@ interface ProductCarouselProps {
   showBestsellerTag?: boolean
   onAddToCart: (product: Product) => void
   onPreview?: (product: Product) => void
+
 }
 
 const ProductCarousel: FC<ProductCarouselProps> = ({
@@ -154,6 +158,7 @@ const ProductCarousel: FC<ProductCarouselProps> = ({
                     onAddToCart={onAddToCart}
                     onPreview={onPreview}
                     layout="carousel"
+
                   />
                 </div>
               ))}

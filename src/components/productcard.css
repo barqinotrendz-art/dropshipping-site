@@ -9,14 +9,36 @@
   bottom: 15px;
   left: 0;
   width: 0%;
-  height: 1px; 
-  background-color: currentColor; 
+  height: 1px;
+  background-color: currentColor;
   transition: width 0.3s ease;
 }
 
 .product-title:hover::before,
 .main-prd:hover .product-title::before {
   width: 100%;
+}
+
+@media (max-width: 768px) {
+  .product-title::before {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .product-title {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    background-size: 0% 1px;
+    transition: background-size 0.3s ease;
+  }
+
+  .product-title:hover,
+  .main-prd:hover .product-title {
+    background-size: 100% 1px;
+
+  }
 }
 
 /* .product-title {

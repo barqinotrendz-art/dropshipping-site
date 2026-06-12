@@ -21,10 +21,12 @@ import './productdetails.css'
 import { getCloudinaryUrl, getCloudinaryVideoUrl } from '../lib/cloudinary'
 import ProductTicker from '../components/ProductTicker'
 import Smartessentialsection from './Smartessentialsection'
+import { useCountryStore } from '../hooks/useCountryStore'
 
 const ProductDetail: React.FC = () => {
   const { slug } = useParams()
   const navigate = useNavigate()
+  const { selectedCountry } = useCountryStore()
   const { data: product, isLoading } = useProductBySlug(slug)
   const { addItem } = useCart()
   const { user } = useAuth()
@@ -68,6 +70,27 @@ const ProductDetail: React.FC = () => {
         title="Product Not Found"
         message="The product you're looking for doesn't exist or has been removed from our catalog."
         showRetry={false}
+        showGoHome={true}
+        showGoBack={true}
+      />
+    )
+  }
+
+  console.log('Product Market:', product.market)
+  console.log('Selected Country:', selectedCountry)
+
+  const isWrongMarket = Boolean(
+    product.country &&
+    selectedCountry &&
+    product.country !== selectedCountry
+  )
+
+
+  if (isWrongMarket) {
+    return (
+      <ErrorPage
+        title="Product Unavailable"
+        message={`This product is not available in ${selectedCountry}. Please browse products available in your selected market.`}
         showGoHome={true}
         showGoBack={true}
       />
@@ -125,6 +148,10 @@ const ProductDetail: React.FC = () => {
 
 
   const onAddToCart = async () => {
+    if (isWrongMarket) {
+      toast.error('This product is not available in your selected market')
+      return
+    }
     // Check if color is selected and in stock
     if (colorVariants.length > 0) {
       if (!selectedColor) {
@@ -166,10 +193,17 @@ const ProductDetail: React.FC = () => {
       maxQty: availableStock,
       tierLabel: activeTier?.label,
       replaceQty: true,
+      currency: product.currency,
+      country: product.country,
+      market: product.market,
     })
   }
 
   const onBuyNow = () => {
+    if (isWrongMarket) {
+      toast.error('This product is not available in your selected market')
+      return
+    }
     onAddToCart()
     navigate('/checkout')
   }
@@ -255,7 +289,7 @@ const ProductDetail: React.FC = () => {
           )}
 
           <div className="flex items-center md:gap-3 gap-2">
-            <span className="lg:text-2xl md:text-[18px] text-[16px] text-[#c03e35] font-bold">{currentPrice.toFixed(2)} AED</span>
+            <span className="lg:text-2xl md:text-[18px] text-[16px] text-[#c03e35] font-bold">{currentPrice.toFixed(2)} {product.currency || (product.market === 'Saudi Arabia' ? 'SAR' : 'AED')}</span>
             {/* {hasDiscount && (
               <>
                 <span className="text-lg text-gray-500 line-through">AED {currentPrice.toFixed(2)}</span>
@@ -267,18 +301,18 @@ const ProductDetail: React.FC = () => {
             {hasDiscount && (
               <>
                 <span className="lg:text-lg md:text-[16px] text-[14px] font-semibold text-gray-500 line-through">
-                  {originalPrice.toFixed(2)} AED
+                  {originalPrice.toFixed(2)} {product.currency || (product.country === 'Saudi Arabia' ? 'SAR' : 'AED')}
                 </span>
 
                 <span className="text-[#c03e35] px-2 py-1 rounded lg:text-lg md:text-[16px] text-[14px]  font-semibold">
-                  Save {(Math.round((originalPrice - currentPrice) * 100) / 100).toFixed(2)} AED
+                  Save {(Math.round((originalPrice - currentPrice) * 100) / 100).toFixed(2)} {product.currency || (product.country === 'Saudi Arabia' ? 'SAR' : 'AED')}
                 </span>
               </>
             )}
           </div>
           <div>
             <p className='text-gray-800 text-[14px]'>
-              Free <Link to={'/shipping'} className='underline font-medium'>shipping</Link> across UAE
+              Free <Link to={'/shipping'} className='underline font-medium'>shipping</Link> across UAE | KSA
             </p>
           </div>
           {/* Esyimated delivery time  */}
@@ -436,10 +470,10 @@ const ProductDetail: React.FC = () => {
 
                         <div className=''>
                           <h4 className="font-semibold text-xl">
-                            {item.discountPrice} AED
+                            {item.discountPrice} {product.currency || (product.country === 'Saudi Arabia' ? 'SAR' : 'AED')}
                           </h4>
                           <p className="md:text-[16px] text-[14px] text-gray-500 line-through text-end">
-                            {item.price} AED
+                            {item.price} {product.currency || (product.country === 'Saudi Arabia' ? 'SAR' : 'AED')}
                           </p>
                         </div>
 
@@ -455,11 +489,11 @@ const ProductDetail: React.FC = () => {
 
                   <div className="text-right">
                     <p className="text-xl font-bold text-[#c03e35]">
-                      {/* {tier.discountPrice} AED */}
+                      {/* {tier.discountPrice} {product.currency || (product.country === 'Saudi Arabia' ? 'SAR' : 'AED')} */}
                     </p>
 
                     <p className="text-sm line-through text-gray-400">
-                      {/* {tier.price} AED */}
+                      {/* {tier.price} {product.currency || (product.country === 'Saudi Arabia' ? 'SAR' : 'AED')} */}
                     </p>
                   </div>
                 </div>
@@ -471,8 +505,8 @@ const ProductDetail: React.FC = () => {
             onClick={onAddToCart}
             className="w-full max-w-lg mt-4 px-4 py-2 rounded-[20px] bg-black text-white font-medium"
           >
-            Add to Cart — {activeTier?.label} • {activeTier?.discountPrice ?? activeTier?.price} AED
-            Add to Cart <span className='ps-2'>{activeTier?.discountPrice ?? activeTier?.price} AED</span>
+            Add to Cart — {activeTier?.label} • {activeTier?.discountPrice ?? activeTier?.price} {product.currency || (product.market === 'Saudi Arabia' ? 'SAR' : 'AED')}
+            Add to Cart <span className='ps-2'>{activeTier?.discountPrice ?? activeTier?.price} {product.currency || (product.market === 'Saudi Arabia' ? 'SAR' : 'AED')} </span>
 
           </button> */}
           <button
@@ -486,7 +520,7 @@ const ProductDetail: React.FC = () => {
             <span className="addcart-liquid-content flex items-center justify-center">
               Add to Cart
               <span className="ps-2">
-                {activeTier?.discountPrice ?? activeTier?.price} AED
+                {activeTier?.discountPrice ?? activeTier?.price} {product.currency || (product.market === 'Saudi Arabia' ? 'SAR' : 'AED')}
               </span>
             </span>
           </button>

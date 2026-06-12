@@ -32,6 +32,9 @@ interface Product {
     stock: number
   }>
   pricing?: PriceTier[]
+  currency?:string
+  country?:string
+  market?:string
 }
 
 interface ProductPreviewModalProps {
@@ -131,6 +134,8 @@ const ProductPreviewModal: React.FC<ProductPreviewModalProps> = ({
       })
     }
   }
+
+  console.log(product,'quickview')
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-fadeIn">
@@ -241,16 +246,16 @@ const ProductPreviewModal: React.FC<ProductPreviewModalProps> = ({
               </div> */}
 
               <span className="text-xl font-semibold text-[#c03e35] me-2">
-                Rs {currentPrice.toFixed(2)}
+                {product.currency || (product.country === "Saudi Arabia" ? 'SAR' : 'AED')} {currentPrice.toFixed(2)}
               </span>
 
               {hasDiscount && (
                 <>
-                  <span className="text-xl text-gray-500 line-through">
-                    AED {originalPrice.toFixed(2)}
+                  <span className="text-[16px] font-medium text-gray-500 line-through">
+                    {product.currency || (product.country === "Saudi Arabia" ? 'SAR' : 'AED')} {originalPrice.toFixed(2)}
                   </span>
                   <span className="bg-red-100 text-red-700 px-2 py-1 rounded text-sm font-medium ms-2">
-                    Save AED {(originalPrice - currentPrice).toFixed(2)}
+                    Save {product.currency || (product.country === "Saudi Arabia" ? 'SAR' : 'AED')} {(originalPrice - currentPrice).toFixed(2)}
                   </span>
                 </>
               )}

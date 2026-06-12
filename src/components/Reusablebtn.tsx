@@ -12,7 +12,7 @@ interface Props {
 const Reusablebtn: FC<Props> = ({ text, icon }) => {
   return (
     <div className="reuse-btn">
-      <span className="reuse-content">
+      <span className="reuse-content ">
         {icon}
         {text}
       </span>

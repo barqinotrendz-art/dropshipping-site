@@ -195,7 +195,10 @@ const Home: FC = () => {
       price: currentPrice,
       image: product.imagePublicIds?.[0],
       pricing: product.pricing,
-      qty: 1
+      qty: 1,
+      currency: product.currency,
+      country: product.country,
+      market: product.market,
     })
   }
 
