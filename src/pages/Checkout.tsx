@@ -182,9 +182,9 @@ const Checkout: React.FC = () => {
   // const subtotal = items.reduce((sum: number, item) => sum + (item.price * item.qty), 0)
   // const shipping = getShippingRateForCity(addr.city, shippingRates || [], 300)
   const subtotal = checkoutItems.reduce(
-  (sum, item) => sum + getItemTotal(item),
-  0
-)
+    (sum, item) => sum + getItemTotal(item),
+    0
+  )
   const shipping = 0
   const discount = appliedCoupon?.discount || 0
   const total = Math.max(0, subtotal - discount)
@@ -325,6 +325,11 @@ const Checkout: React.FC = () => {
           price: i.price,
           qty: i.qty,
           image: i.image ? (i.image.startsWith('http') ? i.image : getCloudinaryUrl(i.image, 200, 200)) : null,
+          pricing: i.pricing,
+          tierLabel: i.tierLabel,
+          country: i.country,
+          market: i.market,
+          currency: i.currency
         })),
         totals: { subtotal, shipping, discount, grandTotal: total },
         coupon: appliedCoupon ? {
@@ -374,7 +379,7 @@ const Checkout: React.FC = () => {
 
       setError(errorMessage)
       toast.error(errorMessage, { id: 'checkout' })
-    } 
+    }
     finally {
       setSubmitting(false)
     }
@@ -650,7 +655,7 @@ const Checkout: React.FC = () => {
                           <p className="text-xs text-gray-500 mt-1">Qty: {item.qty}</p>
                         </div>
                         <div className="text-sm font-semibold text-gray-900">
-                          {item.currency} {(subtotal).toFixed(2)}
+                          {item.currency} {(item.price).toFixed(2)}
                         </div>
                       </div>
                     )
