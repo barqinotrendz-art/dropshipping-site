@@ -5,7 +5,7 @@ import { doc, setDoc, serverTimestamp, collection, Timestamp, getDoc } from 'fir
 import { db } from '../lib/firebase'
 import { useNavigate, Link } from 'react-router-dom'
 import { useCoupons, type Coupon } from '../hooks/useCoupons'
-import { useShippingRates } from '../hooks/useShippingRates'
+// import { useShippingRates } from '../hooks/useShippingRates'
 // import { usePaymentSettings } from '../hooks/usePaymentSettings'
 import { getCloudinaryUrl } from '../lib/cloudinary'
 import { AdvancedImage } from '@cloudinary/react'
