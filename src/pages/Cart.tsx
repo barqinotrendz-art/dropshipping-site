@@ -7,7 +7,7 @@ import { useCountryStore } from '../hooks/useCountryStore'
 
 const Cart: React.FC = () => {
   const { selectedCountry } = useCountryStore()
-  const { items, removeItem, updateQty, clear, loading, getTotal, getItemTotal } = useCart()
+  const { items, removeItem, updateQty, clear, loading, getItemTotal } = useCart()
   const navigate = useNavigate()
   const filteredItems = items.filter(
     item => item.country === selectedCountry

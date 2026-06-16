@@ -5,7 +5,7 @@ import { doc, setDoc, serverTimestamp, collection, Timestamp, getDoc } from 'fir
 import { db } from '../lib/firebase'
 import { useNavigate, Link } from 'react-router-dom'
 import { useCoupons, type Coupon } from '../hooks/useCoupons'
-import { useShippingRates, getShippingRateForCity } from '../hooks/useShippingRates'
+import { useShippingRates } from '../hooks/useShippingRates'
 // import { usePaymentSettings } from '../hooks/usePaymentSettings'
 import { getCloudinaryUrl } from '../lib/cloudinary'
 import { AdvancedImage } from '@cloudinary/react'
@@ -124,8 +124,8 @@ const CouponInput: React.FC<{
 const Checkout: React.FC = () => {
   const { user } = useAuth()
   const navigate = useNavigate()
-  const { items, clear, removeItem, getItemTotal } = useCart()
-  const { data: shippingRates } = useShippingRates()
+  const { items, removeItem, getItemTotal } = useCart()
+  // const { data: shippingRates } = useShippingRates()
   // const { data: paymentSettings, isLoading: isLoadingPayment } = usePaymentSettings()
   const { selectedCountry } = useCountryStore()
 
