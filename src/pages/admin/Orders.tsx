@@ -37,6 +37,7 @@ type EnhancedOrderItem = OrderItem & {
 }
 
 type Order = {
+  currency: string
   country: string
   id: string
   orderNumber?: string
@@ -822,12 +823,12 @@ const OrdersAdminPage: React.FC<OrdersAdminPageProps> = ({
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
                         <span>Subtotal:</span>
-                        <span>Rs {(selectedOrder.totals.subtotal || 0).toFixed(2)}</span>
+                        <span>{selectedOrder?.currency} {(selectedOrder.totals.subtotal || 0).toFixed(2)}</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span>Shipping:</span>
                         <div className="flex items-center gap-2">
-                          <span>Rs {(selectedOrder.totals.shipping || 0).toFixed(2)}</span>
+                          <span>{selectedOrder.currency} {(selectedOrder.totals.shipping || 0).toFixed(2)}</span>
                           {/* Shipping Status Indicator */}
                           {selectedOrder.status && (
                             <span className={`text-xs px-2 py-1 rounded-full ${['shipped', 'delivered'].includes(selectedOrder.status.toLowerCase())
@@ -847,12 +848,12 @@ const OrdersAdminPage: React.FC<OrdersAdminPageProps> = ({
                       {selectedOrder.coupon && (
                         <div className="flex justify-between text-green-600">
                           <span>Discount ({selectedOrder.coupon.code || 'N/A'}):</span>
-                          <span>-Rs {(selectedOrder.coupon.discount || 0).toFixed(2)}</span>
+                          <span>-{selectedOrder.currency} {(selectedOrder.coupon.discount || 0).toFixed(2)}</span>
                         </div>
                       )}
                       <div className="border-t pt-2 flex justify-between font-semibold text-base">
                         <span>Total:</span>
-                        <span>Rs {(selectedOrder.totals.grandTotal || 0).toFixed(2)}</span>
+                        <span>{selectedOrder.currency} {(selectedOrder.totals.grandTotal || 0).toFixed(2)}</span>
                       </div>
                     </div>
                   ) : (
