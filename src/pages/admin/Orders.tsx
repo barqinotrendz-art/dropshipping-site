@@ -33,6 +33,7 @@ type EnhancedOrderItem = OrderItem & {
   market?: string
   currency?: string
   pricing?: any[]
+  lineTotal?: number
 }
 
 type Order = {
@@ -108,7 +109,8 @@ async function fetchProductDetails(productId: string) {
         image: imageUrl,
         description: data.description || '',
         category: data.category || '',
-        pricing: data.pricing || []
+        pricing: data.pricing || [],
+        
       }
     } else {
       console.log(`Product not found: ${productId}`) // Debug log
@@ -155,6 +157,7 @@ async function enhanceOrderItems(items: OrderItem[]): Promise<EnhancedOrderItem[
         productImage: finalImage,
         productDescription: productDetails?.description || '',
         category: productDetails?.category || '',
+      
 
         // keep order item fields
         country: item.country || '',
@@ -287,7 +290,7 @@ const OrdersAdminPage: React.FC<OrdersAdminPageProps> = ({
   const [statusUpdate, setStatusUpdate] = React.useState({ status: '', note: '' })
 
   // console.log(orders, 'pending')
-  // console.log(selectedOrder, 'select')
+  console.log(selectedOrder, 'select')
 
 
   for (let i = 0; i < enhancedOrderItems.length; i++) {
@@ -766,7 +769,8 @@ const OrdersAdminPage: React.FC<OrdersAdminPageProps> = ({
                                   <div className="text-xs text-gray-500 mb-1 font-medium">Subtotal</div>
                                   <div className="text-xl font-bold text-green-600 bg-green-50 px-3 py-1 rounded-lg shadow-sm">
                                     {/* Rs {(item.price).toFixed(2)} */}
-                                    {currency || (selectedOrder?.country === "Sauid Arabia" ? "SAR" : "AED")} {item.price?.toFixed?.(2) ?? item.price}
+                                    {currency || (selectedOrder?.country === "Sauid Arabia" ? "SAR" : "AED")} 
+                                    {''} {item.lineTotal?.toFixed(2)}
                                   </div>
                                 </div>
                               </div>

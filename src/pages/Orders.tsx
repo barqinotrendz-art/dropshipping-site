@@ -16,6 +16,7 @@ const Orders: React.FC = () => {
   const [expandedOrderId, setExpandedOrderId] = useState<string | null>(orderIdFromUrl || null)
   const [productDetails, setProductDetails] = useState<{ [key: string]: Product }>({})
 
+  console.log(orders, "orders")
   // Check if order exists in user's orders
   const isOrderAccessible = React.useCallback((orderId: string) => {
     return orders.some(order => order.id === orderId)
@@ -244,7 +245,7 @@ const Orders: React.FC = () => {
           {/* Product Details */}
           <div className="flex-1 w-full min-w-0">
             <div className="font-bold text-base sm:text-lg text-gray-900 mb-2 leading-tight text-center sm:text-left">
-              {cleanTitle || item.name || 'Unknown Product'}
+              {cleanTitle || item.title || 'Unknown Product'}
             </div>
 
             {/* Category */}
@@ -288,14 +289,14 @@ const Orders: React.FC = () => {
 
                   <div className="text-center">
                     <div className="text-xs text-gray-500 mb-1 font-medium">Unit Price</div>
-                    <div className="font-semibold text-gray-700 text-sm">Rs {item.price?.toFixed?.(2) ?? item.price}</div>
+                    <div className="font-semibold text-gray-700 text-sm">{item.currency} {item.pricing?.[0]?.discountPrice.toFixed?.(2)}</div>
                   </div>
                 </div>
 
                 <div className="text-center sm:text-right">
                   <div className="text-xs text-gray-500 mb-1 font-medium">Subtotal</div>
                   <div className="text-lg sm:text-xl font-bold text-green-600 bg-green-50 px-2 sm:px-3 py-1 rounded-lg shadow-sm">
-                    Rs {(item.price * item.qty).toFixed(2)}
+                    {item.currency} {item.lineTotal.toFixed(2)}
                   </div>
                 </div>
               </div>
@@ -418,7 +419,7 @@ const Orders: React.FC = () => {
                       </div>
                       <div className="text-center sm:text-left">
                         <p className="text-gray-500 text-xs sm:text-sm">Total</p>
-                        <p className="font-medium">Rs {grandTotal.toFixed(2)}</p>
+                        <p className="font-medium">{order?.currency} {grandTotal.toFixed(2)}</p>
                       </div>
                       <div className="text-center sm:text-left">
                         <p className="text-gray-500 text-xs sm:text-sm">Payment</p>
@@ -468,7 +469,7 @@ const Orders: React.FC = () => {
                               </h3>
                               <div className="text-xs sm:text-sm text-gray-600">
                                 <span className="font-medium">Items Value: </span>
-                                <span className="text-green-600 font-bold">Rs {subtotal.toFixed(2)}</span>
+                                <span className="text-green-600 font-bold">{order.currency} {subtotal.toFixed(2)}</span>
                               </div>
                             </div>
                           </div>
@@ -565,12 +566,12 @@ const Orders: React.FC = () => {
                           <div className="bg-white border rounded-lg p-4 space-y-2 text-sm">
                             <div className="flex justify-between">
                               <span className="text-gray-600">Subtotal</span>
-                              <span className="font-medium">Rs {subtotal.toFixed(2)}</span>
+                              <span className="font-medium">{order.currency} {subtotal.toFixed(2)}</span>
                             </div>
                             <div className="flex justify-between">
                               <span className="text-gray-600">Shipping</span>
                               <div className="flex items-center space-x-2">
-                                <span className="font-medium">Rs {shippingAmount.toFixed(2)}</span>
+                                <span className="font-medium">{order.currency} {shippingAmount.toFixed(2)}</span>
                                 {/* Shipping Payment Status */}
                                 {order.status && ['shipped', 'delivered'].includes(order.status.toLowerCase()) && (
                                   <span className="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700">
@@ -582,13 +583,13 @@ const Orders: React.FC = () => {
                             {discountAmount > 0 && (
                               <div className="flex justify-between text-green-600">
                                 <span>Discount</span>
-                                <span className="font-medium">-Rs {discountAmount.toFixed(2)}</span>
+                                <span className="font-medium">-{order.currency} {discountAmount.toFixed(2)}</span>
                               </div>
                             )}
                             <div className="flex justify-between font-semibold text-lg border-t pt-2 mt-2">
                               <span>Total</span>
                               <div className="flex items-center space-x-2">
-                                <span>Rs {grandTotal.toFixed(2)}</span>
+                                <span>{order.currency} {grandTotal.toFixed(2)}</span>
                                 {/* Total Payment Status */}
                                 {order.status && order.status.toLowerCase() === 'delivered' && (
                                   <span className="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700">

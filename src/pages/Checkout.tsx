@@ -326,10 +326,11 @@ const Checkout: React.FC = () => {
           qty: i.qty,
           image: i.image ? (i.image.startsWith('http') ? i.image : getCloudinaryUrl(i.image, 200, 200)) : null,
           pricing: i.pricing,
-          tierLabel: i.tierLabel,
           country: i.country,
           market: i.market,
-          currency: i.currency
+          currency: i.currency,
+            lineTotal: getItemTotal(i), // save this
+
         })),
         totals: { subtotal, shipping, discount, grandTotal: total },
         coupon: appliedCoupon ? {
@@ -378,6 +379,7 @@ const Checkout: React.FC = () => {
       }
 
       setError(errorMessage)
+      console.log(errorMessage)
       toast.error(errorMessage, { id: 'checkout' })
     }
     finally {
@@ -655,7 +657,7 @@ const Checkout: React.FC = () => {
                           <p className="text-xs text-gray-500 mt-1">Qty: {item.qty}</p>
                         </div>
                         <div className="text-sm font-semibold text-gray-900">
-                          {item.currency} {(item.price).toFixed(2)}
+                          {item.currency} {(item.pricing?.[0]?.discountPrice ??  item.price ).toFixed(2)}
                         </div>
                       </div>
                     )
