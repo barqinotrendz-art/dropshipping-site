@@ -14,6 +14,7 @@ import { fill } from '@cloudinary/url-gen/actions/resize'
 import { autoGravity } from '@cloudinary/url-gen/qualifiers/gravity'
 import toast from 'react-hot-toast'
 import { useCountryStore } from '../hooks/useCountryStore'
+import { UAE_CITIES, SAUDI_CITIES } from '../data/cities'
 
 type Address = {
   fullName: string
@@ -138,6 +139,11 @@ const Checkout: React.FC = () => {
     selectedCountry === 'Saudi Arabia'
       ? 'SAR'
       : 'AED'
+
+  const cities =
+    selectedCountry === 'Saudi Arabia'
+      ? SAUDI_CITIES
+      : UAE_CITIES
 
   // Debug payment settings removed for production
 
@@ -329,7 +335,7 @@ const Checkout: React.FC = () => {
           country: i.country,
           market: i.market,
           currency: i.currency,
-            lineTotal: getItemTotal(i), // save this
+          lineTotal: getItemTotal(i), // save this
 
         })),
         totals: { subtotal, shipping, discount, grandTotal: total },
@@ -454,19 +460,55 @@ const Checkout: React.FC = () => {
                     onChange={e => setAddr({ ...addr, line2: e.target.value })}
                   />
                   <div className="grid grid-cols-2 gap-4">
-                    <input
+                    {/* <input
                       className="w-full border border-gray-300 rounded-md px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       placeholder="City"
                       value={addr.city}
                       onChange={e => setAddr({ ...addr, city: e.target.value })}
                       required
-                    />
+                    /> 
                     <input
                       className="w-full border border-gray-300 rounded-md px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       placeholder="Postal code"
                       value={addr.postalCode}
                       onChange={e => setAddr({ ...addr, postalCode: e.target.value })}
+                    /> */}
+                    <select
+                      value={addr.city}
+                      onChange={(e) => {
+                        const selectedCity = cities.find(
+                          c => c.city === e.target.value
+                        )
+
+                        setAddr(prev => ({
+                          ...prev,
+                          city: selectedCity?.city || '',
+                          postalCode: selectedCity?.postalCode || ''
+                        }))
+                      }}
+                      className={`w-full border border-gray-300 rounded-md px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                      ${!addr.city ? 'text-gray-400' : 'text-black'} `}
+                    >
+                      <option value="" className='text-purple-200'>
+                        Select City
+                      </option>
+
+                      {cities.map(city => (
+                        <option
+                          key={city.city}
+                          value={city.city}
+                        >
+                          {city.city}
+                        </option>
+                      ))}
+                    </select>
+                    <input className="w-full border border-gray-300 rounded-md px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder='Postal Code'
+                      type="text"
+                      value={addr.postalCode}
+
                     />
+
                   </div>
                   <input
                     className="w-full border border-gray-300 rounded-md px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -657,7 +699,7 @@ const Checkout: React.FC = () => {
                           <p className="text-xs text-gray-500 mt-1">Qty: {item.qty}</p>
                         </div>
                         <div className="text-sm font-semibold text-gray-900">
-                          {item.currency} {(item.pricing?.[0]?.discountPrice ??  item.price ).toFixed(2)}
+                          {item.currency} {(item.pricing?.[0]?.discountPrice ?? item.price).toFixed(2)}
                         </div>
                       </div>
                     )
