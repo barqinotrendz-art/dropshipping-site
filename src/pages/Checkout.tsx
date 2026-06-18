@@ -725,8 +725,8 @@ const Checkout: React.FC = () => {
                   <div className="flex flex-col ">
                     <div className='flex justify-between text-sm'>
                       <span className="text-gray-600">Shipping</span>
-                      <span className="font-medium">{addr.city ? `${currency} ${shipping.toFixed(2)}` : 'Calculated at next step'}</span>
-                      {/* <span className='font-medium'>Free Delivery</span> */}
+                      {/* <span className="font-medium">{addr.city ? `${currency} ${shipping.toFixed(2)}` : 'Calculated at next step'}</span> */}
+                      <span className='font-medium'>Free</span>
                     </div>
                     <div className='text-xs text-gray-500'>
                       <span>before checkout first scroll to read shipping policies</span>
