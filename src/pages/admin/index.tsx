@@ -16,6 +16,7 @@ import {
 } from 'react-icons/hi'
 import LoadingSpinner from '../../components/ui/LoadingSpinner'
 import { useCountryStore } from '../../hooks/useCountryStore'
+import toast from 'react-hot-toast'
 
 async function fetchDashboardStats(selectedCountry: string) {
   const [productsSnap, ordersSnap, usersSnap, reviewsSnap] = await Promise.all([
@@ -84,8 +85,10 @@ const AdminDashboard: React.FC = () => {
 
   const { data: stats, isLoading } = useQuery({
     queryKey: ['admin-dashboard-stats', selectedCountry],
-    queryFn: () => fetchDashboardStats(selectedCountry)
+    queryFn: () => fetchDashboardStats(selectedCountry),
     // queryFn: fetchDashboardStats
+    refetchInterval: 10000, // every 10 sec
+    refetchOnWindowFocus: true,
 
   })
   const currency =
@@ -96,6 +99,22 @@ const AdminDashboard: React.FC = () => {
   const pendingOrdersCount = stats?.pendingOrders ?? 0
   const lowStockCount = stats?.lowStockProducts ?? 0
   const pendingReviewsCount = stats?.pendingReviews ?? 0
+
+  const previousPendingRef = React.useRef(0)
+
+  React.useEffect(() => {
+  if (pendingOrdersCount > previousPendingRef.current) {
+
+    toast.success(
+      `🛒 New Order Received!\nPending Orders: ${pendingOrdersCount}`,
+      {
+        duration: 4000,
+      }
+    )
+  }
+
+  previousPendingRef.current = pendingOrdersCount
+}, [pendingOrdersCount])
 
 
 
