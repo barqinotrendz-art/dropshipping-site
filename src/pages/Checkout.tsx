@@ -401,7 +401,7 @@ const Checkout: React.FC = () => {
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Checkout</h1>
           {!user && (
             <Link to="/login" className="text-blue-600 hover:underline text-sm">
-              Sign in for faster checkout
+              Continue as guest or sign in to save your details for future orders.
             </Link>
           )}
         </div>
@@ -517,15 +517,20 @@ const Checkout: React.FC = () => {
                     onChange={e => setAddr({ ...addr, phone: e.target.value })}
                     required
                   />
-                  <label className="flex items-center gap-2 text-sm text-gray-700">
-                    <input
-                      type="checkbox"
-                      checked={saveForNext}
-                      onChange={(e) => setSaveForNext(e.target.checked)}
-                      className="rounded border-gray-300"
-                    />
-                    Save this information for next time
-                  </label>
+                  {
+                    user && (
+                      <label className="flex items-center gap-2 text-sm text-gray-700">
+                        <input
+                          type="checkbox"
+                          checked={saveForNext}
+                          onChange={(e) => setSaveForNext(e.target.checked)}
+                          className="rounded border-gray-300"
+                        />
+                        Save this information for next time
+                      </label>
+                    )
+                  }
+
                 </div>
               </div>
 
@@ -707,14 +712,18 @@ const Checkout: React.FC = () => {
                 </div>
 
                 {/* Coupon Code */}
-                <div className="mb-6">
-                  <CouponInput
-                    orderAmount={subtotal}
-                    onCouponApplied={(coupon: Coupon, discount: number) => setAppliedCoupon({ coupon, discount })}
-                    onCouponRemoved={() => setAppliedCoupon(null)}
-                    appliedCoupon={appliedCoupon}
-                  />
-                </div>
+                {
+                  user && (
+                    <div className="mb-6">
+                      <CouponInput
+                        orderAmount={subtotal}
+                        onCouponApplied={(coupon: Coupon, discount: number) => setAppliedCoupon({ coupon, discount })}
+                        onCouponRemoved={() => setAppliedCoupon(null)}
+                        appliedCoupon={appliedCoupon}
+                      />
+                    </div>
+                  )
+                }
 
                 {/* Price Breakdown */}
                 <div className="space-y-3 border-t pt-4">
