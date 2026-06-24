@@ -1,8 +1,10 @@
 import { useQuery } from '@tanstack/react-query'
 import { collection, getDocs, query, where, limit } from 'firebase/firestore'
 import { db } from '../lib/firebase'
+import { useCountryStore } from './useCountryStore'
 
 export type RecommendedProduct = {
+  pricing: any
   id: string
   title: string
   slug: string
@@ -13,11 +15,15 @@ export type RecommendedProduct = {
   reviewCount?: number
   brand?: string
   categoryId: string
+  country?: string
+  currency?: string
+  market?: string
 }
 
 async function fetchRecommendations(
   productId: string,
   categoryId: string,
+  selectedCountry: string,
   brand?: string
 ): Promise<RecommendedProduct[]> {
   try {
@@ -30,12 +36,22 @@ async function fetchRecommendations(
         where('categoryId', '==', categoryId),
         limit(20)
       )
-      
+
       const categorySnap = await getDocs(categoryQuery)
       recommendations = categorySnap.docs
         .map(doc => ({ id: doc.id, ...doc.data() } as RecommendedProduct))
-        .filter(product => product.id !== productId && product.imagePublicIds && product.imagePublicIds.length > 0)
-        
+        .filter(
+          product =>
+            product.id !== productId &&
+            product.country === selectedCountry &&
+            product.imagePublicIds &&
+            product.imagePublicIds.length > 0
+        )
+      // recommendations = categorySnap.docs
+      //   .map(doc => ({ id: doc.id, ...doc.data() } as RecommendedProduct))
+      //   .filter(product => product.id !== productId && product.imagePublicIds && product.imagePublicIds.length > 0)
+
+
       // Sort by rating in memory
       recommendations.sort((a, b) => (b.rating || 0) - (a.rating || 0))
     }
@@ -53,18 +69,25 @@ async function fetchRecommendations(
         collection(db, 'products'),
         limit(20)
       )
-      
+
       const allSnap = await getDocs(allProductsQuery)
       const allProducts = allSnap.docs
         .map(doc => ({ id: doc.id, ...doc.data() } as RecommendedProduct))
-        .filter(product => 
-          product.id !== productId && 
-          product.imagePublicIds && 
+        // .filter(product =>
+        //   product.id !== productId &&
+        //   product.imagePublicIds &&
+        //   product.imagePublicIds.length > 0 &&
+        //   !recommendations.some(r => r.id === product.id)
+        // )
+        .filter(product =>
+          product.id !== productId &&
+          product.country === selectedCountry &&
+          product.imagePublicIds &&
           product.imagePublicIds.length > 0 &&
           !recommendations.some(r => r.id === product.id)
         )
         .sort((a, b) => (b.rating || 0) - (a.rating || 0))
-      
+
       recommendations = [...recommendations, ...allProducts]
     }
 
@@ -76,9 +99,25 @@ async function fetchRecommendations(
 }
 
 export function useRecommendations(productId: string, categoryId: string, brand?: string) {
+    const { selectedCountry } = useCountryStore()
   return useQuery({
-    queryKey: ['recommendations', productId, categoryId, brand],
-    queryFn: () => fetchRecommendations(productId, categoryId, brand),
+    // queryKey: ['recommendations', productId, categoryId, brand],
+    // queryFn: () => fetchRecommendations(productId, categoryId, brand),
+    queryKey: [
+      'recommendations',
+      productId,
+      categoryId,
+      brand,
+      selectedCountry
+    ],
+
+    queryFn: () =>
+      fetchRecommendations(
+        productId,
+        categoryId,
+        selectedCountry,
+        brand
+      ),
     enabled: !!productId, // Only require productId, categoryId is optional
     staleTime: 10 * 60 * 1000, // 10 minutes
   })

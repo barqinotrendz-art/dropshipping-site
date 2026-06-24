@@ -183,6 +183,7 @@ const ProductDetail: React.FC = () => {
     await addItem({
       id: cartId,
       productId: product.id,
+      sku: product.sku,
       name: `${product.title}${selectedColor ? ` - ${selectedColor.name}` : ''}`,
       // price: currentPrice,
       price: activeTier?.discountPrice ?? activeTier?.price,

@@ -175,8 +175,15 @@ const Checkout: React.FC = () => {
       try {
         const snap = await getDoc(doc(db, 'users', user.uid))
         const data = snap.data() as { shippingAddress?: Address } | undefined
+        // if (data?.shippingAddress) {
+        //   setAddr(data.shippingAddress)
+        // }
         if (data?.shippingAddress) {
-          setAddr(data.shippingAddress)
+          setAddr({
+            ...data.shippingAddress,
+            country: selectedCountry,
+            city: ''
+          })
         }
       } catch (error) {
         // Silent catch for production build
@@ -327,6 +334,7 @@ const Checkout: React.FC = () => {
         orderNumber,
         items: checkoutItems.map((i) => ({
           productId: i.id,
+          sku: i.sku || '',
           title: i.name,
           price: i.price,
           qty: i.qty,

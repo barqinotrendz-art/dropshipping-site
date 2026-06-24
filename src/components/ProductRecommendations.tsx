@@ -54,18 +54,34 @@ const RecommendationCard: React.FC<{ product: RecommendedProduct }> = ({ product
     .format('auto').quality('auto')
     .resize(fill().width(250).height(250).gravity(autoGravity()))
 
-  const currentPrice = product.discountPrice || product.price
-  const hasDiscount = product.discountPrice && product.discountPrice < product.price
+  // const currentPrice = product.discountPrice || product.price
+  // const hasDiscount = product.discountPrice && product.discountPrice < product.price
 
+  const firstTier = product.pricing?.[0]
+
+  const currentPrice =
+    firstTier?.discountPrice ??
+    firstTier?.price ??
+    product.discountPrice ??
+    product.price
+
+  const originalPrice =
+    firstTier?.price ??
+    product.price
+
+  const hasDiscount =
+    !!firstTier?.discountPrice &&
+    firstTier.discountPrice < firstTier.price
+  console.log(product, 'recomendation')
   return (
-    <Link 
+    <Link
       to={`/product/${product.slug}`}
       className="group block border rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
     >
       <div className="aspect-square overflow-hidden">
-        <AdvancedImage 
-          cldImg={img} 
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
+        <AdvancedImage
+          cldImg={img}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
       </div>
       <div className="p-3">
@@ -74,12 +90,22 @@ const RecommendationCard: React.FC<{ product: RecommendedProduct }> = ({ product
           <p className="text-xs text-gray-600 mb-1">{product.brand}</p>
         )}
         <div className="flex items-center gap-2 mb-1">
-          <span className="font-semibold text-sm">Rs {currentPrice.toFixed(2)}</span>
+          <span className="font-semibold text-sm text-[#C03E35]">
+            {product.currency ||
+              (product.country === 'Saudi Arabia' ? 'SAR' : 'AED')}
+            {' '}
+            {currentPrice.toFixed(2)}
+          </span>
           {hasDiscount && (
-            <span className="text-xs text-gray-500 line-through">Rs {product.price.toFixed(2)}</span>
+            <span className="text-xs text-gray-500 line-through">
+              {product.currency ||
+                (product.country === 'Saudi Arabia' ? 'SAR' : 'AED')}
+              {' '}
+              {originalPrice.toFixed(2)}
+            </span>
           )}
         </div>
-        {product.rating && product.rating > 0 && (
+        {/* {product.rating && product.rating > 0 && (
           <div className="flex items-center gap-1 text-xs">
             <span className="text-yellow-400">★</span>
             <span>{product.rating.toFixed(1)}</span>
@@ -87,7 +113,17 @@ const RecommendationCard: React.FC<{ product: RecommendedProduct }> = ({ product
               <span className="text-gray-500">({product.reviewCount})</span>
             )}
           </div>
+        )} */}
+        {(product.reviewCount ?? 0) > 0 && (
+          <div className="flex items-center gap-1 text-xs">
+            <span className="text-yellow-400">★</span>
+            <span>{(product.rating ?? 0).toFixed(1)}</span>
+            <span className="text-gray-500">
+              ({product.reviewCount})
+            </span>
+          </div>
         )}
+
       </div>
     </Link>
   )

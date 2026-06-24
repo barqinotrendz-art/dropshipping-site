@@ -111,7 +111,7 @@ async function fetchProductDetails(productId: string) {
         description: data.description || '',
         category: data.category || '',
         pricing: data.pricing || [],
-        
+
       }
     } else {
       console.log(`Product not found: ${productId}`) // Debug log
@@ -158,7 +158,7 @@ async function enhanceOrderItems(items: OrderItem[]): Promise<EnhancedOrderItem[
         productImage: finalImage,
         productDescription: productDetails?.description || '',
         category: productDetails?.category || '',
-      
+
 
         // keep order item fields
         country: item.country || '',
@@ -360,6 +360,148 @@ const OrdersAdminPage: React.FC<OrdersAdminPageProps> = ({
     'Refunded'
   ]
 
+  // const exportOrdersToCSV = (orders: any[]) => {
+  //   const headers = [
+  //     'Order Number',
+  //     'Customer Email',
+  //     'Phone',
+  //     'Country',
+  //     'Status',
+  //     'Total',
+  //     'Created At'
+  //   ]
+
+  //   const rows = orders.map(order => [
+  //     order.orderNumber,
+  //     order.customerEmail,
+  //     order.shipping?.phone || '',
+  //     order.country,
+  //     order.status,
+  //     order.totals?.grandTotal || 0,
+  //     order.createdAt?.toDate?.()?.toLocaleString?.() || ''
+  //   ])
+
+  //   const csvContent = [
+  //     headers.join(','),
+  //     ...rows.map(row =>
+  //       row.map(value => `"${String(value).replace(/"/g, '""')}"`).join(',')
+  //     )
+  //   ].join('\n')
+
+  //   const blob = new Blob([csvContent], {
+  //     type: 'text/csv;charset=utf-8;'
+  //   })
+
+  //   const url = URL.createObjectURL(blob)
+
+  //   const link = document.createElement('a')
+  //   link.href = url
+  //   link.download = `orders-${new Date().toISOString().slice(0, 10)}.csv`
+
+  //   document.body.appendChild(link)
+  //   link.click()
+  //   document.body.removeChild(link)
+  // }
+
+  const exportOrdersToCSV = (orders: any[]) => {
+    const headers = [
+      'SKU',
+      // 'Product Name',
+      'quantity',
+      'first_name',
+      'last_name',
+      'country',
+      'city',
+      'street_address',
+      'apartment',
+      'state',
+      'postcode',
+      'phone',
+      'email',
+      'payment_method',
+      'cod_amount',
+      'location',
+      'order_ref',
+      'order_notes'
+    ]
+
+    const rows = orders.flatMap((order: any) => {
+      const shipping = order.shipping || {}
+
+      const fullName = shipping.fullName || ''
+      const parts = fullName.trim().split(' ')
+
+      const firstName = parts[0] || ''
+      const lastName = parts.slice(1).join(' ')
+      const country =
+        shipping.country === 'United Arab Emirates'
+          ? 'UAE'
+          : shipping.country === 'Saudi Arabia'
+            ? 'KSA'
+            : (shipping.country || order.country || '')
+
+      const state = shipping.state || shipping.city || ''
+
+      const phone = (shipping.phone || '').replace('+', '')
+
+      return (order.items || []).map((item: any) => [
+        item.sku || item.productId || '',
+        // item.title || '',
+        item.qty || 1,
+        firstName,
+        lastName,
+        country,
+        shipping.city || '',
+        shipping.line1 || '',
+        shipping.line2 || '',
+        // shipping.state || '',
+        state,
+        shipping.postalCode || '',
+        // shipping.phone || '',
+        phone,
+        order.customerEmail === 'no-email'
+          ? ''
+          : (order.customerEmail || ''),
+
+        'COD',
+
+        order.totals?.grandTotal || 0,
+
+        shipping.location || '',
+
+        order.orderNumber || '',
+
+        order.notes || ''
+      ])
+    })
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row =>
+        row
+          .map((value: any) =>
+            `"${String(value ?? '').replace(/"/g, '""')}"`
+          )
+          .join(',')
+      )
+    ].join('\n')
+
+    const blob = new Blob([csvContent], {
+      type: 'text/csv;charset=utf-8;',
+    })
+
+    const url = URL.createObjectURL(blob)
+
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `orders-${new Date().toISOString().slice(0, 10)}.csv`
+
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+
+    URL.revokeObjectURL(url)
+  }
 
 
   if (isLoading) return (
@@ -381,6 +523,7 @@ const OrdersAdminPage: React.FC<OrdersAdminPageProps> = ({
     <div className="space-y-4 sm:space-y-6 max-w-full overflow-x-hidden">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h1 className="text-xl sm:text-2xl font-semibold">Admin • {pageTitle}</h1>
+
         {pendingOrdersCount > 0 && (
           <div className="flex items-center gap-2 bg-yellow-100 text-yellow-800 px-3 sm:px-4 py-2 rounded-lg border-2 border-yellow-300 animate-pulse">
             <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -388,6 +531,12 @@ const OrdersAdminPage: React.FC<OrdersAdminPageProps> = ({
           </div>
         )}
       </div>
+      <button
+        onClick={() => exportOrdersToCSV(orders)}
+        className="px-4 py-2 bg-green-600 text-white rounded-lg"
+      >
+        Export Orders CSV
+      </button>
 
       {/* Stats - All Status Sections */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
@@ -770,7 +919,7 @@ const OrdersAdminPage: React.FC<OrdersAdminPageProps> = ({
                                   <div className="text-xs text-gray-500 mb-1 font-medium">Subtotal</div>
                                   <div className="text-xl font-bold text-green-600 bg-green-50 px-3 py-1 rounded-lg shadow-sm">
                                     {/* Rs {(item.price).toFixed(2)} */}
-                                    {currency || (selectedOrder?.country === "Sauid Arabia" ? "SAR" : "AED")} 
+                                    {currency || (selectedOrder?.country === "Sauid Arabia" ? "SAR" : "AED")}
                                     {''} {item.lineTotal?.toFixed(2)}
                                   </div>
                                 </div>

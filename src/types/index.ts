@@ -38,6 +38,7 @@ export interface CartItem {
   currency?: string
   country?: string
   market?: string
+    sku?: string
 
 }
 

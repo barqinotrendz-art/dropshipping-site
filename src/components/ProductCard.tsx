@@ -37,7 +37,7 @@ interface ProductCardProps {
     pricing?: PriceTier[]
     currency?: string,
     market?: string,
-    country?:string
+    country?: string
   }
   showBestsellerTag?: boolean
   onAddToCart: (product: any) => void
@@ -180,7 +180,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         imagePublicId: mainImageId || 'cld-sample-5',
         price: currentPrice,
         slug: product.slug,
-        
+
       })
     }
   }
@@ -321,9 +321,16 @@ const ProductCard: React.FC<ProductCardProps> = ({
       <div className="p-2 sm:p-4 main-prd">
         <Link to={`/product/${product.slug}`} className="block hover:bg-gray-50 rounded-md ">
           <h3 className="font-semibold text-sm sm:text-base text-gray-900 mb-1 sm:mb-0  
-          overflow-hidden group-hover:text-black transition-colors h-[45px] product-title">
-            {product.title.slice(0, 70)}{product.title.length > 60 ? '...' : ''}2
+          overflow-hidden group-hover:text-black transition-colors h-[45px] product-title"
+          title={product.title.length > 40 ? product.title : ''}>
+            {product.title.length > 40
+              ? `${product.title.slice(0, 35)}...`
+              : product.title
+            }
           </h3>
+
+
+
 
 
           {/* Brand */}
