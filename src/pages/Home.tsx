@@ -16,7 +16,6 @@ import './home.css'
 import Collection from '../components/Collection.tsx'
 import { generateCartId } from '../types/index.ts'
 import { useCountryStore } from '../hooks/useCountryStore.ts'
-import { motion } from 'framer-motion'
 import AnimatedUnderlineHeading from '../components/AnimatedUnderlineHeading.tsx'
 
 const Home: FC = () => {
