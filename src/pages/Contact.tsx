@@ -38,7 +38,7 @@ const Contact: React.FC = () => {
 
           <p>WhatsApp is our main contact method for fast and reliable support.</p>
           <p className="text-gray-700 leading-relaxed mb-6">
-            Message our support team directly on WhatsApp for instant help with orders, sizing, or product questions. 
+            Message our support team directly on WhatsApp for instant help with orders, sizing, or product questions.
             We usually reply within minutes during business hours.
           </p>
 
@@ -46,11 +46,10 @@ const Contact: React.FC = () => {
             href={whatsappLink}
             target={canChat ? '_blank' : undefined}
             rel={canChat ? 'noopener noreferrer' : undefined}
-            className={`group inline-flex items-center justify-center gap-2 w-full bg-green-500 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 ${
-              canChat
+            className={`group inline-flex items-center justify-center gap-2 w-full bg-green-500 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 ${canChat
                 ? 'hover:bg-green-600 hover:scale-[1.02]'
                 : 'opacity-60 cursor-not-allowed'
-            }`}
+              }`}
             aria-disabled={!canChat}
           >
             {canChat ? (
@@ -70,7 +69,8 @@ const Contact: React.FC = () => {
 
           {whatsappNumber && (
             <p className="mt-4 text-sm text-gray-500 text-center">
-              Message us directly at <span className="font-medium">+{whatsappNumber}</span>
+              Message us directly 
+              {/* at <span className="font-medium">+{whatsappNumber}</span> */}
             </p>
           )}
         </div>
@@ -94,12 +94,13 @@ const Contact: React.FC = () => {
           <div className="bg-gray-50 border border-gray-200 rounded-xl p-5 hover:border-black transition-colors">
             <p className="text-xs uppercase text-gray-500 tracking-wide mb-1">Email us at</p>
             <a
-              href="https://mail.google.com/mail/?view=cm&fs=1&to=only.esfylo.store@gmail.com"
+              // href="https://mail.google.com/mail/?view=cm&fs=1&to=only.esfylo.store@gmail.com"
+              href="https://mail.google.com/mail/?view=cm&fs=1&to=barqinotrendz@gmail.com"
               target="_blank"
               rel="noopener noreferrer"
               className="text-lg font-semibold text-gray-900 hover:underline"
             >
-              only.esfylo.store@gmail.com
+              barqinotrendz@gmail.com
             </a>
           </div>
 

@@ -4,6 +4,7 @@ import collection2 from '../assets/collection2.webp'
 import { ChevronRight } from 'lucide-react';
 import './collection.css'
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion'
 
 const Collection: React.FC = () => {
     return (
@@ -29,52 +30,93 @@ const Collection: React.FC = () => {
                     Our Products
                 </p>
                 <h1 className='font-semibold md:text-[40px] text-[30px] mb-5 md:mb-6 text-gray-800 md:text-start text-center '>
-                    Explore Collections
+                    Explore 
+                    <span className="relative inline-block text-[#20432F]">
+                        Collections
+                        <svg
+                            className="absolute left-1/2 -translate-x-1/2 top-full md:mt-1 mt-0  w-full min-w-[140px]"
+                            viewBox="0 0 186 24"
+                            fill="none"
+                        >
+                            <motion.path
+                                d="M3 6C28 3 60 2 93 2C126 2 155 3 183 6"
+                                stroke="currentColor"
+                                strokeWidth="3"
+                                strokeLinecap="round"
+                                initial={{ pathLength: 0 }}
+                                whileInView={{ pathLength: 1 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.8 }}
+                            />
+
+                            <motion.path
+                                d="M42 11C68 9 97 9 124 11"
+                                stroke="currentColor"
+                                strokeWidth="3"
+                                strokeLinecap="round"
+                                initial={{ pathLength: 0 }}
+                                whileInView={{ pathLength: 1 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.8, delay: 0.2 }}
+                            />
+
+                            <motion.path
+                                d="M72 15C88 16 101 17 107 18"
+                                stroke="currentColor"
+                                strokeWidth="3"
+                                strokeLinecap="round"
+                                initial={{ pathLength: 0 }}
+                                whileInView={{ pathLength: 1 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.8, delay: 0.4 }}
+                            />
+                        </svg>
+                    </span>
                 </h1>
 
                 <div className="category-list">
 
-                <Link  to="/categories?type=car-accessories" className='flex flex-row justify-between items-center cursor-pointer my-3 pb-3 border-b border-b-gray-200 cart-item'>
-                    <h3 className='font-normal text-[24px]  cat-title'>Car Accessories</h3>
-                    <div className='chevron-liquid'>
+                    <Link to="/categories?type=car-accessories" className='flex flex-row justify-between items-center cursor-pointer my-3 pb-3 border-b border-b-gray-200 cart-item'>
+                        <h3 className='font-normal text-[24px]  cat-title'>Car Accessories</h3>
+                        <div className='chevron-liquid'>
 
-                        <span className='chevron-circle relative overflow-hidden w-[50px] h-[50px] flex items-center justify-center border border-gray-200 rounded-full'>
-                            <div className="chevron-fill"></div>
+                            <span className='chevron-circle relative overflow-hidden w-[50px] h-[50px] flex items-center justify-center border border-gray-200 rounded-full'>
+                                <div className="chevron-fill"></div>
 
-                            <ChevronRight className='icon w-[18px] h-[18px]  relative z-10 transition-colors duration-300' />
-                        </span>
+                                <ChevronRight className='icon w-[18px] h-[18px]  relative z-10 transition-colors duration-300' />
+                            </span>
 
-                    </div>
+                        </div>
 
-                </Link>
+                    </Link>
 
-                <Link  to="/categories?type=health-beauty" className='flex flex-row justify-between items-center cursor-pointer my-3 pb-3 border-b border-b-gray-200 cart-item'>
-                    <h3 className='font-normal text-[24px]  cat-title'>Health & Beauty</h3>
-                    <div className='chevron-liquid'>
+                    <Link to="/categories?type=health-beauty" className='flex flex-row justify-between items-center cursor-pointer my-3 pb-3 border-b border-b-gray-200 cart-item'>
+                        <h3 className='font-normal text-[24px]  cat-title'>Health & Beauty</h3>
+                        <div className='chevron-liquid'>
 
-                        <span className='chevron-circle relative overflow-hidden w-[50px] h-[50px] flex items-center justify-center border border-gray-200 rounded-full'>
-                            <div className="chevron-fill"></div>
+                            <span className='chevron-circle relative overflow-hidden w-[50px] h-[50px] flex items-center justify-center border border-gray-200 rounded-full'>
+                                <div className="chevron-fill"></div>
 
-                            <ChevronRight className='icon w-[18px] h-[18px]  relative z-10 transition-colors duration-300' />
-                        </span>
+                                <ChevronRight className='icon w-[18px] h-[18px]  relative z-10 transition-colors duration-300' />
+                            </span>
 
-                    </div>
+                        </div>
 
-                </Link>
+                    </Link>
 
-                <Link  to="/products" className='flex flex-row justify-between items-center cursor-pointer my-3 pb-3 border-b border-b-gray-200 cart-item'>
-                    <h3 className='font-normal text-[24px]  cat-title'>Trending</h3>
-                    <div className='chevron-liquid'>
+                    <Link to="/products" className='flex flex-row justify-between items-center cursor-pointer my-3 pb-3 border-b border-b-gray-200 cart-item'>
+                        <h3 className='font-normal text-[24px]  cat-title'>Trending</h3>
+                        <div className='chevron-liquid'>
 
-                        <span className='chevron-circle relative overflow-hidden w-[50px] h-[50px] flex items-center justify-center border border-gray-200 rounded-full'>
-                            <div className="chevron-fill"></div>
+                            <span className='chevron-circle relative overflow-hidden w-[50px] h-[50px] flex items-center justify-center border border-gray-200 rounded-full'>
+                                <div className="chevron-fill"></div>
 
-                            <ChevronRight className='icon w-[18px] h-[18px]  relative z-10 transition-colors duration-300' />
-                        </span>
+                                <ChevronRight className='icon w-[18px] h-[18px]  relative z-10 transition-colors duration-300' />
+                            </span>
 
-                    </div>
+                        </div>
 
-                </Link>
+                    </Link>
 
                 </div>
 

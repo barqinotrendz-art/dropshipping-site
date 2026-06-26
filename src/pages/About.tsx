@@ -37,7 +37,7 @@ const AboutPage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto">
             <h1 className="text-5xl font-bold text-gray-900 mb-6">
-              About Esfylo
+              About Barqino
             </h1>
             <p className="text-xl text-gray-600 leading-relaxed">
               We're on a mission to bring you the best products at unbeatable prices.
@@ -57,7 +57,7 @@ const AboutPage: React.FC = () => {
               <h2 className="text-4xl font-bold text-gray-900 mb-6">Our Story</h2>
               <div className="space-y-4 text-gray-600 leading-relaxed">
                 <p>
-                  Esfylo was born from a simple idea: everyone deserves access to quality products
+                  Barqino was born from a simple idea: everyone deserves access to quality products
                   without breaking the bank. What started as a small online store has grown into
                   a thriving e-commerce platform serving thousands of happy customers.
                 </p>

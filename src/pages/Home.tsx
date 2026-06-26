@@ -16,6 +16,8 @@ import './home.css'
 import Collection from '../components/Collection.tsx'
 import { generateCartId } from '../types/index.ts'
 import { useCountryStore } from '../hooks/useCountryStore.ts'
+import { motion } from 'framer-motion'
+import AnimatedUnderlineHeading from '../components/AnimatedUnderlineHeading.tsx'
 
 const Home: FC = () => {
   // const { addItem } = useCart()
@@ -127,7 +129,7 @@ const Home: FC = () => {
   }, [selectedCountry, hasHydrated])
 
   useEffect(() => {
-      hydrateCountry()
+    hydrateCountry()
   }, [])
 
   // Handle add to cart - adapter function to handle type differences
@@ -260,8 +262,11 @@ const Home: FC = () => {
             {/* Main Latest Arrivals Heading */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
               <div className="text-center">
-                <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-2 ">Latest Arrivals</h2>
-                <p className="text-gray-600">Fresh new products just added to our collection</p>
+                <AnimatedUnderlineHeading
+                  title="Latest"
+                  highlightedText="Arrival's"
+                />
+                <p className="text-gray-600 mt-6">Fresh new products just added to our collection</p>
               </div>
             </div>
 
@@ -336,8 +341,11 @@ const Home: FC = () => {
             {/* Main Top Selling Heading */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
               <div className="text-center">
-                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Top Selling Products</h2>
-                <p className="text-gray-600">Best-selling items loved by our customers</p>
+                <AnimatedUnderlineHeading
+                  title="Top Selling"
+                  highlightedText="Products"
+                />
+                <p className="text-gray-600 mt-6">Best-selling items loved by our customers</p>
               </div>
             </div>
 
@@ -395,8 +403,11 @@ const Home: FC = () => {
             {/* Main Featured Products Heading */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
               <div className="text-center">
-                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Featured Products</h2>
-                <p className="text-gray-600">Discover our handpicked selection across all categories</p>
+                <AnimatedUnderlineHeading
+                  title="Featured"
+                  highlightedText="Products"
+                />             
+               <p className="text-gray-600 mt-6">Discover our handpicked selection across all categories</p>
               </div>
             </div>
 

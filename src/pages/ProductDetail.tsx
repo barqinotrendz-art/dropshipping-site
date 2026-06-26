@@ -248,17 +248,22 @@ const ProductDetail: React.FC = () => {
             selectedColor={selectedColor}
             onColorChange={setSelectedColor}
           />
-          <div className='border border-1 w-[100%] h-[450px]'>
-            {product.descriptionVideos?.map((video: string, i: number) => (
-              <video
-                key={i}
-                src={getCloudinaryVideoUrl(video)}
-                controls
-                className="w-full rounded-xl h-[100%]"
-              />
-            ))}
+          {
+            product.descriptionVideos && product.descriptionVideos?.length > 0 && (
+              <div className='border border-1 w-[100%] h-[450px]'>
+                {product.descriptionVideos?.map((video: string, i: number) => (
+                  <video
+                    key={i}
+                    src={getCloudinaryVideoUrl(video)}
+                    controls
+                    className="w-full rounded-xl h-[100%]"
+                  />
+                ))}
 
-          </div>
+              </div>
+            )
+          }
+
 
         </div>
         <div className="space-y-4">
@@ -419,8 +424,13 @@ const ProductDetail: React.FC = () => {
                   key={i}
                   onClick={() => setQuantity(i + 1)}
                   className={`${isActive ? 'ring-1 ring-[#1f473e] border-[#1f473e]' : 'border hover:ring-2 hover:ring-gray-400'} 
-                  border rounded-xl p-6 flex justify-between items-center cursor-pointer`}
+                  relative border rounded-xl p-6 flex justify-between items-center cursor-pointer`}
                 >
+                  {i === 1 && (
+                    <div className="absolute -top-3 right-4 bg-[#1f473e] text-white text-xs font-semibold px-3 py-1 rounded-full shadow-md">
+                      Most Popular
+                    </div>
+                  )}
                   <div className='w-full'>
                     <div className='flex items-center gap-4'>
                       {/* {isActive ? 'yes' : 'no'} */}

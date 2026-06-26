@@ -18,11 +18,11 @@ const Shipping: React.FC = () => {
             Fast, reliable shipping to your doorstep
           </p>
           <p className="mt-3 text-center text-gray-200">
-            Delivery within 3 to 5 business days. Charges may vary based on weight and location.
+            Delivery within 3 to 5 business days. Free shipping across UAE | KSA.
           </p>
-          <p className='mt-3 text-center text-gray-200'>
+          {/* <p className='mt-3 text-center text-gray-200'>
             For any purchase, shipping charges are paid in advance and shared via WhatsApp.
-          </p>
+          </p> */}
         </div>
       </div>
 
@@ -41,20 +41,20 @@ const Shipping: React.FC = () => {
               <div className="bg-gray-50 rounded-lg p-6">
                 <div className="flex justify-between items-start mb-2">
                   <h3 className="font-bold text-lg text-gray-900">Standard Shipping</h3>
-                  <span className="text-black font-semibold">Charges vary by weight and delivery location</span>
+                  <span className="text-black font-semibold">Free shipping across UAE | KSA</span>
                 </div>
                 <p className="text-gray-600 mb-2">Delivery in 3-5 business days</p>
                 <p className="text-sm text-gray-500">Available for all domestic orders</p>
               </div>
 
-              <div className="bg-gray-50 rounded-lg p-6">
+              {/* <div className="bg-gray-50 rounded-lg p-6">
                 <div className="flex justify-between items-start mb-2">
                   <h3 className="font-bold text-lg text-gray-900">Fast Delivery</h3>
                   <span className="text-black font-semibold">Charges vary by weight and delivery location</span>
                 </div>
                 <p className="text-gray-600 mb-2">Estimated delivery up to 2 business days</p>
                 <p className="text-sm text-gray-500">Available with advance payment only</p>
-              </div>
+              </div> */}
            
             </div>
           </section>

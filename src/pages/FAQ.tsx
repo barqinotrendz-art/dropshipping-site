@@ -15,27 +15,27 @@ const FAQ: React.FC = () => {
     {
       category: 'Orders & Payment',
       question: 'What payment methods do you accept?',
-      answer: 'We accept all major credit cards (Visa, Mastercard), debit cards. All payments are processed via WhatsApp. For further details, please contact on WhatsApp.'
+      answer: 'All orders are processed on a Cash on Delivery (COD) basis. No advance payment is required. Payment is made directly to the delivery agent upon receiving your order. For assistance, please contact us on WhatsApp.'
     },
     {
       category: 'Orders & Payment',
       question: 'Can I cancel my order?',
-      answer: 'You can cancel your order within 1 hour of placing it. After that, your order enters processing and cannot be changed. Please contact on WhatsApp immediately if you need to make changes.'
+      answer: 'You can cancel your order within 1 hour of placing it by contacting us on WhatsApp. After an order is placed, customer will be contacted through call to confirm the order details before processing. If you wish to cancel your order, you may do so during the confirmation call or within 1 hour of placing the order via WhatsApp. Once the order has been confirmed and entered the processing stage, it can no longer be cancelled or modified.'
     },
     {
       category: 'Shipping',
       question: 'How long does shipping take?',
-      answer: 'Standard delivery takes 3-5 business days. A fast delivery option is available with an estimated delivery time of up to 2 business days. Delivery charges may vary based on weight and delivery location.'
+      answer: 'Standard delivery takes 3-5 business days. Orders will be delivered free of cost to customers. Free delivery across UAE | KSA'
     },
-    {
-      category: 'Shipping',
-      question: 'Do you ship internationally?',
-      answer: 'For international delieveries, please contact on WhatsApp.'
-    },
+    // {
+    //   category: 'Shipping',
+    //   question: 'Do you ship internationally?',
+    //   answer: 'For international delieveries, please contact on WhatsApp.'
+    // },
     {
       category: 'Shipping',
       question: 'How can I track my order?',
-      answer: 'Once your order ships, you\'ll receive a tracking number via WhatsApp. You can track your package through the carrier\'s website using the tracking link provided.'
+      answer: "Both guest customers and customers with a Barqino account will receive shipment notifications directly from the carrier. You can use the tracking number provided to track your package on the carrier's website."
     },
     {
       category: 'Returns & Exchanges',
@@ -45,7 +45,7 @@ const FAQ: React.FC = () => {
     {
       category: 'Returns & Exchanges',
       question: 'How do I return an item?',
-      answer: 'See our Returns & Exchanges page for detailed instructions on how to initiate a return.'
+      answer: 'See our Returns & Exchanges page for detailed instructions.'
     },
    
     {
@@ -62,7 +62,7 @@ const FAQ: React.FC = () => {
     {
       category: 'Account',
       question: 'Do I need an account to make a purchase?',
-      answer: 'Yes, you need an account to make a purchase.'
+      answer: 'No, an account is not required. You can place an order as a guest customer or as a registered user. Simply provide the required information during checkout to complete your purchase.'
     },
     {
       category: 'Account',
@@ -90,7 +90,7 @@ const FAQ: React.FC = () => {
             Frequently Asked Questions
           </h1>
           <p className="text-xl text-gray-300 text-center">
-            Find answers to common questions about Esfylo
+            Find answers to common questions about Barqino
           </p>
         </div>
       </div>

@@ -2,6 +2,7 @@ import type { FC } from 'react'
 import { Link } from 'react-router-dom'
 import { Package, ArrowRight } from 'lucide-react'
 import { getCloudinaryUrl } from '../../lib/cloudinary'
+import AnimatedUnderlineHeading from '../AnimatedUnderlineHeading'
 
 interface Category {
   id: string
@@ -65,8 +66,11 @@ const CategoriesSection: FC<CategoriesSectionProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-12">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">Shop by Categories</h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          <AnimatedUnderlineHeading
+            title="Shop by"
+            highlightedText="Categories"
+          /> 
+         <p className="text-gray-600 max-w-2xl mx-auto mt-6">
             Discover our wide range of product categories, carefully curated to meet all your needs.
           </p>
         </div>
@@ -105,7 +109,7 @@ const CategoriesSection: FC<CategoriesSectionProps> = ({
                     {category.productCount} {category.productCount === 1 ? 'item' : 'items'}
                   </p>
                 )}
-                
+
                 {/* Hover Arrow */}
                 <div className="mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <ArrowRight className="w-4 h-4 mx-auto text-gray-600 group-hover:text-white " />
