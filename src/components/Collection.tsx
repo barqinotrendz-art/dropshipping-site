@@ -29,12 +29,12 @@ const Collection: React.FC = () => {
                 <p className='font-semibold text-gray-800 md:text-[18px] text-[16px] md:text-start text-center '>
                     Our Products
                 </p>
-                <h1 className='font-semibold md:text-[40px] text-[30px] mb-5 md:mb-6 text-gray-800 md:text-start text-center '>
+                <h1 className='font-semibold lg:text-[40px] text-[30px] mb-5 md:mb-6 text-gray-800 md:text-start text-center '>
                     Explore 
-                    <span className="relative inline-block text-[#20432F]">
+                    <span className="relative inline-block ms-3">
                         Collections
                         <svg
-                            className="absolute left-1/2 -translate-x-1/2 top-full md:mt-1 mt-0  w-full min-w-[140px]"
+                            className="absolute left-1/2 -translate-x-1/2 lg:top-[55px] top-[40px] text-[#20432F]  w-full min-w-[140px]"
                             viewBox="0 0 186 24"
                             fill="none"
                         >

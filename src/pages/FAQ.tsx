@@ -179,7 +179,7 @@ const FAQ: React.FC = () => {
             className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow text-center"
           >
             <h4 className="font-semibold text-gray-900 mb-2">About Us</h4>
-            <p className="text-sm text-gray-600">Learn more about Esfylo</p>
+            <p className="text-sm text-gray-600">Learn more about Barqino</p>
           </Link>
         </div>
 
