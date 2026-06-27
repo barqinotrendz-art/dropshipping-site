@@ -55,7 +55,7 @@ const Shipping: React.FC = () => {
                 <p className="text-gray-600 mb-2">Estimated delivery up to 2 business days</p>
                 <p className="text-sm text-gray-500">Available with advance payment only</p>
               </div> */}
-           
+
             </div>
           </section>
 
@@ -71,24 +71,24 @@ const Shipping: React.FC = () => {
                 <thead className="bg-gray-100">
                   <tr>
                     <th className="px-4 py-3 font-semibold text-gray-900">Region</th>
-                    <th className="px-4 py-3 font-semibold text-gray-900">Standard</th>
-                    <th className="px-4 py-3 font-semibold text-gray-900">Fast Delivery</th>
+                    <th className="px-4 py-3 font-semibold text-gray-900">Estimated Delivery Times</th>
+                    {/* <th className="px-4 py-3 font-semibold text-gray-900">Fast Delivery</th> */}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   <tr>
-                    <td className="px-4 py-3 text-gray-700">Pakistan</td>
-                    <td className="px-4 py-3 text-gray-600">3-5 days (advance payment)</td>
-                    <td className="px-4 py-3 text-gray-600">Up to 2 days (advance payment)</td>
+                    <td className="px-4 py-3 text-gray-700">UAE | KSA</td>
+                    <td className="px-4 py-3 text-gray-600">3-5 days </td>
+                    {/* <td className="px-4 py-3 text-gray-600">Up to 2 days (advance payment)</td> */}
                   </tr>
 
                 </tbody>
               </table>
             </div>
-            <p>
+            {/* <p>
               Note: Delivery charges may vary depending on weight and location.
-            </p>
-            <p className="text-sm text-gray-500 mt-4">
+            </p> */}
+            <p className="text-sm text-gray-500 mt-1">
               * Delivery times are estimates and may vary based on location and processing conditions.
             </p>
           </section>
@@ -101,10 +101,10 @@ const Shipping: React.FC = () => {
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Order Processing</h2>
             <div className="text-gray-600 space-y-3">
               <p>
-                We’ll update your order status to Processing as soon as we receive your shipping charges screenshot on WhatsApp!            
-                  </p>
+                Orders are typically processed within 1–2 business days after confirmation. Once your order has been shipped, the delivery carrier will send shipment updates and a tracking number directly to the contact details provided during checkout.
+              </p>
               <p>
-                Orders are typically processed within 1-2 business days. You will receive a confirmation message via whatsapp when your order ships, including tracking information.
+                Both guest customers and registered Barqino customers will receive tracking information from the carrier. You can use the tracking number provided to track your package on the carrier's website.
               </p>
               <p>
                 {/* <strong>Processing times:</strong> */}
@@ -122,11 +122,11 @@ const Shipping: React.FC = () => {
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Order Tracking</h2>
             <div className="text-gray-600 space-y-3">
               <p>
-                Once your order ships, you'll receive a tracking number via whatsapp. You can track your package:
+                Once your order ships, you'll receive a tracking number via carrier company. You can track your package:
               </p>
               <ul className="list-disc list-inside space-y-1 ml-4">
-                <li>Using the tracking link in your shipping confirmation message on WhatsApp</li>
-                <li>Using the tracking link directly on the carrier's website</li>
+                <li>Using the tracking number provided by the delivery carrier.</li>
+                <li>Visiting the carrier's website and entering your tracking number to view the latest shipment status.</li>
               </ul>
             </div>
           </section>
@@ -135,11 +135,11 @@ const Shipping: React.FC = () => {
           <section className="bg-gray-50 rounded-xl p-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Need Help?</h2>
             <p className="text-gray-600 mb-4">
-              If you have questions about shipping or need to track your order, please contact us on whatsapp:
+              If you have questions about shipping or need to track your order, please contact us on our email:
             </p>
             <div className="space-y-2 text-gray-600">
-              <p><strong>Email:</strong> <a href="https://mail.google.com/mail/?view=cm&fs=1&to=only.esfylo.store@gmail.com" target="_blank" rel="noopener noreferrer" className="text-black hover:underline">only.esfylo.store@gmail.com</a></p>
-              <p><strong>Phone:</strong> +92 318 5631518</p>
+              <p><strong>Email:</strong> <a href="https://mail.google.com/mail/?view=cm&fs=1&to=barqinotrendz@gmail.com" target="_blank" rel="noopener noreferrer" className="text-black hover:underline">barqinotrendz@gmail.com</a></p>
+              {/* <p><strong>Phone:</strong> +92 318 5631518</p> */}
             </div>
           </section>
 
