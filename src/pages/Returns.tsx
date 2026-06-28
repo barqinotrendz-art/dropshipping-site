@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { RotateCcw, CheckCircle, XCircle, AlertCircle } from 'lucide-react'
+import { RotateCcw, CheckCircle, XCircle } from 'lucide-react'
 
 const Returns: React.FC = () => {
   return (
