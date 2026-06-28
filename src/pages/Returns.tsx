@@ -26,12 +26,13 @@ const Returns: React.FC = () => {
 
           {/* Return Policy */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">7-Day Return Policy</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Replacement Policy</h2>
             <p className="text-gray-600 leading-relaxed mb-4">
-              We offer a 7-day return policy on most items. If you're not completely satisfied with your purchase, you can return it within 7 days of delivery for a refund or exchange. Refunds will only be issued for items returned in original and working condition as delivered, not damaged and will be processed after parcel inspection as per our policy.
-            </p>
+              Barqino ensures that all products are carefully inspected and shipped in their original condition.            </p>
             <div className="bg-black text-white rounded-lg p-6">
-              <p className="text-gray-300 text-sm">We'll contact you on WhatsApp for return instructions</p>
+              <p className="text-gray-300 text-sm">
+                Our support team will contact you on WhatsApp with replacement instructions after reviewing your request.
+              </p>
             </div>
           </section>
 
@@ -39,24 +40,28 @@ const Returns: React.FC = () => {
           <section>
             <div className="flex items-center space-x-3 mb-4">
               <CheckCircle className="w-6 h-6 text-green-600" />
-              <h2 className="text-2xl font-bold text-gray-900">Eligible for Return</h2>
+              <h2 className="text-2xl font-bold text-gray-900">Eligible for Replacement</h2>
             </div>
             <ul className="space-y-2 text-gray-600">
               <li className="flex items-start">
                 <span className="text-green-600 mr-2">✓</span>
-                <span>Items in original condition with tags (if provided) attached</span>
+                <span>Incorrect, damaged, broken, or defective product received</span>
               </li>
               <li className="flex items-start">
                 <span className="text-green-600 mr-2">✓</span>
-                <span>Undamaged, unworn, unwashed, and undamaged items</span>
+                <span>Replacement request submitted within 24 hours of delivery</span>
               </li>
               <li className="flex items-start">
                 <span className="text-green-600 mr-2">✓</span>
-                <span>Items in original packaging</span>
+                <span>Clear video evidence of the issue provided to customer support</span>
               </li>
               <li className="flex items-start">
                 <span className="text-green-600 mr-2">✓</span>
-                <span>Items with all accessories and documentation (if provided)</span>
+                <span>Product returned in its original packaging with all included accessories (if applicable)</span>
+              </li>
+              <li className="flex items-start">
+                <span className="text-green-600 mr-2">✓</span>
+                <span>Product in its original condition and not intentionally damaged or misused</span>
               </li>
             </ul>
           </section>
@@ -65,40 +70,66 @@ const Returns: React.FC = () => {
           <section>
             <div className="flex items-center space-x-3 mb-4">
               <XCircle className="w-6 h-6 text-red-600" />
-              <h2 className="text-2xl font-bold text-gray-900">Non-Returnable Items</h2>
+              <h2 className="text-2xl font-bold text-gray-900">Non-Eligible for Replacement</h2>
             </div>
             <ul className="space-y-2 text-gray-600">
               <li className="flex items-start">
                 <span className="text-red-600 mr-2">✗</span>
-                <span>Damaged, used, or items not in their original condition (including missing accessories/packaging)</span>
+                <span>Change of mind after purchase</span>
               </li>
 
               <li className="flex items-start">
                 <span className="text-red-600 mr-2">✗</span>
-                <span>Final sale or clearance items</span>
+                <span> Replacement requests submitted more than 24 hours after delivery</span>
               </li>
               <li className="flex items-start">
                 <span className="text-red-600 mr-2">✗</span>
-                <span>Digital products</span>
+                <span>Products damaged due to misuse, mishandling, or improper use</span>
               </li>
-              {/* <li className="flex items-start">
+              <li className="flex items-start">
                 <span className="text-red-600 mr-2">✗</span>
-                <span>Custom or personalized items</span>
-              </li> */}
+                <span>Products returned without original packaging or included accessories</span>
+              </li>
+              <li className="flex items-start">
+                <span className="text-red-600 mr-2">✗</span>
+                <span>Products showing signs of use, modification, or unauthorized repair</span>
+              </li>
+              <li className="flex items-start">
+                <span className="text-red-600 mr-2">✗</span>
+                <span>Replacement requests without clear video evidence of the issue</span>
+              </li>
+              <li className="flex items-start">
+                <span className="text-red-600 mr-2">✗</span>
+                <span>Digital products or downloadable content</span>
+              </li>
             </ul>
           </section>
 
           {/* How to Return */}
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">How to Return an Item</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">How to Replace an Item</h2>
             <div className="space-y-4">
               <div className="flex items-start space-x-4">
                 <div className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center flex-shrink-0 font-bold">
                   1
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">Initiate Return</h3>
-                  <p className="text-gray-600">Contact us on WhatsApp to initiate your return. Further instructions will be provided on whatsapp.</p>
+                  <h3 className="font-semibold text-gray-900 mb-1">Initiate Replacement</h3>
+                  <p className="text-gray-600">
+                    To initiate a replacement request, please send a clear video showing the issue (incorrect, damaged, broken, or defective product) to our customer support team via WhatsApp within 24 hours of delivery.
+                  </p>
+                  <h4 className='font-semibold text-gray-900 my3'>
+                    Option A – Customer-Initiated Return
+                  </h4>
+                  <p>
+                    You may be instructed to return the product to our designated return address. Return instructions will be provided by customer support after your replacement request is approved.
+                  </p>
+                  <h4 className='font-semibold text-gray-900 my-2'>
+                    Option B – Courier Pickup
+                  </h4>
+                  <p>
+                    Where available, we may arrange a courier pickup from your location. The product must be securely packed in its original packaging with all included accessories.
+                  </p>
                 </div>
               </div>
 
@@ -107,8 +138,13 @@ const Returns: React.FC = () => {
                   2
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">Print Label</h3>
-                  <p className="text-gray-600">We'll contact you on WhatsApp with a prepaid return shipping label. Print it and attach it to your package.</p>
+                  <h3 className="font-semibold text-gray-900 mb-1">Important Terms</h3>
+                  <p className="text-gray-600 my-3">
+                    Change of Mind: Replacements will not be offered in cases of buyer's remorse or change of mind.
+                  </p>
+                  <p className="text-gray-600 my-3">
+                    Product Condition: Returned items must be in their original, unused condition with all original packaging and accessories included. Failure to comply may result in the rejection of the replacement request.
+                  </p>
                 </div>
               </div>
 
@@ -117,12 +153,14 @@ const Returns: React.FC = () => {
                   3
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">Ship It Back</h3>
-                  <p className="text-gray-600">We will guide you through the return process on WhatsApp.</p>
+                  <h3 className="font-semibold text-gray-900 mb-1"> Refund Policy</h3>
+                  <p className="text-[#af6e35] border border-[#FFF1B8] p-5 rounded-md bg-[#FFFBEB] ">
+                    Barqino operates under a replacement-only policy. Eligible products that are defective, damaged, or incorrect may be replaced in accordance with this policy. Refunds are not offered except where required by applicable law.
+                  </p>
                 </div>
               </div>
 
-              <div className="flex items-start space-x-4">
+              {/* <div className="flex items-start space-x-4">
                 <div className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center flex-shrink-0 font-bold">
                   4
                 </div>
@@ -130,12 +168,12 @@ const Returns: React.FC = () => {
                   <h3 className="font-semibold text-gray-900 mb-1">Get Your Refund</h3>
                   <p className="text-gray-600">Once we receive and inspect your return, we'll process your refund within 5-7 business days.</p>
                 </div>
-              </div>
+              </div> */}
             </div>
           </section>
 
           {/* Exchanges */}
-          <section>
+          {/* <section>
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Exchanges</h2>
             <div className="text-gray-600 space-y-3">
               <p>
@@ -153,10 +191,10 @@ const Returns: React.FC = () => {
                 </p>
               </div>
             </div>
-          </section>
+          </section> */}
 
           {/* Refund Timeline */}
-          <section>
+          {/* <section>
             <div className="flex items-center space-x-3 mb-4">
               <AlertCircle className="w-6 h-6 text-black" />
               <h2 className="text-2xl font-bold text-gray-900">Refund Timeline</h2>
@@ -174,17 +212,17 @@ const Returns: React.FC = () => {
                 You'll receive a confirmation message on WhatsApp once your refund is processed.
               </p>
             </div>
-          </section>
+          </section> */}
 
           {/* Damaged or Defective */}
           <section className="bg-red-50 border border-red-200 rounded-xl p-6">
             <h2 className="text-xl font-bold text-gray-900 mb-3">Received a Damaged or Defective Item?</h2>
             <p className="text-gray-700 mb-4">
-              We're sorry! Please contact us immediately with photos of the damage. We'll send you a replacement or issue a full refund right away.
+              We're sorry! Please contact us immediately with a clear video showing the issue. Our team will review your request and assist you with the replacement process. If your claim is approved, we'll send you a replacement.
             </p>
             <div className="space-y-2 text-gray-700">
-              <p><strong>Email:</strong> <a href="https://mail.google.com/mail/?view=cm&fs=1&to=only.esfylo.store@gmail.com" target="_blank" rel="noopener noreferrer" className="text-black hover:underline">only.esfylo.store@gmail.com</a></p>
-              <p><strong>Phone:</strong> +92 318 5631518</p>
+              <p><strong>Email:</strong> <a href="https://mail.google.com/mail/?view=cm&fs=1&to=barqinotrendz@gmail.com" target="_blank" rel="noopener noreferrer" className="text-black hover:underline">barqinotrendz@gmail.com</a></p>
+              <p><strong>WhatsApp:</strong> +92 313 6107654</p>
             </div>
           </section>
 
