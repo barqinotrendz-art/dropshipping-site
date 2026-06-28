@@ -809,39 +809,71 @@ interface CartState {
 let unsubscribeSnapshot: (() => void) | null = null
 
 // ✅ MAIN PRICE CALCULATOR
+// const calculateItemTotal = (item: CartItem) => {
+//   const basePrice = Number(item.price) || 0
+
+//   if (!item.pricing || item.pricing.length === 0) {
+//     return basePrice * item.qty
+//   }
+
+//   const tiers = item.pricing
+//     .map((t: any) => ({
+//       qty: parseInt(t.label.match(/\d+/)?.[0] || '0', 10),
+//       price: Number(t.discountPrice ?? t.price) || 0
+//     }))
+//     .filter((t: any) => t.qty > 0)
+//     .sort((a: any, b: any) => b.qty - a.qty)
+
+//   let remaining = item.qty
+//   let total = 0
+
+//   for (const tier of tiers) {
+//     if (remaining >= tier.qty) {
+//       const count = Math.floor(remaining / tier.qty)
+
+//       total += count * tier.price
+
+//       remaining -= count * tier.qty
+//     }
+//   }
+
+//   if (remaining > 0) {
+//     total += remaining * basePrice
+//   }
+
+//   return total
+// }
+
 const calculateItemTotal = (item: CartItem) => {
-  const basePrice = Number(item.price) || 0
-
   if (!item.pricing || item.pricing.length === 0) {
-    return basePrice * item.qty
+    return (Number(item.price) || 0) * item.qty
   }
 
-  const tiers = item.pricing
-    .map((t: any) => ({
-      qty: parseInt(t.label.match(/\d+/)?.[0] || '0', 10),
-      price: Number(t.discountPrice ?? t.price) || 0
-    }))
-    .filter((t: any) => t.qty > 0)
-    .sort((a: any, b: any) => b.qty - a.qty)
+  const x1Tier = item.pricing.find((t: any) =>
+    t.label.toLowerCase().includes('x1')
+  )
 
-  let remaining = item.qty
-  let total = 0
+  const x1Price = Number(x1Tier?.discountPrice ?? x1Tier?.price ?? item.price)
 
-  for (const tier of tiers) {
-    if (remaining >= tier.qty) {
-      const count = Math.floor(remaining / tier.qty)
+  const tierMap: Record<number, number> = {}
 
-      total += count * tier.price
+  item.pricing.forEach((t: any) => {
+    const qty = parseInt(t.label.match(/\d+/)?.[0] || '0', 10)
 
-      remaining -= count * tier.qty
+    if (qty > 0) {
+      tierMap[qty] = Number(t.discountPrice ?? t.price)
     }
+  })
+
+  // exact tier exists
+  if (tierMap[item.qty]) {
+    return tierMap[item.qty]
   }
 
-  if (remaining > 0) {
-    total += remaining * basePrice
-  }
+  const maxTierQty = Math.max(...Object.keys(tierMap).map(Number))
+  const maxTierPrice = tierMap[maxTierQty]
 
-  return total
+  return maxTierPrice + ((item.qty - maxTierQty) * x1Price)
 }
 
 // ✅ CART TOTAL
