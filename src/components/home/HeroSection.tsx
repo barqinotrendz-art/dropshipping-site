@@ -97,7 +97,7 @@ const HeroSection: FC<HeroSectionProps> = ({ banners, isLoading, error }) => {
 
   if (error || !banners || banners.length === 0) {
     return (
-      <section className="relative h-[70vh] md:h-[85vh] lg:h-screen w-full bg-gradient-to-br from-black via-gray-900 to-gray-800 flex items-center justify-center">
+      <section className="relative h-[70vh] md:h-[85vh] lg:h-screen w-full bg-gradient-to-br from-black via-gray-900 to-gray-800 flex items-center justify-center group">
         <div className="text-center text-white px-4 max-w-4xl mx-auto">
           <div className="mb-8">
             <ShoppingBag className="w-20 h-20 md:w-24 md:h-24 mx-auto mb-6 opacity-60" />
@@ -270,14 +270,14 @@ const HeroSection: FC<HeroSectionProps> = ({ banners, isLoading, error }) => {
         <>
           <button
             onClick={prevSlide}
-            className="absolute left-4 md:left-6 top-1/2 transform -translate-y-1/2 z-20 p-2 md:p-3 bg-black/30 hover:bg-black/50 rounded-full transition-all duration-300 backdrop-blur-sm"
+            className="absolute left-4 md:left-6 top-1/2 transform -translate-y-1/2 z-20 p-2 md:p-3 bg-black/30 hover:bg-black/50 rounded-full transition-all duration-300 backdrop-blur-sm opacity-0 group-hover:opacity-100"
             aria-label="Previous slide"
           >
             <ChevronLeft className="w-5 h-5 md:w-6 md:h-6 text-white" />
           </button>
           <button
             onClick={nextSlide}
-            className="absolute right-4 md:right-6 top-1/2 transform -translate-y-1/2 z-20 p-2 md:p-3 bg-black/30 hover:bg-black/50 rounded-full transition-all duration-300 backdrop-blur-sm"
+            className="absolute right-4 md:right-6 top-1/2 transform -translate-y-1/2 z-20 p-2 md:p-3 bg-black/30 hover:bg-black/50 rounded-full transition-all duration-300 backdrop-blur-sm opacity-0 group-hover:opacity-100"
             aria-label="Next slide"
           >
             <ChevronRight className="w-5 h-5 md:w-6 md:h-6 text-white" />
