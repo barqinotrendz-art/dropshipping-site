@@ -33,7 +33,8 @@ const ProductDetail: React.FC = () => {
   const { addItem: addToWishlist, items: wishlistItems, remove: removeFromWishlist } = useWishlist()
   const [showReviewForm, setShowReviewForm] = React.useState(false)
   const [selectedColor, setSelectedColor] = React.useState<ColorVariant | null>(null)
-  const [quantity, setQuantity] = React.useState(1)
+  // const [quantity, setQuantity] = React.useState(1)
+  const [quantity, setQuantity] = React.useState(product?.pricing?.length > 1 ? 2 : 1)
   const activeTier = product?.pricing?.[quantity - 1]
 
   React.useEffect(() => {
@@ -41,6 +42,12 @@ const ProductDetail: React.FC = () => {
       setQuantity(1) // default to Buy 1
     }
   }, [product])
+
+  React.useEffect(() => {
+  if (product?.pricing?.length > 1) {
+    setQuantity(2)
+  }
+}, [product])
 
   console.log("Desc", product)
 

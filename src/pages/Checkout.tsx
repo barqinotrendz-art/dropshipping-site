@@ -130,7 +130,7 @@ const Checkout: React.FC = () => {
   // const { data: paymentSettings, isLoading: isLoadingPayment } = usePaymentSettings()
   const { selectedCountry } = useCountryStore()
 
-  console.log(items)
+  console.log(items, "checkouts")
 
   const checkoutItems = items.filter(
     item => item.country === selectedCountry
@@ -712,7 +712,8 @@ const Checkout: React.FC = () => {
                           <p className="text-xs text-gray-500 mt-1">Qty: {item.qty}</p>
                         </div>
                         <div className="text-sm font-semibold text-gray-900">
-                          {item.currency} {(item.pricing?.[0]?.discountPrice ?? item.price).toFixed(2)}
+                          {/* {item.currency} {(item.pricing?.[0]?.discountPrice ?? item.price).toFixed(2)} */}
+                          {item.currency} {subtotal.toFixed(2)}
                         </div>
                       </div>
                     )
