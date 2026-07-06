@@ -43,6 +43,8 @@ export type Review = {
   status: 'pending' | 'approved' | 'rejected'
   createdAt: Timestamp
   updatedAt: Timestamp
+  isAdminReview?: boolean
+  userEmail?: string
 }
 
 export function useReviews(productId?: string) {
@@ -94,6 +96,72 @@ export function useAddReview() {
     onSuccess: (_, variables) => {
       qc.invalidateQueries({ queryKey: ['reviews', variables.productId] })
       qc.invalidateQueries({ queryKey: ['reviews-admin'] })
+    }
+  })
+}
+
+export function useAddAdminReview() {
+  const qc = useQueryClient()
+
+  return useMutation({
+    mutationFn: async ({
+      productId,
+      userName,
+      userEmail,
+      rating,
+      comment,
+    }: {
+      productId: string
+      userName: string
+      userEmail: string
+      rating: number
+      comment: string
+    }) => {
+      const reviewRef = await addDoc(
+        collection(db, 'reviews'),
+        {
+          productId,
+
+          userId: 'admin',
+
+          userName,
+          userEmail,
+
+          rating,
+          comment,
+
+          helpful: 0,
+
+          verified: true,
+
+          isAdminReview: true,
+
+          status: 'approved',
+
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        })
+      await updateProductStats(productId)
+
+      return reviewRef
+    },
+
+    onSuccess: (_, variables) => {
+      qc.invalidateQueries({
+        queryKey: ['reviews', variables.productId]
+      })
+
+      qc.invalidateQueries({
+        queryKey: ['reviews-admin']
+      })
+
+      qc.invalidateQueries({
+        queryKey: ['products']
+      })
+
+      qc.invalidateQueries({
+        queryKey: ['product']
+      })
     }
   })
 }

@@ -22,6 +22,7 @@ import { getCloudinaryUrl, getCloudinaryVideoUrl } from '../lib/cloudinary'
 import ProductTicker from '../components/ProductTicker'
 import Smartessentialsection from './Smartessentialsection'
 import { useCountryStore } from '../hooks/useCountryStore'
+import AdminReviewForm from '../components/AdminReviewForm'
 
 const ProductDetail: React.FC = () => {
   const { slug } = useParams()
@@ -36,6 +37,9 @@ const ProductDetail: React.FC = () => {
   // const [quantity, setQuantity] = React.useState(1)
   const [quantity, setQuantity] = React.useState(product?.pricing?.length > 1 ? 2 : 1)
   const activeTier = product?.pricing?.[quantity - 1]
+  const [showAdminReviewForm, setShowAdminReviewForm] = React.useState(false)
+
+  const isAdmin = user?.email === "barqinotrendz@gmail.com"
 
   React.useEffect(() => {
     if (product?.pricing?.length) {
@@ -44,10 +48,10 @@ const ProductDetail: React.FC = () => {
   }, [product])
 
   React.useEffect(() => {
-  if (product?.pricing?.length > 1) {
-    setQuantity(2)
-  }
-}, [product])
+    if (product?.pricing?.length > 1) {
+      setQuantity(2)
+    }
+  }, [product])
 
   console.log("Desc", product)
 
@@ -299,7 +303,7 @@ const ProductDetail: React.FC = () => {
                 {product.rating.toFixed(1)} ({product.reviewCount || 0} reviews)
               </span>
             </div>
-          )}
+          )} 
 
           <div className="flex items-center md:gap-3 gap-2">
             <span className="lg:text-2xl md:text-[18px] text-[16px] text-[#c03e35] font-bold">{currentPrice.toFixed(2)} {product.currency || (product.market === 'Saudi Arabia' ? 'SAR' : 'AED')}</span>
@@ -717,15 +721,48 @@ const ProductDetail: React.FC = () => {
       {/* Customer reviews (bottom) - only reviews shown before recommendations */}
       <div className="border-t pt-8">
 
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold">Customer Reviews</h3>
-          <button
-            onClick={() => setShowReviewForm(!showReviewForm)}
-            className="px-4 py-2 bg-black text-white rounded text-sm"
-          >
-            {showReviewForm ? 'Cancel' : 'Write Review'}
-          </button>
+        <div className="flex items-center justify-end mb-4">
+          <div className="flex gap-2">
+
+            {isAdmin && (
+              <button
+                onClick={() =>
+                  setShowAdminReviewForm(
+                    !showAdminReviewForm
+                  )
+                }
+                className="px-4 py-2 bg-green-600 text-white rounded text-sm"
+              >
+                {showAdminReviewForm
+                  ? "Cancel Admin Review"
+                  : "Add Admin Review"}
+              </button>
+            )}
+
+            <button
+              onClick={() =>
+                setShowReviewForm(!showReviewForm)
+              }
+              className="px-4 py-2 bg-black text-white rounded text-sm"
+            >
+              {showReviewForm
+                ? "Cancel"
+                : "Write Review"}
+            </button>
+
+          </div>
         </div>
+
+        {showAdminReviewForm && (
+          <div className="bg-green-50 p-4 rounded mb-4">
+            <AdminReviewForm
+              productId={product.id}
+              onSuccess={() =>
+                setShowAdminReviewForm(false)
+              }
+            />
+          </div>
+        )}
 
         {showReviewForm && (
           <div className="bg-gray-50 p-4 rounded mb-4">
@@ -736,8 +773,9 @@ const ProductDetail: React.FC = () => {
           </div>
         )}
 
-        <ReviewsList productId={product.id} />
+        <ReviewsList productId={product.id} currentUser={user} />
       </div>
+
 
       {/* Product Recommendations */}
       <div className="border-t pt-8">

@@ -4,11 +4,12 @@ import type { Review } from '../hooks/useReviews'
 
 type Props = {
   productId: string
+  currentUser?: any
 }
 
 const StarRating: React.FC<{ rating: number; size?: 'sm' | 'md' }> = ({ rating, size = 'md' }) => {
   const sizeClass = size === 'sm' ? 'text-sm' : 'text-base'
-  
+
   return (
     <div className={`flex items-center ${sizeClass}`}>
       {[1, 2, 3, 4, 5].map((star) => (
@@ -25,7 +26,7 @@ const StarRating: React.FC<{ rating: number; size?: 'sm' | 'md' }> = ({ rating, 
 
 const ReviewItem: React.FC<{ review: Review }> = ({ review }) => {
   const reviewDate = review.createdAt?.toDate?.() || new Date()
-  
+
   return (
     <div className="border-b pb-4 mb-4 last:border-b-0">
       <div className="flex items-start justify-between mb-2">
@@ -33,6 +34,11 @@ const ReviewItem: React.FC<{ review: Review }> = ({ review }) => {
           <div className="flex items-center gap-2 mb-1">
             <StarRating rating={review.rating} size="sm" />
             <span className="text-sm text-gray-600">by {review.userName}</span>
+            {review.isAdminReview && (
+              <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">
+                Imported Review
+              </span>
+            )}
             {review.verified && (
               <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded">
                 Verified Purchase
@@ -44,11 +50,11 @@ const ReviewItem: React.FC<{ review: Review }> = ({ review }) => {
           {reviewDate.toLocaleDateString()}
         </span>
       </div>
-      
+
       {review.comment && (
         <p className="text-gray-700 text-sm leading-relaxed">{review.comment}</p>
       )}
-      
+
       {review.helpful && review.helpful > 0 && (
         <div className="mt-2">
           <span className="text-xs text-gray-500">
@@ -60,11 +66,11 @@ const ReviewItem: React.FC<{ review: Review }> = ({ review }) => {
   )
 }
 
-const ReviewsList: React.FC<Props> = ({ productId }) => {
+const ReviewsList: React.FC<Props> = ({ productId}) => {
   const { data: reviews, isLoading, error } = useReviews(productId)
 
   if (isLoading) return <p className="text-gray-500">Loading reviews...</p>
-  
+
   if (error) {
     return (
       <div className="bg-red-50 border border-red-200 rounded p-4">
@@ -84,7 +90,7 @@ const ReviewsList: React.FC<Props> = ({ productId }) => {
 
   // Calculate average rating
   const avgRating = reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length
-  const ratingCounts = [5, 4, 3, 2, 1].map(rating => 
+  const ratingCounts = [5, 4, 3, 2, 1].map(rating =>
     reviews.filter(review => review.rating === rating).length
   )
 
@@ -98,17 +104,17 @@ const ReviewsList: React.FC<Props> = ({ productId }) => {
             <StarRating rating={Math.round(avgRating)} />
             <div className="text-sm text-gray-600">{reviews.length} review{reviews.length !== 1 ? 's' : ''}</div>
           </div>
-          
+
           <div className="flex-1">
             {ratingCounts.map((count, index) => {
               const rating = 5 - index
               const percentage = reviews.length > 0 ? (count / reviews.length) * 100 : 0
-              
+
               return (
                 <div key={rating} className="flex items-center gap-2 text-sm">
                   <span>{rating} ★</span>
                   <div className="flex-1 bg-gray-200 rounded-full h-2">
-                    <div 
+                    <div
                       className="bg-yellow-400 h-2 rounded-full"
                       style={{ width: `${percentage}%` }}
                     />
@@ -123,12 +129,20 @@ const ReviewsList: React.FC<Props> = ({ productId }) => {
 
       {/* Reviews List */}
       <div>
-        <h3 className="text-lg font-semibold mb-4">Customer Reviews</h3>
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-semibold">
+            Customer Reviews 
+          </h3>
+        </div>
+
+        {/* <h3 className="text-lg font-semibold mb-4">Customer Reviews</h3> */}
         <div className="space-y-4">
           {reviews.map((review) => (
             <ReviewItem key={review.id} review={review} />
           ))}
         </div>
+
+      
       </div>
     </div>
   )
