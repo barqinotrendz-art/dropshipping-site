@@ -34,11 +34,11 @@ const ReviewItem: React.FC<{ review: Review }> = ({ review }) => {
           <div className="flex items-center gap-2 mb-1">
             <StarRating rating={review.rating} size="sm" />
             <span className="text-sm text-gray-600">by {review.userName}</span>
-            {review.isAdminReview && (
+            {/* {review.isAdminReview && (
               <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">
                 Imported Review
               </span>
-            )}
+            )} */}
             {review.verified && (
               <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded">
                 Verified Purchase
@@ -55,13 +55,13 @@ const ReviewItem: React.FC<{ review: Review }> = ({ review }) => {
         <p className="text-gray-700 text-sm leading-relaxed">{review.comment}</p>
       )}
 
-      {review.helpful && review.helpful > 0 && (
+      {/* {review.helpful && review.helpful > 0 && (
         <div className="mt-2">
           <span className="text-xs text-gray-500">
-            {review.helpful} people found this helpful
+            {review.helpful} people found this helpful 
           </span>
         </div>
-      )}
+      )} */}
     </div>
   )
 }
