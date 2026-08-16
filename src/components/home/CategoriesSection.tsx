@@ -69,53 +69,68 @@ const CategoriesSection: FC<CategoriesSectionProps> = ({
           <AnimatedUnderlineHeading
             title="Shop by"
             highlightedText="Categories"
-          /> 
-         <p className="text-gray-600 max-w-2xl mx-auto mt-6">
+          />
+          <p className="text-gray-600 max-w-2xl mx-auto mt-6">
             Discover our wide range of product categories, carefully curated to meet all your needs.
           </p>
         </div>
 
         {/* Categories Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3  border-2   lg:grid-cols-4 xl:grid-cols-4 p-4 gap-4 md:gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 p-3 gap-4 md:gap-6">
           {categories.map((category, index) => (
-            <Link
-              key={category.id}
-              to={`/categories?type=${category.slug}`}
-              className="group bg-gray-50 w-full h-full border-2 border-black hover:bg-black hover:text-white rounded-lg  p-4 md:p-6 text-center transition-all duration-300 transform hover:scale-105 hover:shadow-lg animate-fadeIn"
-              style={{ animationDelay: `${index * 100}ms` }}
-            >
-              {/* Category Image/Icon */}
-              <div className="aspect-square mb-4 overflow-hidden rounded-lg bg-white">
-                {category.publicId ? (
-                  <img
-                    src={getCloudinaryUrl(category.publicId, 200, 200)}
-                    alt={category.name}
-                    className="w-full h-full object-cover  group-hover:scale-110 transition-transform duration-300"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 group-hover:from-gray-200 group-hover:to-gray-300 transition-all duration-300">
-                    <Package className="w-8 h-8 md:w-12 md:h-12 text-gray-400 group-hover:text-gray-500 transition-colors" />
-                  </div>
-                )}
-              </div>
+            <div>
+              <Link
+                key={category.id}
+                to={`/categories?type=${category.slug}`}
+                className="group bg-gray-50 w-full h-full border border-dashed border-gray-200 hover:border-[#183831]
+               hover:bg-[#183831] hover:text-white text-center lg:py-[23px] md:py-[23px] flex justify-center
+                items-center  rounded-full
+                transition-all duration-300 transform hover:scale-105
+                 hover:shadow-lg animate-fadeIn"
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                {/* Category Image/Icon */}
+                <div className="aspect-square border border-1 overflow-hidden 
+              rounded-full bg-white">
+                  {category.publicId ? (
+                    <img
+                      src={getCloudinaryUrl(category.publicId, 200, 200)}
+                      alt={category.name}
+                      className="w-full h-full object-cover  group-hover:scale-110 transition-transform duration-300"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 group-hover:from-gray-200 group-hover:to-gray-300 transition-all duration-300">
+                      <Package className="w-8 h-8 md:w-12 md:h-12 text-gray-400 group-hover:text-gray-500 transition-colors" />
+                    </div>
+                  )}
+                </div>
 
-              {/* Category Info */}
+                {/* Category Info */}
+                <div>
+                  {/* <h3 className="font-semibold text-gray-900 mb-1 group-hover:text-white text-center transition-colors text-sm md:text-base">
+                  {category.name}
+                </h3> */}
+                  {category.productCount !== undefined && (
+                    <p className="text-xs md:text-sm text-gray-500 group-hover:text-white transition-colors">
+                      {category.productCount} {category.productCount === 1 ? 'item' : 'items'}
+                    </p>
+                  )}
+
+                  {/* Hover Arrow */}
+                  {/* <div className="mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <ArrowRight className="w-4 h-4 mx-auto text-gray-600 group-hover:text-white " />
+                </div> */}
+                </div>
+
+              </Link>
               <div>
                 <h3 className="font-semibold text-gray-900 mb-1 group-hover:text-white text-center transition-colors text-sm md:text-base">
                   {category.name}
                 </h3>
-                {category.productCount !== undefined && (
-                  <p className="text-xs md:text-sm text-gray-500 group-hover:text-white transition-colors">
-                    {category.productCount} {category.productCount === 1 ? 'item' : 'items'}
-                  </p>
-                )}
-
-                {/* Hover Arrow */}
-                <div className="mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <ArrowRight className="w-4 h-4 mx-auto text-gray-600 group-hover:text-white " />
-                </div>
               </div>
-            </Link>
+
+            </div>
+
           ))}
         </div>
 

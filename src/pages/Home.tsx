@@ -254,6 +254,27 @@ const Home: FC = () => {
           />
         </div>
 
+        {/* Categories Section - Only show if more than 1 active category */}
+        
+        {categories && categories.filter(c => c.active !== false).length > 1 && (
+          <div className="animate-fadeIn" style={{ animationDelay: '400ms' }}>
+            <CategoriesSection
+              categories={categories
+                ?.filter(c => c.active !== false) // Only show active categories
+                .map(c => ({
+                  id: c.id,
+                  name: c.name,
+                  slug: c.slug,
+                  publicId: c.imagePublicId, // Category image from Cloudinary
+                  productCount: undefined // Category doesn't have productCount in current schema
+                }))}
+              isLoading={categoriesLoading}
+              error={categoriesError ? 'Failed to load categories' : undefined}
+            />
+          </div>
+        )}
+
+
         {/* Latest Arrivals Section - Category Based */}
         {/* {processedProducts?.categoryBasedSections && processedProducts.categoryBasedSections.length > 0 && ( */}
         {(processedProducts?.latest?.length ?? 0) > 0 && (
@@ -314,24 +335,7 @@ const Home: FC = () => {
         )} */}
 
 
-        {/* Categories Section - Only show if more than 1 active category */}
-        {categories && categories.filter(c => c.active !== false).length > 1 && (
-          <div className="animate-fadeIn" style={{ animationDelay: '400ms' }}>
-            <CategoriesSection
-              categories={categories
-                ?.filter(c => c.active !== false) // Only show active categories
-                .map(c => ({
-                  id: c.id,
-                  name: c.name,
-                  slug: c.slug,
-                  publicId: c.imagePublicId, // Category image from Cloudinary
-                  productCount: undefined // Category doesn't have productCount in current schema
-                }))}
-              isLoading={categoriesLoading}
-              error={categoriesError ? 'Failed to load categories' : undefined}
-            />
-          </div>
-        )}
+        
 
 
         {/* Top Selling Products Section - Category Based */}
