@@ -123,7 +123,7 @@ const HeroSection: FC<HeroSectionProps> = ({ banners, isLoading, error }) => {
   const currentBanner = banners[currentSlide]
 
   return (
-    <section className="relative aspect-square md:aspect-auto md:h-[85vh] lg:h-screen w-full overflow-hidden group">
+    <section className="relative aspect-square md:aspect-auto md:h-screen w-[100%] overflow-hidden group">
       {/* Clickable Banner Wrapper */}
       {currentBanner.ctaLink ? (
         <Link
