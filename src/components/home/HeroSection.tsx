@@ -97,7 +97,7 @@ const HeroSection: FC<HeroSectionProps> = ({ banners, isLoading, error }) => {
 
   if (error || !banners || banners.length === 0) {
     return (
-      <section className="relative h-[70vh] md:h-[85vh] lg:h-screen w-full bg-gradient-to-br from-black via-gray-900 to-gray-800 flex items-center justify-center group">
+      <section className="relative aspect-square  md:h-[85vh] lg:h-screen w-full bg-gradient-to-br from-black via-gray-900 to-gray-800 flex items-center justify-center group">
         <div className="text-center text-white px-4 max-w-4xl mx-auto">
           <div className="mb-8">
             <ShoppingBag className="w-20 h-20 md:w-24 md:h-24 mx-auto mb-6 opacity-60" />
