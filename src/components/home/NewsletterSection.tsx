@@ -16,7 +16,7 @@ const NewsletterSection: React.FC = () => {
   ]
 
   return (
-    <section className="py-16 bg-gradient-to-r from-gray-900 via-black to-gray-900">
+    <section className="py-16 bg-gradient-to-r from-[#224d44] via-[#183831] to-[#224d44]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center">
 
