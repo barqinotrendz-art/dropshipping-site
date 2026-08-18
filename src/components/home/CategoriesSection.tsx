@@ -82,15 +82,43 @@ const CategoriesSection: FC<CategoriesSectionProps> = ({
               <Link
                 key={category.id}
                 to={`/categories?type=${category.slug}`}
-                className="group bg-gray-50 w-full h-full border border-dashed border-gray-200 hover:border-[#183831]
-               hover:bg-[#183831] hover:text-white text-center lg:py-[23px] md:py-[23px] flex justify-center
-                items-center  rounded-full
-                transition-all duration-300 transform hover:scale-105
-                 hover:shadow-lg animate-fadeIn"
+                className="group relative overflow-hidden w-full bg-[#f9fafb] aspect-square text-center 
+                 flex flex-col justify-center items-center  rounded-full
+                 transition-all duration-300 transform hover:scale-105 p-0
+                 hover:shadow-lg animate-fadeIn
+                 "
                 style={{ animationDelay: `${index * 100}ms` }}
               >
+                {/* <div
+                  className="
+                    absolute inset-0
+                    rounded-full
+                    bg-[conic-gradient(from_135deg,#183831_0deg,#183831_180deg,#f9fafb_180deg,#f9fafb_360deg)]
+                    transition-transform duration-700 ease-in-out
+                    group-hover:rotate-[180deg]
+                  "
+                /> */}
+                <div
+                  className="
+                  absolute inset-0
+                  rounded-full
+                  bg-[conic-gradient(from_135deg,#183831_0deg,#183831_180deg,#f9fafb_180deg,#f9fafb_360deg)]"
+                />
+
+                {/* Green dial sweep */}
+                <div className="
+                  absolute inset-0
+                  rounded-full
+                  bg-[conic-gradient(from_134.5deg,#183831_0deg,#183831_181deg,transparent_180deg,transparent_360deg)]    rotate-0
+                  group-hover:rotate-[180deg]
+                  transition-transform
+                  duration-500
+                  ease-linear "
+                />
+
+
                 {/* Category Image/Icon */}
-                <div className="aspect-square border border-1 overflow-hidden 
+                <div className="relative z-10 w-[75%] aspect-square border border-1 overflow-hidden flex-shrink-0 
               rounded-full bg-white">
                   {category.publicId ? (
                     <img
@@ -123,7 +151,7 @@ const CategoriesSection: FC<CategoriesSectionProps> = ({
                 </div>
 
               </Link>
-              <div>
+              <div className='my-4'>
                 <h3 className="font-semibold text-gray-900 mb-1 group-hover:text-white text-center transition-colors text-sm md:text-base">
                   {category.name}
                 </h3>

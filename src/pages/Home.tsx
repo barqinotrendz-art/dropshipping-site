@@ -16,7 +16,8 @@ import './home.css'
 import Collection from '../components/Collection.tsx'
 import { generateCartId } from '../types/index.ts'
 import { useCountryStore } from '../hooks/useCountryStore.ts'
-import AnimatedUnderlineHeading from '../components/AnimatedUnderlineHeading.tsx'
+import AnimatedUnderlineHeading from '../components/AnimatedUnderlineHeading.tsx';
+import SplitFlap from '../components/home/SplitFlap.tsx'
 
 const Home: FC = () => {
   // const { addItem } = useCart()
@@ -255,7 +256,7 @@ const Home: FC = () => {
         </div>
 
         {/* Categories Section - Only show if more than 1 active category */}
-        
+
         {categories && categories.filter(c => c.active !== false).length > 1 && (
           <div className="animate-fadeIn" style={{ animationDelay: '400ms' }}>
             <CategoriesSection
@@ -334,8 +335,7 @@ const Home: FC = () => {
           </div>
         )} */}
 
-
-        
+        <SplitFlap />
 
 
         {/* Top Selling Products Section - Category Based */}
@@ -409,8 +409,8 @@ const Home: FC = () => {
                 <AnimatedUnderlineHeading
                   title="Featured"
                   highlightedText="Products"
-                />             
-               <p className="text-gray-600 mt-6">Discover our handpicked selection across all categories</p>
+                />
+                <p className="text-gray-600 mt-6">Discover our handpicked selection across all categories</p>
               </div>
             </div>
 
